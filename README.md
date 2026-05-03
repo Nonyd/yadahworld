@@ -7,7 +7,7 @@ Official site for **Yadah** — gospel music minister. Built with Next.js 14, Ty
 ```bash
 npm install
 cp .env.example .env.local
-# Set DATABASE_URL, NEXTAUTH_*, ADMIN_*, optional Resend/Stripe
+# Set DATABASE_URL, NEXTAUTH_*, ADMIN_*, optional Brevo SMTP/Stripe
 npx prisma db push
 npm run dev
 ```

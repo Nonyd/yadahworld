@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Resend } from 'resend'
+import { sendMail } from '@/lib/mailer'
 import { prisma } from '@/lib/prisma'
 import { bookingFormSchema } from '@/types/booking'
 
@@ -53,19 +53,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Could not save booking. Check DATABASE_URL and run prisma db push.' }, { status: 500 })
   }
 
-  const resendKey = process.env.RESEND_API_KEY
-  if (resendKey) {
-    const resend = new Resend(resendKey)
-    const fromBooking = process.env.RESEND_FROM_BOOKING ?? 'Yadah Booking <onboarding@resend.dev>'
-    const fromMgmt = process.env.RESEND_FROM_MGMT ?? 'Yadah Management <onboarding@resend.dev>'
-    const mgmtEmail = process.env.BOOKING_NOTIFY_EMAIL ?? 'yadahsings@gmail.com'
+  const notifyEmail = process.env.BREVO_NOTIFY_EMAIL ?? 'yadahsings@gmail.com'
 
-    try {
-      await resend.emails.send({
-        from: fromBooking,
-        to: mgmtEmail,
-        subject: `New Booking Request: ${data.eventName}`,
-        html: `
+  try {
+    await sendMail({
+      to: notifyEmail,
+      subject: `New Booking Request: ${data.eventName}`,
+      html: `
         <h2>New Booking Request</h2>
         <p><strong>From:</strong> ${data.fullName} (${data.email})</p>
         <p><strong>Organization:</strong> ${data.churchName}</p>
@@ -77,13 +71,12 @@ export async function POST(req: NextRequest) {
         <p><strong>Address:</strong> ${data.eventAddress}, ${data.eventCity}</p>
         ${data.additionalInfo ? `<p><strong>Additional:</strong> ${data.additionalInfo}</p>` : ''}
       `,
-      })
+    })
 
-      await resend.emails.send({
-        from: fromMgmt,
-        to: data.email,
-        subject: 'Your Booking Request Has Been Received',
-        html: `
+    await sendMail({
+      to: data.email,
+      subject: 'Your Booking Request Has Been Received',
+      html: `
         <p>Dear ${data.fullName},</p>
         <p>Thank you for reaching out. Your booking request for <strong>${data.eventName}</strong>
         on <strong>${data.eventDate}</strong> has been received.</p>
@@ -91,10 +84,9 @@ export async function POST(req: NextRequest) {
         request and contact you at the soonest possible time.</p>
         <p>God bless you,<br/>Yadah Management Team<br/>SonsHub Media</p>
       `,
-      })
-    } catch (e) {
-      console.error('Resend error:', e)
-    }
+    })
+  } catch (e) {
+    console.error('Brevo / mailer error:', e)
   }
 
   return NextResponse.json({ success: true })
