@@ -10,10 +10,7 @@ export default function StreamMarquee({ copy }: { copy: SiteCopy }) {
   if (!items.length) return null
 
   return (
-    <section
-      style={{ background: 'var(--surface)' }}
-      className="py-6 overflow-hidden border-y border-[var(--gold-light)]/20"
-    >
+    <section style={{ background: 'var(--surface)' }} className="py-6 overflow-hidden">
       <div className="marquee-track">
         {[...items, ...items].map((item, i) => (
           <span key={`${item}-${i}`} className="px-8 whitespace-nowrap">

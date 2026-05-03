@@ -34,9 +34,7 @@ export default async function Home() {
       <HeroSection heroImage={visuals.hero} heroEyebrow={heroEyebrow} heroSubline={heroSubline} />
       <MantraSection copy={copy} />
       <AboutSnippet editorialImage={visuals.editorial} aboutBioShort={branding.aboutBioShort} copy={copy} />
-      <div className="section-rule mx-16 md:mx-24" />
       <MusicSection releases={releases} copy={copy} />
-      <div className="section-rule mx-16 md:mx-24" />
       <VideosSection videos={videos} copy={copy} />
       <StreamMarquee copy={copy} />
       <UpcomingEvents events={events} copy={copy} />

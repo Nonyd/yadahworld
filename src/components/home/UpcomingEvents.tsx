@@ -11,7 +11,7 @@ export default function UpcomingEvents({ events, copy }: { events: PublicEvent[]
   const h = (k: string) => getCopyString(copy, `home.${k}`)
 
   return (
-    <section id="events" ref={ref} className="px-8 md:px-20 py-[clamp(6rem,12vw,14rem)] border-t border-[var(--gold-light)]/15">
+    <section id="events" ref={ref} className="px-8 md:px-20 py-[clamp(6rem,12vw,14rem)]">
       <div className="max-w-screen-xl mx-auto">
         <div className="mb-14">
           <p className="eyebrow mb-6">{h('eventsEyebrow')}</p>
