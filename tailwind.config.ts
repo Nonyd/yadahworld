@@ -1,26 +1,31 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss'
 
 const config: Config = {
-  content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
     extend: {
       colors: {
-        background: "var(--bg)",
-        foreground: "var(--ivory)",
-        gold: "var(--gold)",
-        ivory: "var(--ivory)",
-        muted: "var(--muted)",
+        bg: '#F7F3EC',
+        surface: '#EDE8DF',
+        deep: '#0D0B08',
+        body: '#2A2520',
+        muted: '#8A7F72',
+        accent: '#6B2737',
+        'accent-light': '#A03848',
+        gold: '#8B6914',
+        'gold-light': '#C9A84C',
+        ivory: '#FDFAF5',
       },
       fontFamily: {
-        serif: ["var(--font-cormorant)", "Georgia", "serif"],
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        playfair: ['var(--font-playfair)', 'Georgia', 'serif'],
+        baskerville: ['var(--font-baskerville)', 'Georgia', 'serif'],
+        jost: ['var(--font-jost)', 'system-ui', 'sans-serif'],
+      },
+      spacing: {
+        section: 'clamp(6rem, 12vw, 14rem)',
       },
     },
   },
   plugins: [],
-};
-export default config;
+}
+export default config

@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BookingRequest {
+  id                 String        @id @default(cuid())
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  fullName           String
+  email              String
+  phone              String
+  churchName         String
+  website            String?
+  orgAddress         String
+  orgPhone           String
+  orgEmail           String
+  eventName          String
+  natureOfEvent      String
+  whatExpected       String
+  expectationDetails String
+  eventDate          DateTime
+  eventTime          String
+  eventAddress       String
+  additionalInfo     String?
+  status             BookingStatus @default(PENDING)
+  adminNotes         String?       @map("notes")
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  name      String
+  email     String
+  subject   String
+  message   String
+  read      Boolean  @default(false)
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  createdAt   DateTime    @default(now())
+  name        String
+  description String?
+  price       Int
+  currency    String      @default("NGN")
+  images      String[]
+  category    String?
+  inStock     Boolean     @default(true)
+  stripeId    String?
+  slug        String      @unique
+  orders      OrderItem[]
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  createdAt         DateTime    @default(now())
+  customerName      String
+  customerEmail     String
+  amount            Int
+  currency          String
+  status            OrderStatus @default(PENDING)
+  stripePaymentId   String?
+  items             OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Int
+}
+
+model SiteRelease {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  title     String
+  feat      String?
+  type      String
+  year      String
+  cover     String
+  spotify   String?
+  apple     String?
+  youtube   String?
+  isNew     Boolean  @default(false)
+  order     Int      @default(0)
+}
+
+model SiteEvent {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  title       String
+  description String?
+  date        DateTime
+  location    String
+  link        String?
+  isActive    Boolean  @default(true)
+}
+
+enum BookingStatus {
+  PENDING
+  REVIEWING
+  CONFIRMED
+  DECLINED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}

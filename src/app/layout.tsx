@@ -1,47 +1,60 @@
-import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
-import "./globals.css";
-import Navbar from "@/components/Navbar";
+import type { Metadata } from 'next'
+import { Playfair_Display, Libre_Baskerville, Jost } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/react'
+import SessionProvider from '@/components/providers/SessionProvider'
+import LenisProvider from '@/components/providers/LenisProvider'
+import Navbar from '@/components/layout/Navbar'
+import Footer from '@/components/layout/Footer'
+import CustomCursor from '@/components/ui/CustomCursor'
+import 'lenis/dist/lenis.css'
+import './globals.css'
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  variable: "--font-cormorant",
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  weight: ["400", "500", "600"],
-});
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '500', '700', '900'],
+  style: ['normal', 'italic'],
+  variable: '--font-playfair',
+  display: 'swap',
+})
+const baskerville = Libre_Baskerville({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-baskerville',
+  display: 'swap',
+})
+const jost = Jost({
+  subsets: ['latin'],
+  weight: ['300', '400', '500'],
+  variable: '--font-jost',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
-  title: "YADAH — International Gospel Music Minister",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yadahworld.com'),
+  title: { default: 'Yadah — The Voice of Jesus Christ to Nations', template: '%s | Yadah' },
   description:
-    "She doesn't just sing. She carries Light. 100M+ streams globally. Worship, ministry, and the presence of God through music.",
+    'Yadah Kukeurim Daniel — international gospel music minister, 100M+ streams. Book Yadah, explore her music, and encounter the presence of God.',
   openGraph: {
-    title: "YADAH — International Gospel Music Minister",
-    description:
-      "She doesn't just sing. She carries Light. Worship, ministry, and the presence of God through music.",
-    type: "website",
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
+    type: 'website',
   },
-};
+}
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${cormorant.variable} ${inter.variable}`}
-    >
-      <body className="antialiased bg-[var(--bg)] text-[var(--ivory)] font-sans">
-        <Navbar />
-        {children}
+    <html lang="en" className={`${playfair.variable} ${baskerville.variable} ${jost.variable}`}>
+      <body>
+        <SessionProvider>
+          <LenisProvider>
+            <CustomCursor />
+            <Navbar />
+            <main>{children}</main>
+            <Footer />
+          </LenisProvider>
+        </SessionProvider>
+        <Analytics />
       </body>
     </html>
-  );
+  )
 }
