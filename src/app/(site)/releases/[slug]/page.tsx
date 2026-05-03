@@ -90,7 +90,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
           </div>
 
           <div>
-            <h1 className="display-1 text-body">{release.title}</h1>
+            <h1 className="display-2 text-body text-balance">{release.title}</h1>
             {release.feat?.trim() && (
               <p className="mt-4 font-serif text-xl italic text-muted" style={{ fontFamily: 'Baskerville, Georgia, serif' }}>
                 {release.feat}
