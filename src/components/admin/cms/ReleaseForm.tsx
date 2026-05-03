@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { SiteRelease } from '@prisma/client'
 import { slugify } from '@/lib/slug'
+import { toDateInputValue } from '@/lib/release-date'
 import AdminImageUpload from '@/components/admin/AdminImageUpload'
 
 type Mode = 'create' | 'edit'
@@ -23,6 +24,8 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
   const [youtube, setYoutube] = useState(initial?.youtube ?? '')
   const [musicVideoYoutube, setMusicVideoYoutube] = useState(initial?.musicVideoYoutube ?? '')
   const [isNew, setIsNew] = useState(initial?.isNew ?? false)
+  const [releasedAt, setReleasedAt] = useState(toDateInputValue(initial?.releasedAt))
+  const [showOnHomepage, setShowOnHomepage] = useState(initial?.showOnHomepage ?? false)
   const [order, setOrder] = useState(initial?.order ?? 0)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -51,6 +54,8 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
       musicVideoYoutube: musicVideoYoutube.trim() || null,
       isNew,
       order: Number(order) || 0,
+      releasedAt,
+      showOnHomepage,
     }
     try {
       if (mode === 'create') {
@@ -125,8 +130,20 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
           <input className="admin-input" value={type} onChange={(e) => setType(e.target.value)} required />
         </div>
         <div>
-          <label className="admin-label">Year</label>
+          <label className="admin-label">Year (display)</label>
           <input className="admin-input" value={year} onChange={(e) => setYear(e.target.value)} required />
+          <p className="mt-1 text-xs text-admin-muted">Shown as “Type · Year” on the site. Sorting uses release date below.</p>
+        </div>
+        <div>
+          <label className="admin-label">Release date (catalog)</label>
+          <input
+            type="date"
+            className="admin-input"
+            value={releasedAt}
+            onChange={(e) => setReleasedAt(e.target.value)}
+            required
+          />
+          <p className="mt-1 text-xs text-admin-muted">Exact date — controls order on the public /releases page (newest first).</p>
         </div>
         <div className="sm:col-span-2">
           <AdminImageUpload
@@ -170,14 +187,29 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
             placeholder="https://www.youtube.com/watch?v=… for the official video embed on this page"
           />
         </div>
+        <div className="sm:col-span-2 border-t border-admin-border pt-6">
+          <label className="flex cursor-pointer items-center gap-3 text-sm text-admin-text">
+            <input
+              type="checkbox"
+              checked={showOnHomepage}
+              onChange={(e) => setShowOnHomepage(e.target.checked)}
+              className="h-4 w-4 rounded border-admin-border text-admin-accent"
+            />
+            Show on homepage (music section)
+          </label>
+          <p className="mt-2 text-xs text-admin-muted pl-7">
+            Only checked releases appear on the home page. Order below applies among those picks only.
+          </p>
+        </div>
         <div>
-          <label className="admin-label">Sort order</label>
+          <label className="admin-label">Homepage order</label>
           <input
             type="number"
             className="admin-input"
             value={order}
             onChange={(e) => setOrder(Number(e.target.value))}
           />
+          <p className="mt-1 text-xs text-admin-muted">Lower numbers first (only when “Show on homepage” is on).</p>
         </div>
         <div className="flex items-end">
           <label className="flex cursor-pointer items-center gap-3 text-sm text-admin-text">

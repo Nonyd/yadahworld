@@ -8,6 +8,7 @@ async function main() {
     {
       slug: 'never-seen-live',
       order: 0,
+      releasedAt: new Date('2024-08-20T12:00:00.000Z'),
       title: 'Never Seen (Live)',
       feat: 'ft. Sunmisola Agbebi',
       type: 'Single',
@@ -19,6 +20,7 @@ async function main() {
     {
       slug: 'fathered-by-the-best',
       order: 1,
+      releasedAt: new Date('2023-11-10T12:00:00.000Z'),
       title: 'Fathered By The Best',
       feat: '',
       type: 'Album',
@@ -30,6 +32,7 @@ async function main() {
     {
       slug: 'onye-nwere-jesus',
       order: 2,
+      releasedAt: new Date('2023-05-18T12:00:00.000Z'),
       title: 'Onye Nwere Jesus',
       feat: '',
       type: 'Single',
@@ -41,6 +44,7 @@ async function main() {
     {
       slug: 'beyond-me',
       order: 3,
+      releasedAt: new Date('2022-04-07T12:00:00.000Z'),
       title: 'Beyond Me',
       feat: '',
       type: 'Single',
@@ -69,8 +73,13 @@ async function main() {
         description: null,
         isNew: r.isNew,
         order: r.order,
+        releasedAt: r.releasedAt,
+        showOnHomepage: true,
       },
-      update: {},
+      update: {
+        releasedAt: r.releasedAt,
+        order: r.order,
+      },
     })
   }
 

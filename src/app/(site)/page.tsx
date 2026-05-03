@@ -6,13 +6,13 @@ import VideosSection from '@/components/home/VideosSection'
 import StreamMarquee from '@/components/home/StreamMarquee'
 import UpcomingEvents from '@/components/home/UpcomingEvents'
 import BookingCTA from '@/components/home/BookingCTA'
-import { getPublicEvents, getPublicReleases, getPublicVideos } from '@/lib/site-content'
+import { getHomepageReleases, getPublicEvents, getPublicVideos } from '@/lib/site-content'
 import { getCopyString } from '@/lib/site-copy'
 import { getPublicBranding, getSiteCopy, getSiteVisuals } from '@/lib/site-settings'
 
 export default async function Home() {
   const [releases, events, videos, visuals, branding, copy] = await Promise.all([
-    getPublicReleases(),
+    getHomepageReleases(),
     getPublicEvents(),
     getPublicVideos(),
     getSiteVisuals(),

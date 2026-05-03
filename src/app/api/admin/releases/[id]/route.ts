@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { uniqueReleaseSlug } from '@/lib/site-content'
 import { slugify } from '@/lib/slug'
+import { parseReleasedAtInput } from '@/lib/release-date'
 import { parseSpotifyEmbedUrl } from '@/lib/spotify-embed'
 import { extractYoutubeVideoId } from '@/lib/youtube'
 import { z } from 'zod'
@@ -23,6 +24,8 @@ const patchSchema = z.object({
   musicVideoYoutube: z.string().optional().nullable(),
   isNew: z.boolean().optional(),
   order: z.number().int().optional(),
+  releasedAt: z.string().optional().nullable(),
+  showOnHomepage: z.boolean().optional(),
 })
 
 function emptyToNull(s: string | null | undefined) {
@@ -64,6 +67,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
   if (d.isNew !== undefined) data.isNew = d.isNew
   if (d.order !== undefined) data.order = d.order
+  if (d.releasedAt !== undefined) {
+    data.releasedAt = parseReleasedAtInput(d.releasedAt, new Date())
+  }
+  if (d.showOnHomepage !== undefined) data.showOnHomepage = d.showOnHomepage
 
   if (d.slug !== undefined && d.slug !== null) {
     const raw = String(d.slug).trim()

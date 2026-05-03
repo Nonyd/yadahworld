@@ -67,7 +67,7 @@ export default async function AdminOverview() {
             </li>
             <li className="flex gap-2">
               <span className="text-admin-accent">·</span>
-              Add or edit releases under Releases; the homepage reads the same data as the public catalogue.
+              Add or edit releases under Releases; use release date for /releases order, and check “Show on homepage” for the home music grid.
             </li>
             <li className="flex gap-2">
               <span className="text-admin-accent">·</span>

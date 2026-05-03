@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { uniqueReleaseSlug } from '@/lib/site-content'
 import { slugify } from '@/lib/slug'
+import { parseReleasedAtInput } from '@/lib/release-date'
 import { parseSpotifyEmbedUrl } from '@/lib/spotify-embed'
 import { extractYoutubeVideoId } from '@/lib/youtube'
 import { z } from 'zod'
@@ -23,6 +24,8 @@ const createSchema = z.object({
   musicVideoYoutube: z.string().optional().nullable(),
   isNew: z.boolean().optional(),
   order: z.number().int().optional(),
+  releasedAt: z.string().optional().nullable(),
+  showOnHomepage: z.boolean().optional(),
 })
 
 export async function GET() {
@@ -30,7 +33,7 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
     const items = await prisma.siteRelease.findMany({
-      orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+      orderBy: [{ releasedAt: 'desc' }, { createdAt: 'desc' }],
     })
     return NextResponse.json(items)
   } catch (e) {
@@ -65,6 +68,9 @@ export async function POST(req: NextRequest) {
   const musicVideoYoutube =
     musicVideoUrl && extractYoutubeVideoId(musicVideoUrl) ? musicVideoUrl : null
 
+  const releasedAt = parseReleasedAtInput(d.releasedAt, new Date())
+  const showOnHomepage = d.showOnHomepage ?? false
+
   const baseSlug = d.slug?.trim() ? slugify(d.slug) : slugify(d.title)
   const slug = await uniqueReleaseSlug(baseSlug)
 
@@ -85,6 +91,8 @@ export async function POST(req: NextRequest) {
         musicVideoYoutube,
         isNew: d.isNew ?? false,
         order: d.order ?? 0,
+        releasedAt,
+        showOnHomepage,
       },
     })
     return NextResponse.json(row)

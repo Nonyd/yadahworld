@@ -7,7 +7,7 @@ export default async function AdminReleasesPage() {
   let releases: Awaited<ReturnType<typeof prisma.siteRelease.findMany>> = []
   try {
     releases = await prisma.siteRelease.findMany({
-      orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+      orderBy: [{ releasedAt: 'desc' }, { createdAt: 'desc' }],
     })
   } catch {
     releases = []
@@ -17,7 +17,7 @@ export default async function AdminReleasesPage() {
     <div>
       <AdminPageHeader
         title="Releases"
-        description="These power the homepage grid and /releases. The live site reads from the database; run npm run db:seed after db push to import starter rows."
+        description="Release date sets catalog order on /releases (newest first). Check “Show on homepage” for the home music grid; homepage order uses the numeric order field among those picks only."
         actions={
           <Link href="/admin/releases/new" className="admin-btn admin-btn-primary">
             New release
@@ -27,7 +27,7 @@ export default async function AdminReleasesPage() {
 
       <div className="admin-card overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left text-sm">
+          <table className="w-full min-w-[900px] text-left text-sm">
             <thead>
               <tr className="border-b border-admin-border bg-black/[0.02] text-[10px] font-medium uppercase tracking-[0.14em] text-admin-muted">
                 <th className="px-4 py-3 font-medium sm:px-6">Cover</th>
@@ -35,7 +35,9 @@ export default async function AdminReleasesPage() {
                 <th className="px-4 py-3 font-medium sm:px-6">Slug</th>
                 <th className="px-4 py-3 font-medium sm:px-6">Type</th>
                 <th className="px-4 py-3 font-medium sm:px-6">Year</th>
-                <th className="px-4 py-3 font-medium sm:px-6">Order</th>
+                <th className="px-4 py-3 font-medium sm:px-6">Release date</th>
+                <th className="px-4 py-3 font-medium sm:px-6">Home</th>
+                <th className="px-4 py-3 font-medium sm:px-6">Home order</th>
                 <th className="px-4 py-3 font-medium sm:px-6 text-right">Actions</th>
               </tr>
             </thead>
@@ -66,6 +68,10 @@ export default async function AdminReleasesPage() {
                   </td>
                   <td className="px-4 py-3 text-admin-muted sm:px-6">{r.type}</td>
                   <td className="px-4 py-3 text-admin-muted sm:px-6">{r.year}</td>
+                  <td className="px-4 py-3 text-admin-muted sm:px-6 whitespace-nowrap">
+                    {r.releasedAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </td>
+                  <td className="px-4 py-3 text-admin-muted sm:px-6">{r.showOnHomepage ? 'Yes' : 'No'}</td>
                   <td className="px-4 py-3 text-admin-muted sm:px-6">{r.order}</td>
                   <td className="px-4 py-3 text-right sm:px-6">
                     <div className="flex justify-end gap-1">

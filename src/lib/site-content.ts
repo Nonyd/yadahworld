@@ -172,11 +172,24 @@ function mapReleaseRow(r: {
 export async function getPublicReleases(): Promise<PublicRelease[]> {
   try {
     const rows = await prisma.siteRelease.findMany({
-      orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+      orderBy: [{ releasedAt: 'desc' }, { createdAt: 'desc' }],
     })
     return rows.map(mapReleaseRow)
   } catch {
     return FALLBACK_RELEASES
+  }
+}
+
+/** Homepage music grid — only releases flagged by admin; `order` is ascending within that set. */
+export async function getHomepageReleases(): Promise<PublicRelease[]> {
+  try {
+    const rows = await prisma.siteRelease.findMany({
+      where: { showOnHomepage: true },
+      orderBy: [{ order: 'asc' }, { releasedAt: 'desc' }],
+    })
+    return rows.map(mapReleaseRow)
+  } catch {
+    return FALLBACK_RELEASES.slice(0, 4)
   }
 }
 

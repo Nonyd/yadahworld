@@ -173,7 +173,12 @@ model SiteRelease {
   youtube            String?
   musicVideoYoutube  String?
   isNew              Boolean  @default(false)
-  order       Int      @default(0)
+  /// Display order on the homepage among releases with `showOnHomepage` (lower first).
+  order              Int      @default(0)
+  /// Exact release date — drives sorting on /releases (newest first).
+  releasedAt         DateTime @default(now())
+  /// When true, this release appears in the homepage music grid (order controlled by `order`).
+  showOnHomepage     Boolean  @default(true)
 }
 
 model SiteEvent {
