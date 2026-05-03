@@ -6,6 +6,7 @@ import { uploadAdminImage, type AdminUploadFolder } from '@/lib/admin-upload-cli
 
 type Props = {
   label: string
+  description?: string
   value: string
   onChange: (url: string) => void
   folder: AdminUploadFolder
@@ -13,7 +14,7 @@ type Props = {
   urlPlaceholder?: string
 }
 
-export default function AdminImageUpload({ label, value, onChange, folder, hint, urlPlaceholder }: Props) {
+export default function AdminImageUpload({ label, description, value, onChange, folder, hint, urlPlaceholder }: Props) {
   const inputId = useId()
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
@@ -34,17 +35,35 @@ export default function AdminImageUpload({ label, value, onChange, folder, hint,
   }
 
   return (
-    <div>
-      <label className="admin-label" htmlFor={`${inputId}-url`}>
-        {label}
-      </label>
+    <div className="rounded-lg border border-admin-border/80 bg-admin-bg/40 p-4 sm:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <label className="admin-label" htmlFor={`${inputId}-url`}>
+            {label}
+          </label>
+          {description ? <p className="mt-1 max-w-xl text-xs text-admin-muted">{description}</p> : null}
+        </div>
+        {value ? (
+          <button
+            type="button"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-admin-border text-admin-muted transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700"
+            onClick={() => onChange('')}
+            aria-label="Remove image"
+            title="Remove"
+          >
+            ×
+          </button>
+        ) : null}
+      </div>
+
       {value ? (
-        <div className="relative mt-2 max-h-48 max-w-xs overflow-hidden rounded-lg border border-admin-border bg-admin-bg">
+        <div className="relative mt-3 max-h-[80px] max-w-xs overflow-hidden rounded border border-admin-border bg-admin-surface">
           {/* eslint-disable-next-line @next/next/no-img-element -- admin arbitrary CDN URLs */}
-          <img src={value} alt="" className="max-h-48 w-full object-contain object-left" />
+          <img src={value} alt="" className="max-h-[80px] w-auto object-contain object-left" />
         </div>
       ) : null}
-      <div className="mt-2 flex flex-wrap items-center gap-2">
+
+      <div className="mt-3 flex flex-wrap items-center gap-2">
         <input
           id={`${inputId}-file`}
           type="file"
@@ -65,11 +84,6 @@ export default function AdminImageUpload({ label, value, onChange, folder, hint,
         >
           {busy ? 'Uploading…' : 'Upload image'}
         </label>
-        {value ? (
-          <button type="button" className="admin-btn admin-btn-ghost text-[10px]" onClick={() => onChange('')}>
-            Clear
-          </button>
-        ) : null}
       </div>
       <input
         id={`${inputId}-url`}

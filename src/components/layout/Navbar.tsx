@@ -5,12 +5,10 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import YadahLogo from '@/components/branding/YadahLogo'
-import ThemeToggle from '@/components/ui/ThemeToggle'
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'Media', href: '/media' },
-  { label: 'Releases', href: '/releases' },
   { label: 'About', href: '/about' },
   { label: 'Room For You', href: 'https://rfyglobal.org', external: true },
   { label: 'Contact', href: '/contact' },
@@ -74,11 +72,9 @@ export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
               </Link>
             ),
           )}
-          <ThemeToggle variant="navbar" onDarkBackdrop={onDarkHero} className="shrink-0" />
         </nav>
 
         <div className="flex items-center gap-2 lg:hidden">
-          <ThemeToggle variant="navbar" onDarkBackdrop={onDarkHero} />
           <button
           type="button"
           onClick={() => setMenuOpen(true)}

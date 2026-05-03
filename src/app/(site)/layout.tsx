@@ -20,6 +20,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         tagline={branding.siteTagline}
         contactLine={contactLine || undefined}
         socials={socials}
+        copyrightLine={branding.footerCopyright}
       />
     </LenisProvider>
   )

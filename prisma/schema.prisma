@@ -104,6 +104,32 @@ model SiteSettings {
   imageWorshipBg     String?
 
   galleryImageUrls String[] @default([])
+
+  socialTiktok String?
+
+  paystackPublicKey    String?
+  paystackSecretKey    String?
+  paystackEnabled      Boolean @default(false)
+  flutterwavePublicKey String?
+  flutterwaveSecretKey String?
+  flutterwaveEnabled   Boolean @default(false)
+  stripeEnabled         Boolean @default(false)
+  stripeSecretKey       String?
+  stripePublishableKey  String?
+  stripeWebhookSecret   String?
+
+  brevoSmtpHost    String?
+  brevoSmtpPort    Int?
+  brevoSmtpUser    String?
+  brevoSmtpPass    String?
+  brevoFromEmail   String?
+  brevoFromName    String?
+  brevoNotifyEmail String?
+
+  heroTagline       String?
+  aboutBioShort     String?
+  footerCopyright   String?
+  locationDisplay   String?
 }
 
 model SiteVideo {

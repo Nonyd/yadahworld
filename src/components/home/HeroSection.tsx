@@ -21,10 +21,26 @@ const CHAR_VARIANTS = {
   }),
 }
 
-export default function HeroSection({ heroImage }: { heroImage: string }) {
+const DEFAULT_EYEBROW = '01 — The Voice of Jesus Christ to Nations'
+const DEFAULT_SUBLINE = 'Gospel music minister · 100M+ streams · Abuja, Nigeria'
+
+export default function HeroSection({
+  heroImage,
+  heroEyebrow,
+  heroSubline,
+}: {
+  heroImage: string
+  /** Line above the Yadah title (e.g. 01 — The Voice of Jesus Christ to Nations). */
+  heroEyebrow?: string | null
+  /** Italic line under the title. */
+  heroSubline?: string | null
+}) {
   const sectionRef = useRef<HTMLElement>(null)
   const imgRef = useRef<HTMLDivElement>(null)
   const textRef = useRef<HTMLDivElement>(null)
+
+  const eyebrow = heroEyebrow?.trim() || DEFAULT_EYEBROW
+  const subline = heroSubline?.trim() || DEFAULT_SUBLINE
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -93,10 +109,14 @@ export default function HeroSection({ heroImage }: { heroImage: string }) {
           transition={{ delay: 1.2, duration: 0.6 }}
           className="ui-label mb-8 text-[rgba(253,250,245,0.35)]"
         >
-          01 — The Voice of Jesus Christ to Nations
+          {eyebrow}
         </motion.p>
 
-        <h1 className="display-1 text-[#FDFAF5] mb-6 overflow-hidden" aria-label="Yadah">
+        <h1
+          className="font-playfair font-normal leading-[0.92] tracking-[-0.02em] text-[#FDFAF5] mb-6 overflow-hidden"
+          style={{ fontSize: 'clamp(6rem, 14vw, 11rem)' }}
+          aria-label="Yadah"
+        >
           {chars.map((char, i) => (
             <span key={i} style={{ display: 'inline-block', overflow: 'hidden' }}>
               <motion.span
@@ -117,11 +137,19 @@ export default function HeroSection({ heroImage }: { heroImage: string }) {
             initial={{ y: '100%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.75, duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="font-jost font-light italic text-[clamp(1rem,2.5vw,1.5rem)] text-[rgba(253,250,245,0.55)] max-w-xl mb-10"
+            className="font-jost font-light italic text-[clamp(1rem,2.5vw,1.5rem)] text-[rgba(253,250,245,0.55)] max-w-xl"
           >
-            Gospel music minister · 100M+ streams · Abuja, Nigeria
+            {subline}
           </motion.p>
         </div>
+
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ delay: 1.05, duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="mt-6 mb-10 h-px max-w-md origin-left"
+          style={{ background: 'var(--gold)' }}
+        />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -152,14 +180,18 @@ export default function HeroSection({ heroImage }: { heroImage: string }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.8 }}
-        className="absolute bottom-10 right-12 flex items-center gap-3"
-        style={{ writingMode: 'vertical-rl' }}
+        className="absolute bottom-8 right-8 md:bottom-10 md:right-12 flex flex-col items-center gap-2"
       >
-        <span className="ui-label text-[rgba(253,250,245,0.25)]">Scroll</span>
+        <span
+          className="ui-label text-[rgba(253,250,245,0.35)] lowercase"
+          style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+        >
+          scroll
+        </span>
         <motion.span
           animate={{ scaleY: [1, 0.3, 1] }}
           transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-          className="block w-px h-12 origin-top"
+          className="block h-12 w-px origin-top"
           style={{ background: 'rgba(253,250,245,0.2)' }}
         />
       </motion.div>

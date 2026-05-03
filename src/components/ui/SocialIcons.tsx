@@ -50,6 +50,14 @@ function XIcon() {
   )
 }
 
+function TikTokIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
+      <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z" />
+    </svg>
+  )
+}
+
 function LinkIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" className="h-full w-full" stroke="currentColor" strokeWidth={1.6}>
@@ -67,5 +75,6 @@ export function SocialIcon({ label, href, className = '' }: { label: string; hre
   if (l === 'SP' || u.includes('spotify')) return iconWrap(<SpotifyIcon />, className)
   if (l === 'FB' || u.includes('facebook')) return iconWrap(<FacebookIcon />, className)
   if (l === 'X' || u.includes('twitter.com') || u.includes('x.com')) return iconWrap(<XIcon />, className)
+  if (l === 'TT' || u.includes('tiktok.com')) return iconWrap(<TikTokIcon />, className)
   return iconWrap(<LinkIcon />, className)
 }

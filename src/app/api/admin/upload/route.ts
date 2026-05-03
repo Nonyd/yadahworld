@@ -22,6 +22,7 @@ const FOLDERS: Record<string, string> = {
   site: 'yadahworld/site',
   videos: 'yadahworld/videos',
   gallery: 'yadahworld/gallery',
+  products: 'yadahworld/products',
 }
 
 export async function POST(req: NextRequest) {

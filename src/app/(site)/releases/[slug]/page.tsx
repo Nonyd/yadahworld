@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { getReleaseBySlug } from '@/lib/site-content'
+import { getPublicReleases, getReleaseBySlug } from '@/lib/site-content'
 import { getPublicBranding } from '@/lib/site-settings'
 import { extractYoutubeVideoId } from '@/lib/youtube'
 
@@ -24,43 +24,87 @@ export default async function ReleaseDetailPage({ params }: Props) {
   const release = await getReleaseBySlug(params.slug)
   if (!release) notFound()
 
-  const links = [
-    { label: 'Spotify', href: release.spotify },
-    { label: 'Apple Music', href: release.apple },
-    { label: 'YouTube', href: release.youtube },
-  ].filter((x): x is { label: string; href: string } => !!x.href?.trim())
+  const all = await getPublicReleases()
+  const more = all.filter((r) => r.slug !== release.slug).slice(0, 3)
 
+  const typeUpper = release.type.toUpperCase()
   const musicVideoId = release.musicVideoYoutube ? extractYoutubeVideoId(release.musicVideoYoutube) : null
+  const bodyText =
+    release.description?.trim() || "This release is part of Yadah's discography."
 
   return (
-    <article className="min-h-screen bg-bg pt-32 pb-24 px-8 md:px-20">
-      <div className="max-w-screen-lg mx-auto">
+    <article className="min-h-screen bg-bg pb-28 pt-32 md:px-20 px-8">
+      <div className="mx-auto max-w-screen-lg">
         <Link href="/releases" className="ui-label text-muted hover:text-accent transition-colors">
           ← All releases
         </Link>
+        <p className="eyebrow mb-2 mt-8">Discography</p>
+        <p className="ui-label mb-10 text-muted">
+          {typeUpper} · {release.year}
+        </p>
 
-        <div className="mt-10 grid gap-12 md:grid-cols-[minmax(0,320px)_1fr] md:items-start">
-          <div className="manuscript-frame relative aspect-square w-full max-w-sm overflow-hidden shadow-[0_4px_24px_rgba(13,11,8,0.08)]">
-            <Image src={release.cover} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 320px" priority />
-            {release.isNew && (
-              <span className="absolute top-4 left-4 ui-label px-2 py-1 text-[10px] bg-accent text-ivory">New</span>
-            )}
+        <div className="grid gap-12 lg:grid-cols-[2fr_3fr] lg:items-start">
+          <div>
+            <div className="manuscript-frame relative aspect-square w-full max-w-md overflow-hidden shadow-[0_4px_24px_rgba(13,11,8,0.08)]">
+              <Image src={release.cover} alt="" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 40vw" priority />
+              {release.isNew && (
+                <span className="absolute left-4 top-4 bg-accent px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-ivory">
+                  New
+                </span>
+              )}
+            </div>
+            <div className="mt-8 flex flex-col gap-3">
+              {release.spotify?.trim() && (
+                <a
+                  href={release.spotify}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full max-w-sm items-center justify-center rounded-full bg-[#1DB954] px-5 py-3 font-jost text-[11px] font-medium uppercase tracking-[0.12em] text-white transition-opacity hover:opacity-95"
+                >
+                  Listen on Spotify →
+                </a>
+              )}
+              {release.apple?.trim() && (
+                <a
+                  href={release.apple}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full max-w-sm items-center justify-center rounded-full bg-black px-5 py-3 font-jost text-[11px] font-medium uppercase tracking-[0.12em] text-white transition-opacity hover:opacity-90"
+                >
+                  Apple Music →
+                </a>
+              )}
+              {release.youtube?.trim() && (
+                <a
+                  href={release.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full max-w-sm items-center justify-center rounded-full bg-[#FF0000] px-5 py-3 font-jost text-[11px] font-medium uppercase tracking-[0.12em] text-white transition-opacity hover:opacity-95"
+                >
+                  Watch on YouTube →
+                </a>
+              )}
+            </div>
           </div>
 
           <div>
-            <p className="eyebrow mb-4">{release.type}</p>
-            <h1 className="font-playfair text-4xl md:text-5xl font-normal text-body leading-tight">
-              {release.title}
-              {release.feat && <span className="font-jost block text-lg font-light italic text-muted mt-2">{release.feat}</span>}
-            </h1>
-            <p className="ui-label text-muted mt-4">{release.year}</p>
+            <h1 className="display-1 text-body">{release.title}</h1>
+            {release.feat?.trim() && (
+              <p className="mt-4 font-serif text-xl italic text-muted" style={{ fontFamily: 'Baskerville, Georgia, serif' }}>
+                {release.feat}
+              </p>
+            )}
+            <p className="ui-label mt-4 text-muted">
+              {release.year} · {release.type}
+            </p>
+            <div className="my-8 h-px max-w-md bg-gold" />
 
-            {release.description && <p className="body-lg mt-8 max-w-xl whitespace-pre-wrap">{release.description}</p>}
+            <p className="body-lg max-w-xl whitespace-pre-wrap text-muted">{bodyText}</p>
 
-            {release.spotifyEmbed && (
+            {release.spotifyEmbed?.trim() && (
               <div className="mt-10 max-w-xl">
                 <h2 className="eyebrow mb-4">Listen on Spotify</h2>
-                <div className="overflow-hidden rounded-lg border border-gold-light/20 bg-[var(--surface)] shadow-[0_4px_24px_rgba(13,11,8,0.06)]">
+                <div className="overflow-hidden rounded-lg border border-gold-light/20 bg-surface shadow-[0_4px_24px_rgba(13,11,8,0.06)]">
                   <iframe
                     title="Spotify player"
                     src={release.spotifyEmbed}
@@ -90,26 +134,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
               </div>
             )}
 
-            {links.length > 0 && (
-              <div className="mt-10 flex flex-wrap gap-3">
-                {links.map(({ label, href }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-outline text-[10px] py-3 px-6"
-                  >
-                    {label}
-                    <span aria-hidden className="ml-1">
-                      ↗
-                    </span>
-                  </a>
-                ))}
-              </div>
-            )}
-
-            <p className="body-sm mt-12 max-w-md">
+            <p className="body-sm mt-12 max-w-md text-muted">
               Looking for a live experience?{' '}
               <Link href="/booking" className="link-underline text-accent">
                 Book Yadah
@@ -118,6 +143,37 @@ export default async function ReleaseDetailPage({ params }: Props) {
             </p>
           </div>
         </div>
+
+        {more.length > 0 && (
+          <section className="mt-24 border-t border-gold-light/20 pt-16">
+            <p className="eyebrow mb-6">Discography</p>
+            <h2 className="display-2 mb-12 text-body">More releases</h2>
+            <ul className="grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-8 lg:grid-cols-3">
+              {more.map((r) => (
+                <li key={r.slug}>
+                  <Link href={`/releases/${r.slug}`} className="group block">
+                    <div className="manuscript-frame relative mb-4 aspect-square overflow-hidden shadow-[0_4px_24px_rgba(13,11,8,0.06)]">
+                      <Image
+                        src={r.cover}
+                        alt=""
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                        sizes="(max-width: 768px) 50vw, 33vw"
+                      />
+                      {r.isNew && (
+                        <span className="absolute left-3 top-3 bg-accent px-2 py-1 text-[10px] text-ivory">New</span>
+                      )}
+                    </div>
+                    <p className="font-playfair text-base text-body transition-colors group-hover:text-accent">{r.title}</p>
+                    <p className="ui-label mt-1 text-muted">
+                      {r.type} · {r.year}
+                    </p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
     </article>
   )

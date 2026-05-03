@@ -35,6 +35,16 @@ const config: Config = {
       spacing: {
         section: 'clamp(6rem, 12vw, 14rem)',
       },
+      keyframes: {
+        lineGrow: {
+          '0%': { transform: 'scaleX(0)' },
+          '50%': { transform: 'scaleX(1)' },
+          '100%': { transform: 'scaleX(0)' },
+        },
+      },
+      animation: {
+        lineGrow: 'lineGrow 1.5s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

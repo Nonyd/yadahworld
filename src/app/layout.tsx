@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${jost.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`light ${playfair.variable} ${jost.variable}`} suppressHydrationWarning>
       <body>
         <ThemeProvider>
           <SessionProvider>{children}</SessionProvider>

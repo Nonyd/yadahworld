@@ -4,9 +4,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import YadahLogo from '@/components/branding/YadahLogo'
-import ThemeToggle from '@/components/ui/ThemeToggle'
 
-const ADMIN_LINKS: { label: string; href: string; icon: React.ReactNode }[] = [
+const ADMIN_LINKS: { label: string; href: string; icon: React.ReactNode; badgeKey?: 'bookings' | 'messages' }[] = [
   {
     label: 'Overview',
     href: '/admin',
@@ -19,6 +18,7 @@ const ADMIN_LINKS: { label: string; href: string; icon: React.ReactNode }[] = [
   {
     label: 'Bookings',
     href: '/admin/bookings',
+    badgeKey: 'bookings',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden>
         <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5a2.25 2.25 0 002.25-2.25m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5a2.25 2.25 0 012.25 2.25v7.5" />
@@ -28,6 +28,7 @@ const ADMIN_LINKS: { label: string; href: string; icon: React.ReactNode }[] = [
   {
     label: 'Messages',
     href: '/admin/messages',
+    badgeKey: 'messages',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden>
         <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
@@ -71,6 +72,11 @@ const ADMIN_LINKS: { label: string; href: string; icon: React.ReactNode }[] = [
     ),
   },
   {
+    label: 'Products',
+    href: '/admin/products',
+    icon: <span className="text-lg font-normal leading-none text-current">◈</span>,
+  },
+  {
     label: 'Events',
     href: '/admin/events',
     icon: (
@@ -89,11 +95,21 @@ function linkActive(path: string, href: string) {
 export default function AdminSidebar({
   onNavigate,
   userLabel,
+  pendingBookingsCount = 0,
+  unreadMessagesCount = 0,
 }: {
   onNavigate?: () => void
   userLabel?: string | null
+  pendingBookingsCount?: number
+  unreadMessagesCount?: number
 }) {
   const path = usePathname()
+
+  const badgeFor = (key?: 'bookings' | 'messages') => {
+    if (key === 'bookings' && pendingBookingsCount > 0) return pendingBookingsCount
+    if (key === 'messages' && unreadMessagesCount > 0) return unreadMessagesCount
+    return 0
+  }
 
   return (
     <aside className="flex h-full min-h-screen flex-col border-admin-border bg-admin-surface shadow-admin-sidebar lg:min-h-0 lg:border-r">
@@ -102,21 +118,19 @@ export default function AdminSidebar({
           <YadahLogo alt="Yadah Studio" treatment="admin" height={30} />
         </Link>
         <p className="mt-3 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-admin-muted">Studio</p>
-        <div className="mt-4">
-          <ThemeToggle variant="admin" />
-        </div>
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-3">
-        {ADMIN_LINKS.map(({ label, href, icon }) => {
+        {ADMIN_LINKS.map(({ label, href, icon, badgeKey }) => {
           const active = linkActive(path, href)
+          const n = badgeFor(badgeKey)
           return (
             <Link
               key={href}
               href={href}
               onClick={() => onNavigate?.()}
               className={`
-                flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
+                relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
                 ${
                   active
                     ? 'bg-admin-accent/15 text-admin-accent ring-1 ring-admin-accent/25'
@@ -126,6 +140,11 @@ export default function AdminSidebar({
             >
               <span className={active ? 'text-admin-accent' : 'text-admin-muted'}>{icon}</span>
               {label}
+              {n > 0 ? (
+                <span className="absolute right-2 top-1/2 flex h-[18px] min-w-[18px] -translate-y-1/2 items-center justify-center rounded-full bg-accent px-1 font-jost text-[10px] font-medium leading-none text-white">
+                  {n > 99 ? '99+' : n}
+                </span>
+              ) : null}
             </Link>
           )
         })}

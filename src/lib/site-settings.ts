@@ -16,6 +16,7 @@ const defaultSocials = () => [
   { label: 'SP', href: 'https://open.spotify.com/artist/xxx' },
   { label: 'FB', href: 'https://facebook.com/yadahsings' },
   { label: 'X', href: 'https://x.com/ministeryadah' },
+  { label: 'TT', href: 'https://www.tiktok.com/@yadah' },
 ]
 
 export function buildSocialLinks(settings: SiteSettings | null) {
@@ -27,6 +28,7 @@ export function buildSocialLinks(settings: SiteSettings | null) {
     SP: settings.socialSpotify,
     FB: settings.socialFacebook,
     X: settings.socialX,
+    TT: settings.socialTiktok,
   }
   return s.map((item) => {
     const url = map[item.label]?.trim()
@@ -82,6 +84,10 @@ export type PublicSiteBranding = {
   contactEmail: string | null
   contactPhone: string | null
   bookingEmail: string | null
+  heroTagline: string | null
+  aboutBioShort: string | null
+  footerCopyright: string | null
+  locationDisplay: string | null
 }
 
 export async function getPublicBranding(): Promise<PublicSiteBranding> {
@@ -94,5 +100,15 @@ export async function getPublicBranding(): Promise<PublicSiteBranding> {
     contactEmail: row?.contactEmail?.trim() || null,
     contactPhone: row?.contactPhone?.trim() || null,
     bookingEmail: row?.bookingEmail?.trim() || null,
+    heroTagline: row?.heroTagline?.trim() || null,
+    aboutBioShort: row?.aboutBioShort?.trim() || null,
+    footerCopyright: row?.footerCopyright?.trim() || null,
+    locationDisplay: row?.locationDisplay?.trim() || null,
   }
+}
+
+/** Where admin notifications should go (DB overrides env). */
+export async function getNotifyEmail(): Promise<string> {
+  const row = await getSiteSettingsRow()
+  return row?.brevoNotifyEmail?.trim() || process.env.BREVO_NOTIFY_EMAIL?.trim() || 'yadahsings@gmail.com'
 }

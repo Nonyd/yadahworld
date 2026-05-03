@@ -5,12 +5,21 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 
-export default function AboutSnippet({ editorialImage }: { editorialImage: string }) {
+const DEFAULT_BIO =
+  "Yadah Kukeurim Daniel is a Nigerian singer, songwriter, and minister of the gospel. Her music — rooted in God's love and grace — has accumulated over 100 million streams globally, touching hearts in every continent and leading souls into the presence of God."
+
+export default function AboutSnippet({
+  editorialImage,
+  aboutBioShort,
+}: {
+  editorialImage: string
+  aboutBioShort?: string | null
+}) {
   const { ref, inView } = useInView({ threshold: 0.15, triggerOnce: true })
 
   return (
     <section ref={ref} className="px-8 md:px-20 py-[clamp(6rem,12vw,14rem)]">
-      <div className="max-w-screen-xl mx-auto grid md:grid-cols-[5fr_7fr] gap-16 md:gap-24 items-center">
+      <div className="max-w-screen-xl mx-auto grid md:grid-cols-[4fr_6fr] gap-16 md:gap-24 items-center">
         <motion.div
           initial={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 100%, 0 100%)' }}
           animate={inView ? { clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' } : {}}
@@ -63,9 +72,7 @@ export default function AboutSnippet({ editorialImage }: { editorialImage: strin
             transition={{ delay: 0.4, duration: 0.8 }}
             className="body-lg max-w-md mb-10"
           >
-            Yadah Kukeurim Daniel is a Nigerian singer, songwriter, and minister of the gospel. Her music — rooted in
-            God&apos;s love and grace — has accumulated over 100 million streams globally, touching hearts in every
-            continent and leading souls into the presence of God.
+            {aboutBioShort?.trim() || DEFAULT_BIO}
           </motion.p>
 
           <motion.div
@@ -80,7 +87,7 @@ export default function AboutSnippet({ editorialImage }: { editorialImage: strin
               { n: '7+', label: 'Years of Ministry' },
             ].map(({ n, label }) => (
               <div key={label}>
-                <p className="font-playfair text-[2.5rem] font-normal text-[var(--accent)] leading-none mb-1">{n}</p>
+                <p className="font-playfair text-5xl font-normal text-[var(--accent)] leading-none mb-1">{n}</p>
                 <p className="ui-label text-[var(--muted)]">{label}</p>
               </div>
             ))}

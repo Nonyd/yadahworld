@@ -1,4 +1,4 @@
-export type AdminUploadFolder = 'releases' | 'site' | 'videos' | 'gallery'
+export type AdminUploadFolder = 'releases' | 'site' | 'videos' | 'gallery' | 'products'
 
 export async function uploadAdminImage(file: File, folder: AdminUploadFolder): Promise<string> {
   const fd = new FormData()

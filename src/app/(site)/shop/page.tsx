@@ -8,7 +8,6 @@ export default async function ShopPage() {
   let products: Awaited<ReturnType<typeof prisma.product.findMany>> = []
   try {
     products = await prisma.product.findMany({
-      where: { inStock: true },
       orderBy: { createdAt: 'desc' },
     })
   } catch {

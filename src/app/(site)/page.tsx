@@ -7,21 +7,27 @@ import StreamMarquee from '@/components/home/StreamMarquee'
 import UpcomingEvents from '@/components/home/UpcomingEvents'
 import BookingCTA from '@/components/home/BookingCTA'
 import { getPublicEvents, getPublicReleases, getPublicVideos } from '@/lib/site-content'
-import { getSiteVisuals } from '@/lib/site-settings'
+import { getPublicBranding, getSiteVisuals } from '@/lib/site-settings'
 
 export default async function Home() {
-  const [releases, events, videos, visuals] = await Promise.all([
+  const [releases, events, videos, visuals, branding] = await Promise.all([
     getPublicReleases(),
     getPublicEvents(),
     getPublicVideos(),
     getSiteVisuals(),
+    getPublicBranding(),
   ])
+
+  const heroTag = branding.heroTagline?.trim()
+  const heroEyebrow = heroTag ? `01 — ${heroTag}` : undefined
+  const loc = branding.locationDisplay?.trim()
+  const heroSubline = ['Gospel music minister', '100M+ streams', loc || 'Abuja, Nigeria'].join(' · ')
 
   return (
     <>
-      <HeroSection heroImage={visuals.hero} />
+      <HeroSection heroImage={visuals.hero} heroEyebrow={heroEyebrow} heroSubline={heroSubline} />
       <MantraSection />
-      <AboutSnippet editorialImage={visuals.editorial} />
+      <AboutSnippet editorialImage={visuals.editorial} aboutBioShort={branding.aboutBioShort} />
       <div className="section-rule mx-16 md:mx-24" />
       <MusicSection releases={releases} />
       <div className="section-rule mx-16 md:mx-24" />

@@ -219,6 +219,7 @@ export async function getPublicVideos(): Promise<PublicVideo[]> {
     const rows = await prisma.siteVideo.findMany({
       where: { isActive: true },
       orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+      take: 6,
     })
     return rows.map((v) => ({
       id: v.id,
@@ -232,6 +233,21 @@ export async function getPublicVideos(): Promise<PublicVideo[]> {
 }
 
 /** Ensure a base slug is unique in SiteRelease (excluding one id when editing). */
+/** Ensure a base slug is unique for Product (excluding one id when editing). */
+export async function uniqueProductSlug(base: string, excludeId?: string): Promise<string> {
+  const s = slugify(base) || 'product'
+  for (let n = 0; n < 200; n++) {
+    const candidate = n === 0 ? s : `${s}-${n}`
+    try {
+      const found = await prisma.product.findUnique({ where: { slug: candidate } })
+      if (!found || found.id === excludeId) return candidate
+    } catch {
+      return candidate
+    }
+  }
+  return `${s}-${Date.now()}`
+}
+
 export async function uniqueReleaseSlug(base: string, excludeId?: string): Promise<string> {
   const s = slugify(base) || 'release'
   for (let n = 0; n < 200; n++) {

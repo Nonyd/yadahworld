@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
-import MessageCard from '@/components/admin/messages/MessageCard'
+import MessagesInbox, { type InboxMessage } from '@/components/admin/messages/MessagesInbox'
 
 export default async function MessagesPage() {
   let messages: Awaited<ReturnType<typeof prisma.contactMessage.findMany>> = []
@@ -10,25 +10,24 @@ export default async function MessagesPage() {
     messages = []
   }
 
+  const rows: InboxMessage[] = messages.map((m) => ({
+    id: m.id,
+    createdAt: new Date(m.createdAt).toLocaleString('en-GB'),
+    name: m.name,
+    email: m.email,
+    subject: m.subject,
+    message: m.message,
+    read: m.read,
+  }))
+
   return (
     <div>
       <AdminPageHeader title="Messages" description="Contact form submissions from the public site." />
-      <ul className="space-y-4">
-        {messages.map((m) => (
-          <li key={m.id}>
-            <MessageCard
-              id={m.id}
-              subject={m.subject}
-              name={m.name}
-              email={m.email}
-              createdAt={new Date(m.createdAt).toLocaleString('en-GB')}
-              message={m.message}
-              read={m.read}
-            />
-          </li>
-        ))}
-      </ul>
-      {messages.length === 0 && <p className="text-sm text-admin-muted">No messages yet.</p>}
+      {messages.length === 0 ? (
+        <p className="text-sm text-admin-muted">No messages yet.</p>
+      ) : (
+        <MessagesInbox messages={rows} />
+      )}
     </div>
   )
 }

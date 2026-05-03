@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { sendMail } from '@/lib/mailer'
 import { prisma } from '@/lib/prisma'
+import { getNotifyEmail } from '@/lib/site-settings'
 
 const contactSchema = z.object({
   name: z.string().min(2),
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Could not save message.' }, { status: 500 })
   }
 
-  const notifyEmail = process.env.BREVO_NOTIFY_EMAIL ?? 'yadahsings@gmail.com'
+  const notifyEmail = await getNotifyEmail()
 
   try {
     await sendMail({

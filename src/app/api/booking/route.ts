@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendMail } from '@/lib/mailer'
 import { prisma } from '@/lib/prisma'
+import { getNotifyEmail } from '@/lib/site-settings'
 import { bookingFormSchema } from '@/types/booking'
 
 function normalizeWhatExpected(value: unknown): string[] {
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Could not save booking. Check DATABASE_URL and run prisma db push.' }, { status: 500 })
   }
 
-  const notifyEmail = process.env.BREVO_NOTIFY_EMAIL ?? 'yadahsings@gmail.com'
+  const notifyEmail = await getNotifyEmail()
 
   try {
     await sendMail({

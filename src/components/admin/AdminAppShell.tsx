@@ -4,14 +4,16 @@ import { useState } from 'react'
 import Link from 'next/link'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import YadahLogo from '@/components/branding/YadahLogo'
-import ThemeToggle from '@/components/ui/ThemeToggle'
-
 export default function AdminAppShell({
   children,
   userLabel,
+  pendingBookingsCount = 0,
+  unreadMessagesCount = 0,
 }: {
   children: React.ReactNode
   userLabel?: string | null
+  pendingBookingsCount?: number
+  unreadMessagesCount?: number
 }) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -30,7 +32,7 @@ export default function AdminAppShell({
         <Link href="/admin" className="flex shrink-0 justify-center" aria-label="Admin home">
           <YadahLogo alt="Yadah" treatment="admin" height={34} />
         </Link>
-        <ThemeToggle variant="admin" className="shrink-0" />
+        <span className="w-10 shrink-0" aria-hidden />
       </div>
 
       {mobileOpen && (
@@ -50,7 +52,12 @@ export default function AdminAppShell({
             ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           `}
         >
-          <AdminSidebar onNavigate={() => setMobileOpen(false)} userLabel={userLabel} />
+          <AdminSidebar
+            onNavigate={() => setMobileOpen(false)}
+            userLabel={userLabel}
+            pendingBookingsCount={pendingBookingsCount}
+            unreadMessagesCount={unreadMessagesCount}
+          />
         </div>
 
         <main className="min-w-0 flex-1 px-4 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">

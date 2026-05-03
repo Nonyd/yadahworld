@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import YadahLogo from '@/components/branding/YadahLogo'
-import ThemeToggle from '@/components/ui/ThemeToggle'
 import { SocialIcon } from '@/components/ui/SocialIcons'
 
 const FOOTER_COLS = [
@@ -44,11 +43,14 @@ export default function Footer({
   tagline,
   contactLine,
   socials,
+  copyrightLine,
 }: {
   siteName?: string
   tagline?: string | null
   contactLine?: string
   socials?: FooterSocial[]
+  /** When set, replaces the default © line (year + SonsHub still applied unless you include them). */
+  copyrightLine?: string | null
 }) {
   const displayTagline = tagline?.trim() || DEFAULT_TAGLINE
   const displayContact = contactLine?.trim() || DEFAULT_CONTACT
@@ -61,6 +63,7 @@ export default function Footer({
           { label: 'SP', href: 'https://open.spotify.com/artist/xxx' },
           { label: 'FB', href: 'https://facebook.com/yadahsings' },
           { label: 'X', href: 'https://x.com/ministeryadah' },
+          { label: 'TT', href: 'https://www.tiktok.com/@yadah' },
         ]
 
   return (
@@ -75,7 +78,6 @@ export default function Footer({
               <Link href="/" aria-label={`${siteName} home`}>
                 <YadahLogo alt={siteName} treatment="inDarkPill" height={44} />
               </Link>
-              <ThemeToggle className="shrink-0" />
             </div>
             <p className="body-sm mt-4 max-w-xs">{displayTagline}</p>
             <div className="flex gap-3 mt-8 flex-wrap items-center">
@@ -128,17 +130,23 @@ export default function Footer({
           className="pt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-t"
           style={{ borderColor: 'rgba(201,168,76,0.15)' }}
         >
-          <p className="ui-label" style={{ color: 'var(--muted)' }}>
-            © {new Date().getFullYear()} {siteName}. Powered & managed by{' '}
-            <a
-              href="https://sonshubmedia.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link-underline"
-              style={{ color: 'var(--accent)' }}
-            >
-              SonsHub Media
-            </a>
+          <p className="ui-label max-w-xl" style={{ color: 'var(--muted)' }}>
+            {copyrightLine?.trim() ? (
+              copyrightLine.trim()
+            ) : (
+              <>
+                © {new Date().getFullYear()} {siteName}. Powered & managed by{' '}
+                <a
+                  href="https://sonshubmedia.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-underline"
+                  style={{ color: 'var(--accent)' }}
+                >
+                  SonsHub Media
+                </a>
+              </>
+            )}
           </p>
           <p className="ui-label" style={{ color: 'var(--muted)', opacity: 0.5 }}>
             {displayContact}

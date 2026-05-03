@@ -17,12 +17,34 @@ const patchSchema = z.object({
   socialSpotify: z.string().optional().nullable(),
   socialFacebook: z.string().optional().nullable(),
   socialX: z.string().optional().nullable(),
+  socialTiktok: z.string().optional().nullable(),
   imageHero: z.string().optional().nullable(),
   imageEditorial: z.string().optional().nullable(),
   imageAboutHero: z.string().optional().nullable(),
   imageAboutPortrait: z.string().optional().nullable(),
   imageWorshipBg: z.string().optional().nullable(),
   galleryImageUrls: z.array(z.string()).optional(),
+  paystackPublicKey: z.string().optional().nullable(),
+  paystackSecretKey: z.string().optional().nullable(),
+  paystackEnabled: z.boolean().optional(),
+  flutterwavePublicKey: z.string().optional().nullable(),
+  flutterwaveSecretKey: z.string().optional().nullable(),
+  flutterwaveEnabled: z.boolean().optional(),
+  stripeEnabled: z.boolean().optional(),
+  stripeSecretKey: z.string().optional().nullable(),
+  stripePublishableKey: z.string().optional().nullable(),
+  stripeWebhookSecret: z.string().optional().nullable(),
+  brevoSmtpHost: z.string().optional().nullable(),
+  brevoSmtpPort: z.number().int().optional().nullable(),
+  brevoSmtpUser: z.string().optional().nullable(),
+  brevoSmtpPass: z.string().optional().nullable(),
+  brevoFromEmail: z.string().optional().nullable(),
+  brevoFromName: z.string().optional().nullable(),
+  brevoNotifyEmail: z.string().optional().nullable(),
+  heroTagline: z.string().optional().nullable(),
+  aboutBioShort: z.string().optional().nullable(),
+  footerCopyright: z.string().optional().nullable(),
+  locationDisplay: z.string().optional().nullable(),
 })
 
 function emptyToNull(s: string | null | undefined) {
@@ -75,12 +97,34 @@ export async function PATCH(req: NextRequest) {
   if (d.socialSpotify !== undefined) data.socialSpotify = emptyToNull(d.socialSpotify)
   if (d.socialFacebook !== undefined) data.socialFacebook = emptyToNull(d.socialFacebook)
   if (d.socialX !== undefined) data.socialX = emptyToNull(d.socialX)
+  if (d.socialTiktok !== undefined) data.socialTiktok = emptyToNull(d.socialTiktok)
   if (d.imageHero !== undefined) data.imageHero = emptyToNull(d.imageHero)
   if (d.imageEditorial !== undefined) data.imageEditorial = emptyToNull(d.imageEditorial)
   if (d.imageAboutHero !== undefined) data.imageAboutHero = emptyToNull(d.imageAboutHero)
   if (d.imageAboutPortrait !== undefined) data.imageAboutPortrait = emptyToNull(d.imageAboutPortrait)
   if (d.imageWorshipBg !== undefined) data.imageWorshipBg = emptyToNull(d.imageWorshipBg)
   if (d.galleryImageUrls !== undefined) data.galleryImageUrls = d.galleryImageUrls.map((u) => u.trim()).filter(Boolean)
+  if (d.paystackPublicKey !== undefined) data.paystackPublicKey = emptyToNull(d.paystackPublicKey)
+  if (d.paystackSecretKey !== undefined) data.paystackSecretKey = emptyToNull(d.paystackSecretKey)
+  if (d.paystackEnabled !== undefined) data.paystackEnabled = d.paystackEnabled
+  if (d.flutterwavePublicKey !== undefined) data.flutterwavePublicKey = emptyToNull(d.flutterwavePublicKey)
+  if (d.flutterwaveSecretKey !== undefined) data.flutterwaveSecretKey = emptyToNull(d.flutterwaveSecretKey)
+  if (d.flutterwaveEnabled !== undefined) data.flutterwaveEnabled = d.flutterwaveEnabled
+  if (d.stripeEnabled !== undefined) data.stripeEnabled = d.stripeEnabled
+  if (d.stripeSecretKey !== undefined) data.stripeSecretKey = emptyToNull(d.stripeSecretKey)
+  if (d.stripePublishableKey !== undefined) data.stripePublishableKey = emptyToNull(d.stripePublishableKey)
+  if (d.stripeWebhookSecret !== undefined) data.stripeWebhookSecret = emptyToNull(d.stripeWebhookSecret)
+  if (d.brevoSmtpHost !== undefined) data.brevoSmtpHost = emptyToNull(d.brevoSmtpHost)
+  if (d.brevoSmtpPort !== undefined) data.brevoSmtpPort = d.brevoSmtpPort
+  if (d.brevoSmtpUser !== undefined) data.brevoSmtpUser = emptyToNull(d.brevoSmtpUser)
+  if (d.brevoSmtpPass !== undefined) data.brevoSmtpPass = emptyToNull(d.brevoSmtpPass)
+  if (d.brevoFromEmail !== undefined) data.brevoFromEmail = emptyToNull(d.brevoFromEmail)
+  if (d.brevoFromName !== undefined) data.brevoFromName = emptyToNull(d.brevoFromName)
+  if (d.brevoNotifyEmail !== undefined) data.brevoNotifyEmail = emptyToNull(d.brevoNotifyEmail)
+  if (d.heroTagline !== undefined) data.heroTagline = emptyToNull(d.heroTagline)
+  if (d.aboutBioShort !== undefined) data.aboutBioShort = emptyToNull(d.aboutBioShort)
+  if (d.footerCopyright !== undefined) data.footerCopyright = emptyToNull(d.footerCopyright)
+  if (d.locationDisplay !== undefined) data.locationDisplay = emptyToNull(d.locationDisplay)
 
   try {
     const row = await prisma.siteSettings.upsert({
