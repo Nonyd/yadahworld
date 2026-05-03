@@ -55,6 +55,7 @@ export function usePublicVideoLightbox(videos: PublicVideo[]) {
         close={() => setOpen(false)}
         index={index}
         slides={slides}
+        controller={{ closeOnBackdropClick: true }}
         on={{ view: ({ index: i }) => setIndex(i) }}
         carousel={{ finite: true, padding: '4%', spacing: '4%' }}
         render={{

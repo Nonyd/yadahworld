@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { DEFAULT_SITE_LOGO_URL } from '@/lib/default-branding'
+import { getCopyString, type SiteCopy } from '@/lib/site-copy'
 
 const linkClass =
   'font-jost text-[11px] tracking-[0.15em] uppercase block mb-3 transition-colors duration-300 hover:text-[#C9A84C]'
@@ -25,34 +26,35 @@ const defaultSocial: FooterSocialConnect = {
 
 export default function Footer({
   siteName = 'Yadah',
+  logoUrl = DEFAULT_SITE_LOGO_URL,
   contactLine,
   socialConnect,
   copyrightLine,
+  copy,
 }: {
   siteName?: string
+  logoUrl?: string
   contactLine?: string
   socialConnect?: Partial<FooterSocialConnect>
   copyrightLine?: string | null
+  copy: SiteCopy
 }) {
   const social = { ...defaultSocial, ...socialConnect }
   const displayContact = contactLine?.trim() || 'yadahsings@gmail.com · +234 808 188 1365'
+  const g = (k: string) => getCopyString(copy, `footer.${k}`)
 
   return (
     <footer className="w-full">
-      {/* Part A — pre-footer */}
-      <section
-        className="py-20 px-8 md:px-20"
-        style={{ background: '#EDE8DF' }}
-      >
+      <section className="py-20 px-8 md:px-20" style={{ background: '#EDE8DF' }}>
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="font-playfair italic text-[clamp(2rem,5vw,4rem)] text-[var(--body)] text-center">
-            Have you heard the good news?
+            {g('preFooterTitle')}
           </h2>
           <p className="font-baskerville italic text-lg text-[var(--muted)] text-center mt-4 mb-10">
-            You can live forever by believing in Jesus.
+            {g('preFooterSubtitle')}
           </p>
           <a href="/booking" className="btn-primary mx-auto inline-flex">
-            Book Yadah
+            {g('preFooterCta')}
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
               <path
                 d="M1 7h12M7 1l6 6-6 6"
@@ -66,12 +68,11 @@ export default function Footer({
         </div>
       </section>
 
-      {/* Part B — main footer */}
       <div className="px-8 md:px-20" style={{ background: '#0D0B08' }}>
         <div className="flex justify-between items-center py-16 gap-8 flex-col sm:flex-row sm:items-center">
           <Link href="/" className="shrink-0" aria-label={`${siteName} home`}>
             <Image
-              src={DEFAULT_SITE_LOGO_URL}
+              src={logoUrl}
               alt={siteName}
               width={300}
               height={56}
@@ -83,52 +84,46 @@ export default function Footer({
             className="font-playfair italic text-[clamp(1rem,3vw,2rem)] text-center sm:text-right max-w-xl"
             style={{ color: 'rgba(201,168,76,0.35)' }}
           >
-            &ldquo;The Voice of Jesus Christ to Nations.&rdquo;
+            &ldquo;{g('taglineQuote')}&rdquo;
           </p>
         </div>
 
         <div style={{ height: '1px', background: 'rgba(201,168,76,0.12)' }} />
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 py-16">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-12 py-16">
           <div>
             <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
-              Navigate
+              {g('colNavigate')}
             </p>
             <Link href="/" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              Home
+              {g('linkHome')}
             </Link>
             <Link href="/media" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              Media
+              {g('linkMedia')}
             </Link>
             <Link href="/about" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              About
+              {g('linkAbout')}
             </Link>
             <Link href="/releases" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              Releases
+              {g('linkReleases')}
             </Link>
             <Link href="/contact" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              Contact
+              {g('linkContact')}
             </Link>
             <Link href="/booking" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              Booking
+              {g('linkBooking')}
             </Link>
             <Link href="/shop" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              Shop
+              {g('linkShop')}
+            </Link>
+            <Link href="/refund-policy" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              {g('refundLink')}
             </Link>
           </div>
 
           <div>
             <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
-              Events
-            </p>
-            <Link href="/#events" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              Upcoming
-            </Link>
-          </div>
-
-          <div>
-            <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
-              Ministry
+              {g('colMinistry')}
             </p>
             <a
               href="https://rfyglobal.org"
@@ -137,31 +132,19 @@ export default function Footer({
               className={linkClass}
               style={{ color: 'rgba(253,250,245,0.4)' }}
             >
-              Room For You
+              {g('ministryRoomForYou')}
             </a>
             <Link href="/campus-tour" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              Campus Tour
+              {g('ministryCampusTour')}
             </Link>
-            <Link href="/privacy-policy" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              Privacy Policy
+            <Link href="/#events" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              {g('ministryEvents')}
             </Link>
-            <Link href="/refund-policy" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              Refund & Returns
-            </Link>
-            <a
-              href="https://sonshubmedia.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={linkClass}
-              style={{ color: 'rgba(253,250,245,0.4)' }}
-            >
-              About SonsHub
-            </a>
           </div>
 
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
-              Connect
+              {g('colConnect')}
             </p>
             <a
               href={social.instagram}
@@ -170,7 +153,7 @@ export default function Footer({
               className={linkClass}
               style={{ color: 'rgba(253,250,245,0.4)' }}
             >
-              Instagram
+              {g('connectInstagram')}
             </a>
             <a
               href={social.youtube}
@@ -179,7 +162,7 @@ export default function Footer({
               className={linkClass}
               style={{ color: 'rgba(253,250,245,0.4)' }}
             >
-              YouTube
+              {g('connectYoutube')}
             </a>
             <a
               href={social.spotify}
@@ -188,7 +171,7 @@ export default function Footer({
               className={linkClass}
               style={{ color: 'rgba(253,250,245,0.4)' }}
             >
-              Spotify
+              {g('connectSpotify')}
             </a>
             <a
               href={social.facebook}
@@ -197,7 +180,7 @@ export default function Footer({
               className={linkClass}
               style={{ color: 'rgba(253,250,245,0.4)' }}
             >
-              Facebook
+              {g('connectFacebook')}
             </a>
             <a
               href={social.x}
@@ -206,7 +189,7 @@ export default function Footer({
               className={linkClass}
               style={{ color: 'rgba(253,250,245,0.4)' }}
             >
-              X (Twitter)
+              {g('connectX')}
             </a>
             <a
               href={social.tiktok}
@@ -215,9 +198,39 @@ export default function Footer({
               className={linkClass}
               style={{ color: 'rgba(253,250,245,0.4)' }}
             >
-              TikTok
+              {g('connectTiktok')}
             </a>
           </div>
+        </div>
+
+        <div style={{ height: '1px', background: 'rgba(201,168,76,0.12)' }} />
+
+        <div className="flex flex-col items-center gap-4 py-8 text-center">
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-2">
+            <Link
+              href="/privacy-policy"
+              className="font-jost text-[10px] tracking-[0.2em] uppercase transition-colors hover:text-[#C9A84C]"
+              style={{ color: 'rgba(253,250,245,0.45)' }}
+            >
+              {g('bottomPrivacy')}
+            </Link>
+            <Link
+              href="/cookie-policy"
+              className="font-jost text-[10px] tracking-[0.2em] uppercase transition-colors hover:text-[#C9A84C]"
+              style={{ color: 'rgba(253,250,245,0.45)' }}
+            >
+              {g('bottomCookie')}
+            </Link>
+          </div>
+          <a
+            href={g('creditHref')}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-jost text-[11px] tracking-[0.12em] transition-colors hover:text-[#C9A84C]"
+            style={{ color: 'rgba(253,250,245,0.55)' }}
+          >
+            {g('creditLine')}
+          </a>
         </div>
 
         <div style={{ height: '1px', background: 'rgba(201,168,76,0.12)' }} />
@@ -235,16 +248,7 @@ export default function Footer({
               className="font-jost text-[10px] tracking-[0.15em] uppercase text-center md:text-left"
               style={{ color: 'rgba(253,250,245,0.2)' }}
             >
-              © {new Date().getFullYear()} {siteName}. Powered & managed by{' '}
-              <a
-                href="https://sonshubmedia.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-[#C9A84C] transition-colors"
-                style={{ color: 'rgba(253,250,245,0.35)' }}
-              >
-                SonsHub Media
-              </a>
+              © {new Date().getFullYear()} {siteName}.
             </p>
           )}
           <p

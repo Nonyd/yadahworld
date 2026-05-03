@@ -1,13 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import type { CSSProperties } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
+import { useTheme } from 'next-themes'
 import { DEFAULT_SITE_LOGO_URL } from '@/lib/default-branding'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
-const NAV_LINKS = [
+type NavLink = { label: string; href: string; external?: boolean }
+
+const NAV_LINKS: NavLink[] = [
   { label: 'Home', href: '/' },
   { label: 'Media', href: '/media' },
   { label: 'About', href: '/about' },
@@ -21,22 +26,35 @@ const NAV_LINKS = [
 export default function Navbar({
   siteName = 'Yadah',
   logoUrl = DEFAULT_SITE_LOGO_URL,
+  navLabels,
 }: {
   siteName?: string
   logoUrl?: string
+  navLabels: Record<string, string>
 }) {
   const pathname = usePathname()
   const [heroMode, setHeroMode] = useState(true)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const { scrollY } = useScroll()
+  const { resolvedTheme } = useTheme()
 
   useMotionValueEvent(scrollY, 'change', (y) => {
     setHeroMode(y < 40)
   })
 
-  /** Light text + logo only on home over the dark hero. Else use body-colored chrome. */
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const onDarkHero = pathname === '/' && heroMode
   const navMuted = 'rgba(253,250,245,0.6)'
+  const isDark = mounted && resolvedTheme === 'dark'
+  /** White mark on hero / dark pages; dark mark on light pages (light theme only). */
+  const logoStyle: CSSProperties | undefined =
+    onDarkHero || isDark ? undefined : { filter: 'brightness(0)' }
+
+  const labelFor = (href: string, fallback: string) => navLabels[href]?.trim() || fallback
 
   return (
     <>
@@ -61,38 +79,46 @@ export default function Navbar({
             height={80}
             priority
             className="h-9 w-auto md:h-12"
-            style={onDarkHero ? undefined : { filter: 'brightness(0)' }}
+            style={logoStyle}
             sizes="(max-width: 768px) 140px, 180px"
           />
         </Link>
 
-        <nav className="hidden lg:flex flex-1 items-center justify-end gap-8 xl:gap-10">
+        <nav className="hidden lg:flex flex-1 items-center justify-end gap-6 xl:gap-8">
           {NAV_LINKS.map((link) =>
             link.external ? (
               <a
-                key={link.label}
+                key={link.href}
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ui-label link-underline"
                 style={{ color: onDarkHero ? navMuted : 'var(--muted)' }}
               >
-                {link.label}
+                {labelFor(link.href, link.label)}
               </a>
             ) : (
               <Link
-                key={link.label}
+                key={link.href}
                 href={link.href}
                 className="ui-label link-underline"
                 style={{ color: onDarkHero ? navMuted : 'var(--muted)' }}
               >
-                {link.label}
+                {labelFor(link.href, link.label)}
               </Link>
             ),
           )}
+          <ThemeToggle
+            className={onDarkHero ? '!border-white/25 !text-[rgba(253,250,245,0.75)]' : ''}
+            variant="public"
+          />
         </nav>
 
-        <div className="flex items-center lg:hidden">
+        <div className="flex items-center gap-3 lg:hidden">
+          <ThemeToggle
+            className={onDarkHero ? '!border-white/25 !text-[rgba(253,250,245,0.75)]' : ''}
+            variant="public"
+          />
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
@@ -126,7 +152,7 @@ export default function Navbar({
         </button>
         {NAV_LINKS.map((link, i) => (
           <motion.div
-            key={link.label}
+            key={link.href}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: menuOpen ? 1 : 0, y: menuOpen ? 0 : 30 }}
             transition={{ delay: i * 0.06, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -139,7 +165,7 @@ export default function Navbar({
                 onClick={() => setMenuOpen(false)}
                 className="font-playfair text-4xl font-normal italic text-accent"
               >
-                {link.label}
+                {labelFor(link.href, link.label)}
               </a>
             ) : (
               <Link
@@ -147,7 +173,7 @@ export default function Navbar({
                 onClick={() => setMenuOpen(false)}
                 className="font-playfair text-4xl font-normal text-body hover:text-accent transition-colors"
               >
-                {link.label}
+                {labelFor(link.href, link.label)}
               </Link>
             )}
           </motion.div>

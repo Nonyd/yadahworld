@@ -1,16 +1,19 @@
+import type { Metadata } from 'next'
 import { getCopyString } from '@/lib/site-copy'
 import { getSiteCopy } from '@/lib/site-settings'
 
-export default async function PrivacyPolicyPage() {
+export const metadata: Metadata = { title: 'Cookie Policy' }
+
+export default async function CookiePolicyPage() {
   const copy = await getSiteCopy()
   const l = (k: string) => getCopyString(copy, `legal.${k}`)
 
   return (
     <div className="min-h-screen pt-40 pb-24 px-8 md:px-20 bg-bg">
       <div className="max-w-2xl mx-auto">
-        <p className="eyebrow mb-4">{l('privacyEyebrow')}</p>
-        <h1 className="display-3 text-body mb-8">{l('privacyTitle')}</h1>
-        <p className="body-lg">{l('privacyBody')}</p>
+        <p className="eyebrow mb-4">{l('cookieEyebrow')}</p>
+        <h1 className="display-3 text-body mb-8">{l('cookieTitle')}</h1>
+        <p className="body-lg">{l('cookieBody')}</p>
       </div>
     </div>
   )

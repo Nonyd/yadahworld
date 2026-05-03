@@ -4,15 +4,19 @@ import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
+import { getCopyString, type SiteCopy } from '@/lib/site-copy'
 
 export default function AboutPageClient({
   aboutHero,
   aboutPortrait,
+  copy,
 }: {
   aboutHero: string
   aboutPortrait: string
+  copy: SiteCopy
 }) {
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true })
+  const a = (k: string) => getCopyString(copy, `aboutPage.${k}`)
 
   return (
     <div className="min-h-screen">
@@ -28,7 +32,7 @@ export default function AboutPageClient({
             transition={{ delay: 0.3 }}
             className="eyebrow mb-4 text-[rgba(253,250,245,0.45)]"
           >
-            The Artist
+            {a('heroEyebrow')}
           </motion.p>
           <motion.h1
             initial={{ y: 40, opacity: 0 }}
@@ -36,10 +40,10 @@ export default function AboutPageClient({
             transition={{ duration: 0.9, delay: 0.2, ease: [0.77, 0, 0.175, 1] }}
             className="font-playfair text-[clamp(3rem,10vw,8rem)] font-normal text-ivory leading-[0.9]"
           >
-            Yadah.
+            {a('heroTitle')}
             <br />
             <em className="text-[rgba(253,250,245,0.55)] text-[clamp(1.5rem,5vw,4rem)] font-playfair italic">
-              The Voice Of Jesus To Nations.
+              {a('heroSubtitle')}
             </em>
           </motion.h1>
         </div>
@@ -54,8 +58,7 @@ export default function AboutPageClient({
               transition={{ delay: 0.2, duration: 0.8 }}
               className="font-playfair text-2xl md:text-3xl font-normal italic text-gold-light leading-relaxed mb-10 border-l border-accent pl-6"
             >
-              &ldquo;I believe in the one and only true God. I believe in Christ&apos;s cross and all that it is to a
-              believer!!&rdquo;
+              &ldquo;{a('blockquote')}&rdquo;
             </motion.blockquote>
 
             <motion.p
@@ -64,10 +67,7 @@ export default function AboutPageClient({
               transition={{ delay: 0.4, duration: 0.7 }}
               className="body-lg mb-6"
             >
-              Yadah Kukeurim Daniel, professionally known as Yadah, is a distinguished Nigerian singer, songwriter, and fashion
-              designer whose impactful music centers on the themes of God&apos;s love and grace. Based in Abuja, Nigeria,
-              Yadah has carved a significant niche in contemporary gospel music, captivating audiences worldwide with her
-              soulful melodies and profound lyrical content.
+              {a('body1')}
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -75,10 +75,7 @@ export default function AboutPageClient({
               transition={{ delay: 0.5, duration: 0.7 }}
               className="body-lg mb-6"
             >
-              She made her official debut in 2017 with &ldquo;Goodie Goodie&rdquo; under the management of SonsHub Media. Her
-              discography includes hit songs such as &ldquo;Beyond Me&rdquo;, &ldquo;Never Seen&rdquo;, &ldquo;Onye Nwere
-              Jesus&rdquo;, &ldquo;Free of Charge&rdquo;, and &ldquo;Na Your Hand&rdquo; — collectively garnering over 100
-              million streams globally.
+              {a('body2')}
             </motion.p>
 
             <motion.div
@@ -88,18 +85,18 @@ export default function AboutPageClient({
               className="flex flex-wrap gap-6 mt-10"
             >
               <div>
-                <p className="font-playfair text-5xl font-normal text-accent">100M+</p>
-                <p className="ui-label text-muted mt-1">Streams Globally</p>
+                <p className="font-playfair text-5xl font-normal text-accent">{a('stat1n')}</p>
+                <p className="ui-label text-muted mt-1">{a('stat1l')}</p>
               </div>
               <div className="w-px bg-gold-light/20 hidden sm:block self-stretch min-h-[3rem]" />
               <div>
-                <p className="font-playfair text-5xl font-normal text-accent">600K+</p>
-                <p className="ui-label text-muted mt-1">Social Followers</p>
+                <p className="font-playfair text-5xl font-normal text-accent">{a('stat2n')}</p>
+                <p className="ui-label text-muted mt-1">{a('stat2l')}</p>
               </div>
               <div className="w-px bg-gold-light/20 hidden sm:block self-stretch min-h-[3rem]" />
               <div>
-                <p className="font-playfair text-5xl font-normal text-accent">7+</p>
-                <p className="ui-label text-muted mt-1">Years Ministry</p>
+                <p className="font-playfair text-5xl font-normal text-accent">{a('stat3n')}</p>
+                <p className="ui-label text-muted mt-1">{a('stat3l')}</p>
               </div>
             </motion.div>
           </div>
@@ -116,9 +113,9 @@ export default function AboutPageClient({
       </section>
 
       <section className="py-20 px-8 md:px-20 text-center border-t border-gold-light/15 bg-surface/40">
-        <p className="font-playfair text-2xl font-normal italic text-muted mb-6">Want to invite Yadah to your event?</p>
+        <p className="font-playfair text-2xl font-normal italic text-muted mb-6">{a('ctaLine')}</p>
         <Link href="/booking" className="btn-primary">
-          Book Yadah
+          {a('ctaButton')}
           <span aria-hidden>→</span>
         </Link>
       </section>

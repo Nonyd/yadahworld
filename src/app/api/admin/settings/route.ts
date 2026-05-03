@@ -19,6 +19,7 @@ const patchSchema = z.object({
   socialFacebook: z.string().optional().nullable(),
   socialX: z.string().optional().nullable(),
   socialTiktok: z.string().optional().nullable(),
+  imageSiteLogo: z.string().optional().nullable(),
   imageHero: z.string().optional().nullable(),
   imageEditorial: z.string().optional().nullable(),
   imageAboutHero: z.string().optional().nullable(),
@@ -49,6 +50,7 @@ const patchSchema = z.object({
   aboutBioShort: z.string().optional().nullable(),
   footerCopyright: z.string().optional().nullable(),
   locationDisplay: z.string().optional().nullable(),
+  siteContentJson: z.unknown().optional(),
 })
 
 function emptyToNull(s: string | null | undefined) {
@@ -102,6 +104,7 @@ export async function PATCH(req: NextRequest) {
   if (d.socialFacebook !== undefined) data.socialFacebook = emptyToNull(d.socialFacebook)
   if (d.socialX !== undefined) data.socialX = emptyToNull(d.socialX)
   if (d.socialTiktok !== undefined) data.socialTiktok = emptyToNull(d.socialTiktok)
+  if (d.imageSiteLogo !== undefined) data.imageSiteLogo = emptyToNull(d.imageSiteLogo)
   if (d.imageHero !== undefined) data.imageHero = emptyToNull(d.imageHero)
   if (d.imageEditorial !== undefined) data.imageEditorial = emptyToNull(d.imageEditorial)
   if (d.imageAboutHero !== undefined) data.imageAboutHero = emptyToNull(d.imageAboutHero)
@@ -136,6 +139,9 @@ export async function PATCH(req: NextRequest) {
   if (d.aboutBioShort !== undefined) data.aboutBioShort = emptyToNull(d.aboutBioShort)
   if (d.footerCopyright !== undefined) data.footerCopyright = emptyToNull(d.footerCopyright)
   if (d.locationDisplay !== undefined) data.locationDisplay = emptyToNull(d.locationDisplay)
+  if (d.siteContentJson !== undefined && d.siteContentJson !== null && typeof d.siteContentJson === 'object') {
+    data.siteContentJson = d.siteContentJson as object
+  }
 
   try {
     const row = await prisma.siteSettings.upsert({
@@ -156,6 +162,7 @@ export async function PATCH(req: NextRequest) {
         '/shop',
         '/privacy-policy',
         '/refund-policy',
+        '/cookie-policy',
       ] as const
       for (const p of paths) {
         revalidatePath(p)

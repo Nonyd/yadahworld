@@ -1,20 +1,22 @@
-export default function StreamMarquee() {
-  const items = [
-    'Beyond Me',
-    '· 100M+ Streams ·',
-    'Onye Nwere Jesus',
-    '· God in All Seasons ·',
-    'Fathered By The Best',
-    '· Never Seen ·',
-    'Free of Charge',
-    '· Na Your Hand ·',
-  ]
+import { getCopyString, type SiteCopy } from '@/lib/site-copy'
+
+export default function StreamMarquee({ copy }: { copy: SiteCopy }) {
+  const raw = getCopyString(copy, 'home.streamMarqueeLines')
+  const items = raw
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+
+  if (!items.length) return null
 
   return (
-    <section style={{ background: 'var(--surface)' }} className="py-6 overflow-hidden border-y border-[var(--gold-light)]/20">
+    <section
+      style={{ background: 'var(--surface)' }}
+      className="py-6 overflow-hidden border-y border-[var(--gold-light)]/20"
+    >
       <div className="marquee-track">
         {[...items, ...items].map((item, i) => (
-          <span key={i} className="px-8 whitespace-nowrap">
+          <span key={`${item}-${i}`} className="px-8 whitespace-nowrap">
             {item.startsWith('·') ? (
               <span className="ui-label" style={{ color: 'var(--gold)' }}>
                 {item}

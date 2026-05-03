@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'framer-motion'
+import { getCopyString, type SiteCopy } from '@/lib/site-copy'
 
 const schema = z.object({
   name: z.string().min(2, 'Name required'),
@@ -14,9 +15,11 @@ const schema = z.object({
 })
 type FormData = z.infer<typeof schema>
 
-export default function ContactForm() {
+export default function ContactForm({ copy }: { copy: SiteCopy }) {
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
+  const f = (k: string) => getCopyString(copy, `contactForm.${k}`)
+
   const {
     register,
     handleSubmit,
@@ -42,8 +45,8 @@ export default function ContactForm() {
   if (sent) {
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-12">
-        <p className="font-playfair text-2xl italic text-[var(--body)] mb-4">Message sent.</p>
-        <p className="body-sm">Thank you for reaching out. We will be in touch shortly.</p>
+        <p className="font-playfair text-2xl italic text-[var(--body)] mb-4">{f('successTitle')}</p>
+        <p className="body-sm">{f('successBody')}</p>
       </motion.div>
     )
   }
@@ -52,9 +55,9 @@ export default function ContactForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
       {(
         [
-          { id: 'name' as const, label: 'Your Name', type: 'text', placeholder: 'Full name' },
-          { id: 'email' as const, label: 'Email Address', type: 'email', placeholder: 'your@email.com' },
-          { id: 'subject' as const, label: 'Subject', type: 'text', placeholder: 'How can we help?' },
+          { id: 'name' as const, label: f('nameLabel'), type: 'text', placeholder: f('namePh') },
+          { id: 'email' as const, label: f('emailLabel'), type: 'email', placeholder: f('emailPh') },
+          { id: 'subject' as const, label: f('subjectLabel'), type: 'text', placeholder: f('subjectPh') },
         ] as const
       ).map(({ id, label, type, placeholder }) => (
         <div key={id}>
@@ -71,9 +74,9 @@ export default function ContactForm() {
       ))}
       <div>
         <label className="ui-label mb-2 block" style={{ color: 'var(--muted)' }}>
-          Message
+          {f('messageLabel')}
         </label>
-        <textarea {...register('message')} placeholder="Your message…" className="field-textarea" />
+        <textarea {...register('message')} placeholder={f('messagePh')} className="field-textarea" />
         {errors.message && (
           <p className="font-jost text-xs mt-1" style={{ color: 'var(--accent)' }}>
             {errors.message.message}
@@ -81,7 +84,7 @@ export default function ContactForm() {
         )}
       </div>
       <button type="submit" disabled={loading} className="btn-primary self-start">
-        {loading ? 'Sending…' : 'Send Message'}
+        {loading ? f('sending') : f('submit')}
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
           <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>

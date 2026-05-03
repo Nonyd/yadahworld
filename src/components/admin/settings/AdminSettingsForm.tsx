@@ -1,14 +1,74 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import type { SiteSettings } from '@prisma/client'
 import AdminImageUpload from '@/components/admin/AdminImageUpload'
 import { cloudinaryCloudName } from '@/lib/cloudinary'
 import { getAdminUploadStatus, uploadAdminImage, type AdminUploadStatus } from '@/lib/admin-upload-client'
+import {
+  buildSiteContentJsonFromDotMap,
+  getCopyString,
+  listSiteCopyDotPaths,
+  mergeSiteContent,
+} from '@/lib/site-copy'
 import { SocialIcon } from '@/components/ui/SocialIcons'
 
-const TABS = ['General', 'Contact', 'Social', 'Images', 'Gallery', 'Campus tour', 'Integrations'] as const
+const TABS = ['General', 'Contact', 'Social', 'Images', 'Gallery', 'Campus tour', 'Site text', 'Integrations'] as const
+
+const SITE_TEXT_GROUP_ORDER = [
+  'nav',
+  'footer',
+  'home',
+  'media',
+  'aboutPage',
+  'bookingPage',
+  'contactPage',
+  'campusTour',
+  'shop',
+  'releases',
+  'releaseDetail',
+  'legal',
+  'contactForm',
+] as const
+
+const SITE_TEXT_GROUP_LABEL: Record<string, string> = {
+  nav: 'Navigation (navbar)',
+  footer: 'Footer',
+  home: 'Homepage sections',
+  media: 'Media page',
+  aboutPage: 'About page',
+  bookingPage: 'Booking page',
+  contactPage: 'Contact page (sidebar)',
+  campusTour: 'Campus tour page',
+  shop: 'Shop page',
+  releases: 'Releases index',
+  releaseDetail: 'Single release page',
+  legal: 'Legal pages (Privacy, Refund, Cookies)',
+  contactForm: 'Contact form (labels & messages)',
+}
+
+function siteTextUseTextarea(path: string): boolean {
+  const tail = path.split('.').pop() ?? path
+  if (
+    tail.includes('Lines') ||
+    tail.includes('Marquee') ||
+    tail.endsWith('Body') ||
+    tail === 'intro' ||
+    tail === 'note' ||
+    tail === 'blockquote' ||
+    tail === 'body1' ||
+    tail === 'body2' ||
+    tail === 'successBody' ||
+    tail === 'emptyBody' ||
+    tail === 'taglineQuote' ||
+    tail.startsWith('preFooter') ||
+    tail === 'creditLine' ||
+    tail === 'messagePh'
+  )
+    return true
+  return false
+}
 type Tab = (typeof TABS)[number]
 
 export type AdminSettingsIntegrationEnv = {
@@ -36,6 +96,7 @@ type FormState = {
   socialFacebook: string
   socialX: string
   socialTiktok: string
+  imageSiteLogo: string
   imageHero: string
   imageEditorial: string
   imageAboutHero: string
@@ -83,6 +144,7 @@ function toFormState(row: SiteSettings | null): FormState {
     socialFacebook: row?.socialFacebook ?? '',
     socialX: row?.socialX ?? '',
     socialTiktok: row?.socialTiktok ?? '',
+    imageSiteLogo: row?.imageSiteLogo ?? '',
     imageHero: row?.imageHero ?? '',
     imageEditorial: row?.imageEditorial ?? '',
     imageAboutHero: row?.imageAboutHero ?? '',
@@ -180,6 +242,16 @@ export default function AdminSettingsForm({
   const campusTourM2FilesId = useId()
   const [tab, setTab] = useState<Tab>('General')
   const [form, setForm] = useState<FormState>(() => toFormState(initial))
+  const siteContentKey =
+    initial?.siteContentJson === null || initial?.siteContentJson === undefined
+      ? ''
+      : JSON.stringify(initial.siteContentJson)
+  const [copyForm, setCopyForm] = useState<Record<string, string>>(() => {
+    const merged = mergeSiteContent(initial?.siteContentJson ?? null)
+    const o: Record<string, string> = {}
+    for (const p of listSiteCopyDotPaths()) o[p] = getCopyString(merged, p)
+    return o
+  })
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
   const [galleryBusy, setGalleryBusy] = useState(false)
@@ -189,6 +261,33 @@ export default function AdminSettingsForm({
 
   useEffect(() => {
     void getAdminUploadStatus().then(setUploadStatus)
+  }, [])
+
+  useEffect(() => {
+    const merged = mergeSiteContent(initial?.siteContentJson ?? null)
+    const o: Record<string, string> = {}
+    for (const p of listSiteCopyDotPaths()) o[p] = getCopyString(merged, p)
+    setCopyForm(o)
+  }, [siteContentKey, initial])
+
+  const copyPathsByGroup = useMemo(() => {
+    const g: Record<string, string[]> = {}
+    for (const p of listSiteCopyDotPaths()) {
+      const seg = p.split('.')[0]!
+      if (!g[seg]) g[seg] = []
+      g[seg].push(p)
+    }
+    const out: { key: string; paths: string[] }[] = []
+    for (const k of SITE_TEXT_GROUP_ORDER) {
+      if (g[k]?.length) out.push({ key: k, paths: [...g[k]!].sort() })
+    }
+    const orderStr = SITE_TEXT_GROUP_ORDER as readonly string[]
+    for (const k of Object.keys(g)) {
+      if (!orderStr.includes(k)) {
+        out.push({ key: k, paths: [...g[k]!].sort() })
+      }
+    }
+    return out
   }, [])
   const [testBusy, setTestBusy] = useState(false)
   const [testMsg, setTestMsg] = useState('')
@@ -331,6 +430,7 @@ export default function AdminSettingsForm({
           socialFacebook: form.socialFacebook || null,
           socialX: form.socialX || null,
           socialTiktok: form.socialTiktok || null,
+          imageSiteLogo: form.imageSiteLogo || null,
           imageHero: form.imageHero || null,
           imageEditorial: form.imageEditorial || null,
           imageAboutHero: form.imageAboutHero || null,
@@ -357,6 +457,7 @@ export default function AdminSettingsForm({
           flutterwavePublicKey: form.flutterwavePublicKey || null,
           flutterwaveSecretKey: form.flutterwaveSecretKey || null,
           flutterwaveEnabled: form.flutterwaveEnabled,
+          siteContentJson: buildSiteContentJsonFromDotMap(copyForm),
         }),
       })
       if (!res.ok) throw new Error('Save failed')
@@ -513,6 +614,13 @@ export default function AdminSettingsForm({
             ) : null}
           </p>
           <div className="space-y-8">
+            <AdminImageUpload
+              label="Site logo (navbar, footer, admin)"
+              description="Same mark as the public site; used on admin sign-in and dashboard when set."
+              value={form.imageSiteLogo}
+              onChange={(v) => set('imageSiteLogo', v)}
+              folder="site"
+            />
             <AdminImageUpload
               label="Hero background"
               description="Homepage full-bleed behind the hero."
@@ -894,6 +1002,50 @@ export default function AdminSettingsForm({
               />
             </div>
           </div>
+        </div>
+      )}
+
+      {tab === 'Site text' && (
+        <div className="admin-card max-h-[min(70vh,720px)] space-y-8 overflow-y-auto p-6 sm:p-8">
+          <div>
+            <h2 className="font-playfair text-lg text-admin-text">Site text</h2>
+            <p className="mt-2 text-sm text-admin-muted">
+              Public copy for pages and chrome. Values merge with built-in defaults. In <strong>Contact page → body</strong>,
+              include <code className="rounded bg-admin-bg px-1 py-0.5 font-mono text-[11px]">{'{{booking}}'}</code> where
+              the booking link should appear. In <strong>Campus tour → body1</strong>, include{' '}
+              <code className="rounded bg-admin-bg px-1 py-0.5 font-mono text-[11px]">{'{{rfy}}'}</code> for the Room For
+              You link.
+            </p>
+          </div>
+          {copyPathsByGroup.map(({ key, paths }) => (
+            <div key={key} className="space-y-4 border-t border-admin-border pt-6 first:border-t-0 first:pt-0">
+              <h3 className="font-jost text-xs font-semibold uppercase tracking-[0.2em] text-admin-muted">
+                {SITE_TEXT_GROUP_LABEL[key] ?? key}
+              </h3>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {paths.map((path) => (
+                  <div key={path} className={siteTextUseTextarea(path) ? 'sm:col-span-2' : undefined}>
+                    <label className="admin-label mb-1 block font-mono text-[10px] normal-case tracking-normal text-admin-muted">
+                      {path}
+                    </label>
+                    {siteTextUseTextarea(path) ? (
+                      <textarea
+                        className="admin-input min-h-[72px] resize-y font-mono text-xs"
+                        value={copyForm[path] ?? ''}
+                        onChange={(e) => setCopyForm((c) => ({ ...c, [path]: e.target.value }))}
+                      />
+                    ) : (
+                      <input
+                        className="admin-input font-mono text-xs"
+                        value={copyForm[path] ?? ''}
+                        onChange={(e) => setCopyForm((c) => ({ ...c, [path]: e.target.value }))}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

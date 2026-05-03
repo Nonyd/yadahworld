@@ -3,13 +3,17 @@
 import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { getCopyString, type SiteCopy } from '@/lib/site-copy'
 
-export default function BookingCTA({ worshipBg }: { worshipBg: string }) {
+export default function BookingCTA({ worshipBg, copy }: { worshipBg: string; copy: SiteCopy }) {
   const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true })
+  const h = (k: string) => getCopyString(copy, `home.${k}`)
+  const lines = [h('bookingLine1'), h('bookingLine2'), h('bookingLine3')]
 
   return (
     <section ref={ref} className="relative py-[clamp(8rem,16vw,18rem)] px-8 md:px-20 overflow-hidden">
       <div
+        key={worshipBg}
         className="absolute inset-0"
         style={{
           backgroundImage: `url('${worshipBg}')`,
@@ -38,11 +42,11 @@ export default function BookingCTA({ worshipBg }: { worshipBg: string }) {
           animate={inView ? { opacity: 1 } : {}}
           className="eyebrow mb-10 text-[var(--gold-light)] opacity-60"
         >
-          07 — Invite Yadah
+          {h('bookingEyebrow')}
         </motion.p>
 
-        {['Yadah is always', 'glad to be', 'a blessing.'].map((line, i) => (
-          <div key={line} style={{ overflow: 'hidden' }}>
+        {lines.map((line, i) => (
+          <div key={i} style={{ overflow: 'hidden' }}>
             <motion.p
               initial={{ y: '110%' }}
               animate={inView ? { y: 0 } : {}}
@@ -67,7 +71,7 @@ export default function BookingCTA({ worshipBg }: { worshipBg: string }) {
           transition={{ delay: 0.6 }}
           className="font-jost font-light italic text-[rgba(253,250,245,0.45)] text-lg mt-8 mb-12"
         >
-          Concert · Church Conference · Worship Night · Album Launch
+          {h('bookingSubline')}
         </motion.p>
 
         <motion.div
@@ -80,7 +84,7 @@ export default function BookingCTA({ worshipBg }: { worshipBg: string }) {
             className="inline-flex items-center gap-4 border text-[var(--white)] px-10 py-5 font-jost text-[0.7rem] tracking-[0.2em] uppercase hover:bg-[var(--white)] hover:text-[var(--accent)] transition-all duration-500"
             style={{ borderColor: 'rgba(253,250,245,0.3)' }}
           >
-            Submit Booking Request
+            {h('bookingCta')}
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
               <path
                 d="M1 7h12M7 1l6 6-6 6"

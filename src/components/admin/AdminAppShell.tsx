@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 
@@ -9,11 +10,15 @@ export default function AdminAppShell({
   userLabel,
   pendingBookingsCount = 0,
   unreadMessagesCount = 0,
+  logoUrl,
+  siteName = 'Yadah',
 }: {
   children: React.ReactNode
   userLabel?: string | null
   pendingBookingsCount?: number
   unreadMessagesCount?: number
+  logoUrl: string
+  siteName?: string
 }) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -29,12 +34,8 @@ export default function AdminAppShell({
         >
           Menu
         </button>
-        <Link
-          href="/admin"
-          className="flex shrink-0 justify-center font-playfair text-2xl font-medium italic text-admin-text"
-          aria-label="Admin home"
-        >
-          Yadah
+        <Link href="/admin" className="flex shrink-0 justify-center" aria-label="Admin home">
+          <Image src={logoUrl} alt={siteName} width={200} height={48} className="h-8 w-auto" priority />
         </Link>
         <span className="w-10 shrink-0" aria-hidden />
       </div>
@@ -61,6 +62,8 @@ export default function AdminAppShell({
             userLabel={userLabel}
             pendingBookingsCount={pendingBookingsCount}
             unreadMessagesCount={unreadMessagesCount}
+            logoUrl={logoUrl}
+            siteName={siteName}
           />
         </div>
 

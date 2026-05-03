@@ -5,26 +5,29 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { PublicRelease } from '@/lib/site-content'
+import { getCopyString, type SiteCopy } from '@/lib/site-copy'
 
 const MotionLink = motion(Link)
 
-export default function MusicSection({ releases }: { releases: PublicRelease[] }) {
+export default function MusicSection({ releases, copy }: { releases: PublicRelease[]; copy: SiteCopy }) {
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true })
+  const h = (k: string) => getCopyString(copy, `home.${k}`)
+  const badgeNew = getCopyString(copy, 'releases.badgeNew')
 
   return (
     <section id="music" ref={ref} className="px-8 md:px-20 py-[clamp(6rem,12vw,14rem)]">
       <div className="max-w-screen-xl mx-auto flex items-end justify-between mb-16 flex-wrap gap-8">
         <div>
-          <p className="eyebrow mb-6">04 — The Sound</p>
+          <p className="eyebrow mb-6">{h('musicEyebrow')}</p>
           <h2 className="display-2 text-[var(--body)]">
-            Recent
+            {h('musicHeading1')}
             <br />
-            <em className="font-playfair italic">Releases.</em>
+            <em className="font-playfair italic">{h('musicHeading2')}</em>
           </h2>
         </div>
         <Link href="/releases" className="btn-ghost hidden md:flex">
           <span className="arrow-line" />
-          All Releases
+          {h('musicAllReleases')}
         </Link>
       </div>
 
@@ -53,7 +56,7 @@ export default function MusicSection({ releases }: { releases: PublicRelease[] }
                   className="absolute top-3 left-3 ui-label px-2 py-1 text-[10px]"
                   style={{ background: 'var(--accent)', color: 'var(--white)' }}
                 >
-                  New
+                  {badgeNew}
                 </span>
               )}
             </div>

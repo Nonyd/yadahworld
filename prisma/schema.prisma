@@ -97,6 +97,8 @@ model SiteSettings {
   socialFacebook  String?
   socialX         String?
 
+  /// Site logo (same asset as public navbar when set; falls back to default Cloudinary logo)
+  imageSiteLogo      String?
   imageHero          String?
   imageEditorial     String?
   imageAboutHero     String?
@@ -138,6 +140,9 @@ model SiteSettings {
   aboutBioShort     String?
   footerCopyright   String?
   locationDisplay   String?
+
+  /// Merged with code defaults — editable page/section copy (nested JSON)
+  siteContentJson Json?
 }
 
 model SiteVideo {

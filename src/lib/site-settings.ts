@@ -1,7 +1,9 @@
 import type { SiteSettings } from '@prisma/client'
+import { cache } from 'react'
 import { DEFAULT_SITE_LOGO_URL } from '@/lib/default-branding'
 import { prisma } from '@/lib/prisma'
 import { images } from '@/lib/imagePlaceholders'
+import { mergeSiteContent, type SiteCopy } from '@/lib/site-copy'
 
 export type SiteVisuals = {
   hero: string
@@ -79,7 +81,7 @@ export async function getGalleryUrls(): Promise<string[]> {
 
 export type PublicSiteBranding = {
   siteName: string
-  /** Default raster logo (Cloudinary); use on public site chrome. */
+  /** Logo URL (admin **Images → Site logo**) or default Cloudinary asset. */
   logoUrl: string
   siteTagline: string | null
   metaDescription: string | null
@@ -95,9 +97,10 @@ export type PublicSiteBranding = {
 
 export async function getPublicBranding(): Promise<PublicSiteBranding> {
   const row = await getSiteSettingsRow()
+  const customLogo = row?.imageSiteLogo?.trim()
   return {
     siteName: row?.siteName?.trim() || 'Yadah',
-    logoUrl: DEFAULT_SITE_LOGO_URL,
+    logoUrl: customLogo || DEFAULT_SITE_LOGO_URL,
     siteTagline: row?.siteTagline?.trim() || null,
     metaDescription: row?.metaDescription?.trim() || null,
     metaTitleSuffix: row?.metaTitleSuffix?.trim() || '| Yadah',
@@ -150,3 +153,9 @@ export async function getNotifyEmail(): Promise<string> {
   const row = await getSiteSettingsRow()
   return row?.brevoNotifyEmail?.trim() || process.env.BREVO_NOTIFY_EMAIL?.trim() || 'yadahsings@gmail.com'
 }
+
+/** Merged site copy (defaults + `siteContentJson`). Cached per request. */
+export const getSiteCopy = cache(async (): Promise<SiteCopy> => {
+  const row = await getSiteSettingsRow()
+  return mergeSiteContent(row?.siteContentJson ?? null)
+})

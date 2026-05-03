@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import CampusTourView from '@/components/campus-tour/CampusTourView'
-import { getCampusTourVisuals } from '@/lib/site-settings'
+import { getCampusTourVisuals, getSiteCopy } from '@/lib/site-settings'
 
 export const metadata: Metadata = {
   title: 'Campus Tour',
@@ -9,6 +9,6 @@ export const metadata: Metadata = {
 }
 
 export default async function CampusTourPage() {
-  const visuals = await getCampusTourVisuals()
-  return <CampusTourView {...visuals} />
+  const [visuals, copy] = await Promise.all([getCampusTourVisuals(), getSiteCopy()])
+  return <CampusTourView {...visuals} copy={copy} />
 }

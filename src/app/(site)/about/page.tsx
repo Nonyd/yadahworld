@@ -1,7 +1,7 @@
 import AboutPageClient from '@/components/about/AboutPageClient'
-import { getSiteVisuals } from '@/lib/site-settings'
+import { getSiteCopy, getSiteVisuals } from '@/lib/site-settings'
 
 export default async function AboutPage() {
-  const v = await getSiteVisuals()
-  return <AboutPageClient aboutHero={v.aboutHero} aboutPortrait={v.aboutPortrait} />
+  const [v, copy] = await Promise.all([getSiteVisuals(), getSiteCopy()])
+  return <AboutPageClient aboutHero={v.aboutHero} aboutPortrait={v.aboutPortrait} copy={copy} />
 }

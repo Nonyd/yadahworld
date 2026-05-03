@@ -4,6 +4,7 @@ import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
+import { getCopyString, type SiteCopy } from '@/lib/site-copy'
 
 const DEFAULT_BIO =
   "Yadah Kukeurim Daniel is a Nigerian singer, songwriter, and minister of the gospel. Her music — rooted in God's love and grace — has accumulated over 100 million streams globally, touching hearts in every continent and leading souls into the presence of God."
@@ -11,11 +12,14 @@ const DEFAULT_BIO =
 export default function AboutSnippet({
   editorialImage,
   aboutBioShort,
+  copy,
 }: {
   editorialImage: string
   aboutBioShort?: string | null
+  copy: SiteCopy
 }) {
   const { ref, inView } = useInView({ threshold: 0.15, triggerOnce: true })
+  const h = (k: string) => getCopyString(copy, `home.${k}`)
 
   return (
     <section ref={ref} className="px-8 md:px-20 py-[clamp(6rem,12vw,14rem)]">
@@ -43,7 +47,7 @@ export default function AboutSnippet({
             transition={{ duration: 0.6 }}
             className="eyebrow mb-8"
           >
-            03 — The Artist
+            {h('aboutEyebrow')}
           </motion.p>
 
           <div style={{ overflow: 'hidden' }} className="mb-2">
@@ -53,7 +57,7 @@ export default function AboutSnippet({
               transition={{ delay: 0.1, duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="display-2 text-[var(--body)]"
             >
-              A Voice Sent
+              {h('aboutHeading1')}
             </motion.h2>
           </div>
           <div style={{ overflow: 'hidden' }} className="mb-10">
@@ -63,7 +67,7 @@ export default function AboutSnippet({
               transition={{ delay: 0.2, duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="display-2 font-playfair italic text-[var(--accent)]"
             >
-              From Heaven.
+              {h('aboutHeading2')}
             </motion.h2>
           </div>
 
@@ -83,9 +87,9 @@ export default function AboutSnippet({
             className="flex gap-10 mb-12 pb-10 border-b border-[var(--gold-light)]/20 flex-wrap"
           >
             {[
-              { n: '100M+', label: 'Streams' },
-              { n: '600K+', label: 'Followers' },
-              { n: '7+', label: 'Years of Ministry' },
+              { n: h('aboutStat1n'), label: h('aboutStat1l') },
+              { n: h('aboutStat2n'), label: h('aboutStat2l') },
+              { n: h('aboutStat3n'), label: h('aboutStat3l') },
             ].map(({ n, label }) => (
               <div key={label}>
                 <p className="font-playfair text-5xl font-normal text-[var(--accent)] leading-none mb-1">{n}</p>
@@ -97,7 +101,7 @@ export default function AboutSnippet({
           <motion.div initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.8 }}>
             <Link href="/about" className="btn-ghost">
               <span className="arrow-line" />
-              Read Her Story
+              {h('aboutReadStory')}
             </Link>
           </motion.div>
         </div>

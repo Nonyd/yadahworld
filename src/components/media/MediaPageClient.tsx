@@ -7,13 +7,17 @@ import 'yet-another-react-lightbox/styles.css'
 import type { PublicVideo } from '@/lib/site-content'
 import { extractYoutubeVideoId, youtubeWatchUrl } from '@/lib/youtube'
 import { usePublicVideoLightbox } from '@/components/media/usePublicVideoLightbox'
+import type { SiteCopy } from '@/lib/site-copy'
+import { getCopyString } from '@/lib/site-copy'
 
 export default function MediaPageClient({
   videos,
   galleryUrls,
+  copy,
 }: {
   videos: PublicVideo[]
   galleryUrls: string[]
+  copy: SiteCopy
 }) {
   const [tab, setTab] = useState<'videos' | 'photos'>('videos')
   const [open, setOpen] = useState(false)
@@ -21,12 +25,13 @@ export default function MediaPageClient({
   const { openAtVideoIndex, videoLightbox } = usePublicVideoLightbox(videos)
 
   const slides = useMemo(() => galleryUrls.map((src) => ({ src })), [galleryUrls])
+  const m = (k: string) => getCopyString(copy, `media.${k}`)
 
   return (
     <div className="min-h-screen pt-40 pb-24 px-8 md:px-20 bg-bg">
       <div className="max-w-screen-xl mx-auto">
-        <p className="eyebrow mb-4">Library</p>
-        <h1 className="display-2 text-body mb-12">Media</h1>
+        <p className="eyebrow mb-4">{m('eyebrow')}</p>
+        <h1 className="display-2 text-body mb-12">{m('title')}</h1>
 
         <div className="flex gap-8 border-b border-[rgba(42,37,32,0.1)] mb-12">
           <button
@@ -36,7 +41,7 @@ export default function MediaPageClient({
               tab === 'videos' ? 'text-accent border-b border-accent' : 'text-muted hover:text-body'
             }`}
           >
-            Videos
+            {m('tabVideos')}
           </button>
           <button
             type="button"
@@ -45,7 +50,7 @@ export default function MediaPageClient({
               tab === 'photos' ? 'text-accent border-b border-accent' : 'text-muted hover:text-body'
             }`}
           >
-            Photos
+            {m('tabPhotos')}
           </button>
         </div>
 
@@ -87,7 +92,7 @@ export default function MediaPageClient({
                         rel="noopener noreferrer"
                         className="mt-1 inline-block ui-label text-muted hover:text-accent"
                       >
-                        Watch on YouTube →
+                        {m('watchYoutube')}
                       </a>
                     </div>
                   </div>
@@ -126,6 +131,7 @@ export default function MediaPageClient({
           close={() => setOpen(false)}
           index={index}
           slides={slides}
+          controller={{ closeOnBackdropClick: true }}
           on={{ view: ({ index: i }) => setIndex(i) }}
         />
         {videoLightbox}

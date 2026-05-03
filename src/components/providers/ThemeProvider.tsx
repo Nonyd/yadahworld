@@ -1,6 +1,11 @@
 'use client'
 
-/** Site is light-only; no theme switching (next-themes removed). */
+import { ThemeProvider as NextThemesProvider } from 'next-themes'
+
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  return (
+    <NextThemesProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+      {children}
+    </NextThemesProvider>
+  )
 }

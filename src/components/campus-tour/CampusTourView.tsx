@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { CampusTourVisuals } from '@/lib/site-settings'
+import { getCopyString, type SiteCopy } from '@/lib/site-copy'
 
 function MarqueeStrip({ urls, reverse }: { urls: string[]; reverse?: boolean }) {
   if (!urls.length) return null
@@ -21,42 +22,49 @@ function MarqueeStrip({ urls, reverse }: { urls: string[]; reverse?: boolean }) 
   )
 }
 
-export default function CampusTourView({ portraitUrl, marqueeRow1, marqueeRow2 }: CampusTourVisuals) {
+export default function CampusTourView({
+  portraitUrl,
+  marqueeRow1,
+  marqueeRow2,
+  copy,
+}: CampusTourVisuals & { copy: SiteCopy }) {
+  const c = (k: string) => getCopyString(copy, `campusTour.${k}`)
+  const body1 = c('body1')
+  const [beforeRfy, afterRfy] = body1.includes('{{rfy}}')
+    ? body1.split('{{rfy}}')
+    : [body1, '']
+
   return (
     <>
       <div className="min-h-screen pt-40 pb-16 px-8 md:px-20" style={{ background: 'var(--bg)' }}>
         <div className="mx-auto grid max-w-screen-xl gap-12 md:grid-cols-2 md:items-center md:gap-16 lg:gap-20">
           <div className="order-2 md:order-1">
-            <p className="eyebrow mb-6">Ministry</p>
+            <p className="eyebrow mb-6">{c('eyebrow')}</p>
             <h1 className="display-2 text-[var(--body)] mb-10">
-              Campus
+              {c('headingLine1')}
               <br />
-              <em className="font-playfair italic text-[var(--accent)]">Tour.</em>
+              <em className="font-playfair italic text-[var(--accent)]">{c('headingLine2')}</em>
             </h1>
 
             <div className="max-w-xl space-y-6 body-sm text-[var(--muted)]">
               <p>
-                Campus Tour is a ministry expression — taking worship, the good news of Jesus, and the presence of God
-                into campuses and communities. It sits alongside other outreaches such as{' '}
+                {beforeRfy}
                 <a
                   href="https://rfyglobal.org"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="link-underline text-accent"
                 >
-                  Room For You
+                  {c('rfyLinkLabel')}
                 </a>
-                , pointing people to salvation, discipleship, and a life with Christ.
+                {afterRfy}
               </p>
-              <p>
-                Details for upcoming Campus Tour stops, cities, and how to host or partner are shared through official
-                channels. For ministry bookings and appearances, use the booking form — we will respond with next steps.
-              </p>
+              <p>{c('body2')}</p>
             </div>
 
             <div className="mt-14 flex flex-wrap gap-6">
               <Link href="/booking" className="btn-primary">
-                Book Yadah
+                {c('bookCta')}
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
                   <path
                     d="M1 7h12M7 1l6 6-6 6"
@@ -69,7 +77,7 @@ export default function CampusTourView({ portraitUrl, marqueeRow1, marqueeRow2 }
               </Link>
               <Link href="/contact" className="btn-ghost">
                 <span className="arrow-line" />
-                Contact
+                {c('contactCta')}
               </Link>
             </div>
           </div>

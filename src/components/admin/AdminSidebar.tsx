@@ -1,8 +1,10 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 const ADMIN_LINKS: { label: string; href: string; icon: React.ReactNode; badgeKey?: 'bookings' | 'messages' }[] = [
   {
     label: 'Overview',
@@ -95,11 +97,15 @@ export default function AdminSidebar({
   userLabel,
   pendingBookingsCount = 0,
   unreadMessagesCount = 0,
+  logoUrl,
+  siteName = 'Yadah',
 }: {
   onNavigate?: () => void
   userLabel?: string | null
   pendingBookingsCount?: number
   unreadMessagesCount?: number
+  logoUrl: string
+  siteName?: string
 }) {
   const path = usePathname()
 
@@ -112,12 +118,8 @@ export default function AdminSidebar({
   return (
     <aside className="flex h-full min-h-screen flex-col border-admin-border bg-admin-surface shadow-admin-sidebar lg:min-h-0 lg:border-r">
       <div className="border-b border-admin-border px-5 py-6">
-        <Link
-          href="/admin"
-          className="inline-block font-playfair text-2xl font-medium italic text-admin-text"
-          aria-label="Admin home"
-        >
-          Yadah
+        <Link href="/admin" className="inline-block" aria-label="Admin home">
+          <Image src={logoUrl} alt={siteName} width={220} height={52} className="h-10 w-auto" priority />
         </Link>
         <p className="mt-3 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-admin-muted">Studio</p>
       </div>
@@ -153,6 +155,10 @@ export default function AdminSidebar({
       </nav>
 
       <div className="mt-auto border-t border-admin-border p-4">
+        <div className="mb-3 flex items-center justify-between gap-2 px-1">
+          <span className="text-[0.65rem] font-medium uppercase tracking-[0.18em] text-admin-muted">Theme</span>
+          <ThemeToggle variant="admin" className="!min-w-0 shrink-0" />
+        </div>
         {userLabel && <p className="mb-3 truncate px-1 text-xs text-admin-muted">{userLabel}</p>}
         <button
           type="button"

@@ -2,15 +2,12 @@
 
 import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
+import { getCopyString, type SiteCopy } from '@/lib/site-copy'
 
-const MANTRA_LINES = [
-  '"I believe in the one and only true God.',
-  "I believe in Christ's cross and all",
-  'that it is to a believer."',
-]
-
-export default function MantraSection() {
+export default function MantraSection({ copy }: { copy: SiteCopy }) {
   const { ref, inView } = useInView({ threshold: 0.4, triggerOnce: true })
+  const h = (k: string) => getCopyString(copy, `home.${k}`)
+  const lines = [h('mantraLine1'), h('mantraLine2'), h('mantraLine3')]
 
   return (
     <section ref={ref} className="px-8 md:px-20 py-[clamp(6rem,12vw,14rem)] bg-[var(--bg)]">
@@ -21,10 +18,10 @@ export default function MantraSection() {
           transition={{ duration: 0.6 }}
           className="eyebrow mb-12"
         >
-          02 — Her Mantra
+          {h('mantraEyebrow')}
         </motion.p>
 
-        {MANTRA_LINES.map((line, i) => (
+        {lines.map((line, i) => (
           <div key={i} style={{ overflow: 'hidden' }}>
             <motion.p
               initial={{ y: '100%', opacity: 0 }}
@@ -47,7 +44,7 @@ export default function MantraSection() {
           transition={{ delay: 0.7, duration: 0.6 }}
           className="font-jost text-xs tracking-[0.2em] uppercase text-[var(--muted)] mt-8"
         >
-          — Yadah Kukeurim Daniel
+          {h('mantraAttribution')}
         </motion.p>
 
         <motion.div

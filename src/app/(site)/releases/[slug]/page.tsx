@@ -2,8 +2,9 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { getCopyString } from '@/lib/site-copy'
 import { getPublicReleases, getReleaseBySlug } from '@/lib/site-content'
-import { getPublicBranding } from '@/lib/site-settings'
+import { getPublicBranding, getSiteCopy } from '@/lib/site-settings'
 import { extractYoutubeVideoId } from '@/lib/youtube'
 
 type Props = { params: { slug: string } }
@@ -24,21 +25,22 @@ export default async function ReleaseDetailPage({ params }: Props) {
   const release = await getReleaseBySlug(params.slug)
   if (!release) notFound()
 
-  const all = await getPublicReleases()
+  const [all, copy] = await Promise.all([getPublicReleases(), getSiteCopy()])
   const more = all.filter((r) => r.slug !== release.slug).slice(0, 3)
+  const d = (k: string) => getCopyString(copy, `releaseDetail.${k}`)
+  const badgeNew = getCopyString(copy, 'releases.badgeNew')
 
   const typeUpper = release.type.toUpperCase()
   const musicVideoId = release.musicVideoYoutube ? extractYoutubeVideoId(release.musicVideoYoutube) : null
-  const bodyText =
-    release.description?.trim() || "This release is part of Yadah's discography."
+  const bodyText = release.description?.trim() || d('bodyFallback')
 
   return (
     <article className="min-h-screen bg-bg pb-28 pt-32 md:px-20 px-8">
       <div className="mx-auto max-w-screen-lg">
         <Link href="/releases" className="ui-label text-muted hover:text-accent transition-colors">
-          ← All releases
+          {d('backLink')}
         </Link>
-        <p className="eyebrow mb-2 mt-8">Discography</p>
+        <p className="eyebrow mb-2 mt-8">{d('eyebrow')}</p>
         <p className="ui-label mb-10 text-muted">
           {typeUpper} · {release.year}
         </p>
@@ -49,7 +51,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
               <Image src={release.cover} alt="" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 40vw" priority />
               {release.isNew && (
                 <span className="absolute left-4 top-4 bg-accent px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-ivory">
-                  New
+                  {badgeNew}
                 </span>
               )}
             </div>
@@ -61,7 +63,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
                   rel="noopener noreferrer"
                   className="inline-flex w-full max-w-sm items-center justify-center rounded-full bg-[#1DB954] px-5 py-3 font-jost text-[11px] font-medium uppercase tracking-[0.12em] text-white transition-opacity hover:opacity-95"
                 >
-                  Listen on Spotify →
+                  {d('listenSpotify')}
                 </a>
               )}
               {release.apple?.trim() && (
@@ -71,7 +73,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
                   rel="noopener noreferrer"
                   className="inline-flex w-full max-w-sm items-center justify-center rounded-full bg-black px-5 py-3 font-jost text-[11px] font-medium uppercase tracking-[0.12em] text-white transition-opacity hover:opacity-90"
                 >
-                  Apple Music →
+                  {d('listenApple')}
                 </a>
               )}
               {release.youtube?.trim() && (
@@ -81,7 +83,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
                   rel="noopener noreferrer"
                   className="inline-flex w-full max-w-sm items-center justify-center rounded-full bg-[#FF0000] px-5 py-3 font-jost text-[11px] font-medium uppercase tracking-[0.12em] text-white transition-opacity hover:opacity-95"
                 >
-                  Watch on YouTube →
+                  {d('listenYoutube')}
                 </a>
               )}
             </div>
@@ -103,7 +105,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
 
             {release.spotifyEmbed?.trim() && (
               <div className="mt-10 max-w-xl">
-                <h2 className="eyebrow mb-4">Listen on Spotify</h2>
+                <h2 className="eyebrow mb-4">{d('spotifyEmbedHeading')}</h2>
                 <div className="overflow-hidden rounded-lg border border-gold-light/20 bg-surface shadow-[0_4px_24px_rgba(13,11,8,0.06)]">
                   <iframe
                     title="Spotify player"
@@ -120,7 +122,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
 
             {musicVideoId && (
               <div className="mt-10 max-w-3xl">
-                <h2 className="eyebrow mb-4">Music video</h2>
+                <h2 className="eyebrow mb-4">{d('musicVideoHeading')}</h2>
                 <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-gold-light/20 bg-black shadow-[0_4px_24px_rgba(13,11,8,0.08)]">
                   <iframe
                     title="YouTube music video"
@@ -135,19 +137,19 @@ export default async function ReleaseDetailPage({ params }: Props) {
             )}
 
             <p className="body-sm mt-12 max-w-md text-muted">
-              Looking for a live experience?{' '}
+              {d('bookingTeaserBefore')}
               <Link href="/booking" className="link-underline text-accent">
-                Book Yadah
-              </Link>{' '}
-              for your event.
+                {d('bookingTeaserLink')}
+              </Link>
+              {d('bookingTeaserAfter')}
             </p>
           </div>
         </div>
 
         {more.length > 0 && (
           <section className="mt-24 border-t border-gold-light/20 pt-16">
-            <p className="eyebrow mb-6">Discography</p>
-            <h2 className="display-2 mb-12 text-body">More releases</h2>
+            <p className="eyebrow mb-6">{d('moreEyebrow')}</p>
+            <h2 className="display-2 mb-12 text-body">{d('moreTitle')}</h2>
             <ul className="grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-8 lg:grid-cols-3">
               {more.map((r) => (
                 <li key={r.slug}>
@@ -161,7 +163,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
                         sizes="(max-width: 768px) 50vw, 33vw"
                       />
                       {r.isNew && (
-                        <span className="absolute left-3 top-3 bg-accent px-2 py-1 text-[10px] text-ivory">New</span>
+                        <span className="absolute left-3 top-3 bg-accent px-2 py-1 text-[10px] text-ivory">{badgeNew}</span>
                       )}
                     </div>
                     <p className="font-playfair text-base text-body transition-colors group-hover:text-accent">{r.title}</p>

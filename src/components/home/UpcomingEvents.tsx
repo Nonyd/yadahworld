@@ -4,19 +4,21 @@ import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import type { PublicEvent } from '@/lib/site-content'
+import { getCopyString, type SiteCopy } from '@/lib/site-copy'
 
-export default function UpcomingEvents({ events }: { events: PublicEvent[] }) {
+export default function UpcomingEvents({ events, copy }: { events: PublicEvent[]; copy: SiteCopy }) {
   const { ref, inView } = useInView({ threshold: 0.15, triggerOnce: true })
+  const h = (k: string) => getCopyString(copy, `home.${k}`)
 
   return (
     <section id="events" ref={ref} className="px-8 md:px-20 py-[clamp(6rem,12vw,14rem)] border-t border-[var(--gold-light)]/15">
       <div className="max-w-screen-xl mx-auto">
         <div className="mb-14">
-          <p className="eyebrow mb-6">06 — On the Road</p>
+          <p className="eyebrow mb-6">{h('eventsEyebrow')}</p>
           <h2 className="display-2 text-[var(--body)] leading-tight">
-            Upcoming
+            {h('eventsHeading1')}
             <br />
-            <em className="font-playfair italic text-muted">Moments.</em>
+            <em className="font-playfair italic text-muted">{h('eventsHeading2')}</em>
           </h2>
         </div>
 
@@ -42,12 +44,12 @@ export default function UpcomingEvents({ events }: { events: PublicEvent[] }) {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 ui-label text-accent hover:text-accent-light transition-colors"
                 >
-                  Details
+                  {h('eventsDetails')}
                   <span aria-hidden>→</span>
                 </a>
               ) : (
                 <Link href={ev.href} className="inline-flex items-center gap-2 ui-label text-accent hover:text-accent-light transition-colors">
-                  Book / inquire
+                  {h('eventsBookInquire')}
                   <span aria-hidden>→</span>
                 </Link>
               )}
