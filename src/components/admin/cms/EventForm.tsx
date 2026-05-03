@@ -23,6 +23,7 @@ export default function EventForm({ mode, initial }: { mode: Mode; initial?: Sit
   const [title, setTitle] = useState(initial?.title ?? '')
   const [description, setDescription] = useState(initial?.description ?? '')
   const [date, setDate] = useState(initial ? toInputDate(initial.date) : '')
+  const [dateCaption, setDateCaption] = useState(initial?.dateCaption ?? '')
   const [location, setLocation] = useState(initial?.location ?? '')
   const [link, setLink] = useState(initial?.link ?? '')
   const [isActive, setIsActive] = useState(initial?.isActive ?? true)
@@ -37,6 +38,7 @@ export default function EventForm({ mode, initial }: { mode: Mode; initial?: Sit
       title,
       description: description || null,
       date,
+      dateCaption: dateCaption.trim() || null,
       location,
       link: link || null,
       isActive,
@@ -91,7 +93,16 @@ export default function EventForm({ mode, initial }: { mode: Mode; initial?: Sit
           <label className="admin-label">Date</label>
           <input type="date" className="admin-input" value={date} onChange={(e) => setDate(e.target.value)} required />
         </div>
-        <div>
+        <div className="sm:col-span-2">
+          <label className="admin-label">Date label override (optional)</label>
+          <input
+            className="admin-input"
+            value={dateCaption}
+            onChange={(e) => setDateCaption(e.target.value)}
+            placeholder="e.g. TBA, Coming soon — shown instead of the calendar date"
+          />
+        </div>
+        <div className="sm:col-span-2">
           <label className="admin-label">Location</label>
           <input className="admin-input" value={location} onChange={(e) => setLocation(e.target.value)} required />
         </div>

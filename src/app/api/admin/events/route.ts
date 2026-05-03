@@ -8,6 +8,7 @@ const createSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional().nullable(),
   date: z.string().min(1),
+  dateCaption: z.string().optional().nullable(),
   location: z.string().min(1),
   link: z.string().optional().nullable(),
   isActive: z.boolean().optional(),
@@ -52,11 +53,14 @@ export async function POST(req: NextRequest) {
   const linkTrim = d.link?.trim() || null
 
   try {
+    const cap = d.dateCaption?.trim() || null
+
     const row = await prisma.siteEvent.create({
       data: {
         title: d.title.trim(),
         description: d.description?.trim() || null,
         date,
+        dateCaption: cap,
         location: d.location.trim(),
         link: linkTrim,
         isActive: d.isActive ?? true,

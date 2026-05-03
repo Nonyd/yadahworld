@@ -143,6 +143,8 @@ model SiteEvent {
   title       String
   description String?
   date        DateTime
+  /// Shown on the public site instead of the formatted calendar date when set (e.g. TBA).
+  dateCaption String?
   location    String
   link        String?
   isActive    Boolean  @default(true)

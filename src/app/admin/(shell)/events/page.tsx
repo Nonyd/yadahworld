@@ -66,7 +66,9 @@ export default async function AdminEventsPage() {
           </table>
         </div>
         {events.length === 0 && (
-          <p className="px-6 py-12 text-center text-sm text-admin-muted">No events yet. The homepage uses built-in placeholders until you add one.</p>
+          <p className="px-6 py-12 text-center text-sm text-admin-muted">
+            No events yet. Run <code className="font-mono text-[11px] text-admin-text">npm run db:seed</code> after <code className="font-mono text-[11px] text-admin-text">npx prisma db push</code> to create starter events, or add one with New event.
+          </p>
         )}
       </div>
     </div>

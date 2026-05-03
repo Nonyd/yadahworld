@@ -62,7 +62,9 @@ export default async function AdminVideosPage() {
           </table>
         </div>
         {videos.length === 0 && (
-          <p className="px-6 py-12 text-center text-sm text-admin-muted">No videos yet. Add one or the site uses built-in placeholders.</p>
+          <p className="px-6 py-12 text-center text-sm text-admin-muted">
+            No videos yet. Run <code className="font-mono text-[11px] text-admin-text">npm run db:seed</code> after <code className="font-mono text-[11px] text-admin-text">npx prisma db push</code> for starter rows, or add a video with New video.
+          </p>
         )}
       </div>
     </div>

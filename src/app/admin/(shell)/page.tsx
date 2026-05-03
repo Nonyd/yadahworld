@@ -62,7 +62,12 @@ export default async function AdminOverview() {
           <ul className="mt-4 space-y-3 text-sm text-admin-muted">
             <li className="flex gap-2">
               <span className="text-admin-accent">·</span>
-              Add at least one release so the homepage reflects your catalogue.
+              If the database is new, run <code className="rounded bg-admin-bg px-1 font-mono text-[11px] text-admin-text">npm run db:seed</code> after{' '}
+              <code className="rounded bg-admin-bg px-1 font-mono text-[11px] text-admin-text">npx prisma db push</code> to load default releases, events, and videos into the admin and the live site.
+            </li>
+            <li className="flex gap-2">
+              <span className="text-admin-accent">·</span>
+              Add or edit releases under Releases; the homepage reads the same data as the public catalogue.
             </li>
             <li className="flex gap-2">
               <span className="text-admin-accent">·</span>

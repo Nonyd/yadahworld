@@ -17,7 +17,7 @@ export default async function AdminReleasesPage() {
     <div>
       <AdminPageHeader
         title="Releases"
-        description="These power the “Recent Releases” section on the homepage. If none exist, the site shows curated defaults."
+        description="These power the homepage grid and /releases. The live site reads from the database; run npm run db:seed after db push to import starter rows."
         actions={
           <Link href="/admin/releases/new" className="admin-btn admin-btn-primary">
             New release
@@ -81,7 +81,9 @@ export default async function AdminReleasesPage() {
           </table>
         </div>
         {releases.length === 0 && (
-          <p className="px-6 py-12 text-center text-sm text-admin-muted">No releases yet. Add one to replace homepage defaults.</p>
+          <p className="px-6 py-12 text-center text-sm text-admin-muted">
+            No releases yet. Run <code className="font-mono text-[11px] text-admin-text">npm run db:seed</code> after <code className="font-mono text-[11px] text-admin-text">npx prisma db push</code> to load the catalogue into the admin and site, or create one with New release.
+          </p>
         )}
       </div>
     </div>

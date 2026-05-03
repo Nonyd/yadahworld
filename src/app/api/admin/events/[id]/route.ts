@@ -8,6 +8,7 @@ const patchSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().optional().nullable(),
   date: z.string().min(1).optional(),
+  dateCaption: z.string().optional().nullable(),
   location: z.string().min(1).optional(),
   link: z.string().optional().nullable(),
   isActive: z.boolean().optional(),
@@ -33,6 +34,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const data: Record<string, unknown> = {}
   if (d.title !== undefined) data.title = d.title.trim()
   if (d.description !== undefined) data.description = d.description?.trim() || null
+  if (d.dateCaption !== undefined) data.dateCaption = d.dateCaption?.trim() || null
   if (d.location !== undefined) data.location = d.location.trim()
   if (d.link !== undefined) data.link = d.link?.trim() || null
   if (d.isActive !== undefined) data.isActive = d.isActive

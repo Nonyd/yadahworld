@@ -174,7 +174,6 @@ export async function getPublicReleases(): Promise<PublicRelease[]> {
     const rows = await prisma.siteRelease.findMany({
       orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
     })
-    if (rows.length === 0) return FALLBACK_RELEASES
     return rows.map(mapReleaseRow)
   } catch {
     return FALLBACK_RELEASES
@@ -185,10 +184,10 @@ export async function getReleaseBySlug(slug: string): Promise<PublicRelease | nu
   try {
     const row = await prisma.siteRelease.findUnique({ where: { slug } })
     if (row) return mapReleaseRow(row)
+    return null
   } catch {
-    /* offline DB — try static fallbacks */
+    return FALLBACK_RELEASES.find((r) => r.slug === slug) ?? null
   }
-  return FALLBACK_RELEASES.find((r) => r.slug === slug) ?? null
 }
 
 export async function getPublicEvents(): Promise<PublicEvent[]> {
@@ -197,14 +196,14 @@ export async function getPublicEvents(): Promise<PublicEvent[]> {
       where: { isActive: true },
       orderBy: { date: 'asc' },
     })
-    if (rows.length === 0) return FALLBACK_EVENTS
     return rows.map((e) => {
       const link = e.link?.trim() ?? ''
       const external = link.startsWith('http://') || link.startsWith('https://')
       const href = link || '/booking'
+      const cap = e.dateCaption?.trim()
       return {
         title: e.title,
-        dateLabel: formatEventDate(e.date),
+        dateLabel: cap || formatEventDate(e.date),
         location: e.location,
         href,
         external,
@@ -221,7 +220,6 @@ export async function getPublicVideos(): Promise<PublicVideo[]> {
       where: { isActive: true },
       orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
     })
-    if (rows.length === 0) return FALLBACK_VIDEOS
     return rows.map((v) => ({
       id: v.id,
       title: v.title,
