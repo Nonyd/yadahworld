@@ -12,11 +12,11 @@ export default async function AdminMediaPage() {
     <div>
       <AdminPageHeader
         title="Media"
-        description="Preview of images currently driving the public site. Hero, about, and other slots are edited under Settings. Videos are managed under Videos."
+        description="Live preview of gallery and key images. Edit URLs and uploads under Site settings (jump to Images or Gallery)."
       />
 
       <div className="mb-6 flex flex-wrap gap-2">
-        <Link href="/admin/settings" className="admin-btn admin-btn-secondary text-[10px]">
+        <Link href="/admin/settings#settings-images" className="admin-btn admin-btn-secondary text-[10px]">
           Site images & gallery
         </Link>
         <Link href="/admin/videos" className="admin-btn admin-btn-secondary text-[10px]">

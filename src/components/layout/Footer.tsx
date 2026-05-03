@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import YadahLogo from '@/components/branding/YadahLogo'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import { SocialIcon } from '@/components/ui/SocialIcons'
 
 const FOOTER_COLS = [
   {
@@ -72,22 +73,24 @@ export default function Footer({
           <div>
             <div className="flex flex-wrap items-center gap-4">
               <Link href="/" aria-label={`${siteName} home`}>
-                <YadahLogo alt={siteName} treatment="inDarkPill" height={36} />
+                <YadahLogo alt={siteName} treatment="inDarkPill" height={44} />
               </Link>
               <ThemeToggle className="shrink-0" />
             </div>
             <p className="body-sm mt-4 max-w-xs">{displayTagline}</p>
-            <div className="flex gap-4 mt-8 flex-wrap">
+            <div className="flex gap-3 mt-8 flex-wrap items-center">
               {socialList.map(({ label, href }) => (
                 <a
                   key={label}
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ui-label link-underline"
+                  className="group inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--body)_12%,transparent)] px-3 py-2 text-[11px] font-medium uppercase tracking-wider transition-colors hover:border-[color-mix(in_srgb,var(--accent)_45%,transparent)] hover:text-[var(--accent)]"
                   style={{ color: 'var(--muted)' }}
+                  aria-label={label}
                 >
-                  {label}
+                  <SocialIcon label={label} href={href} className="h-4 w-4 shrink-0 opacity-80 group-hover:opacity-100" />
+                  <span className="link-underline decoration-transparent group-hover:decoration-current">{label}</span>
                 </a>
               ))}
             </div>

@@ -28,7 +28,7 @@ export default function AdminAppShell({
           Menu
         </button>
         <Link href="/admin" className="flex shrink-0 justify-center" aria-label="Admin home">
-          <YadahLogo alt="Yadah" treatment="admin" height={22} />
+          <YadahLogo alt="Yadah" treatment="admin" height={34} />
         </Link>
         <ThemeToggle variant="admin" className="shrink-0" />
       </div>

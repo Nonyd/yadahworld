@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Lightbox from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
 import type { PublicVideo } from '@/lib/site-content'
+import { usePublicVideoLightbox } from '@/components/media/usePublicVideoLightbox'
 
 export default function MediaPageClient({
   videos,
@@ -17,6 +18,7 @@ export default function MediaPageClient({
   const [tab, setTab] = useState<'videos' | 'photos'>('videos')
   const [open, setOpen] = useState(false)
   const [index, setIndex] = useState(0)
+  const { openAtVideoIndex, videoLightbox } = usePublicVideoLightbox(videos)
 
   const slides = useMemo(() => galleryUrls.map((src) => ({ src })), [galleryUrls])
 
@@ -50,13 +52,13 @@ export default function MediaPageClient({
         {tab === 'videos' && (
           <div id="videos" className="space-y-12">
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {videos.map((v) => (
-                <Link
+              {videos.map((v, vi) => (
+                <button
                   key={v.id}
-                  href={v.youtubeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative group overflow-hidden aspect-video block manuscript-frame shadow-[0_4px_24px_rgba(13,11,8,0.08)] border border-[rgba(42,37,32,0.08)]"
+                  type="button"
+                  aria-label={`Play video: ${v.title}`}
+                  onClick={() => openAtVideoIndex(vi)}
+                  className="relative group overflow-hidden aspect-video block w-full cursor-pointer text-left manuscript-frame shadow-[0_4px_24px_rgba(13,11,8,0.08)] border border-[rgba(42,37,32,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 >
                   <Image
                     src={v.thumbnail}
@@ -76,7 +78,7 @@ export default function MediaPageClient({
                   <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-deep/90 to-transparent">
                     <p className="font-playfair text-xl text-ivory">{v.title}</p>
                   </div>
-                </Link>
+                </button>
               ))}
             </div>
             <div className="border border-[rgba(42,37,32,0.1)] p-6 md:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 bg-surface/40">
@@ -128,6 +130,7 @@ export default function MediaPageClient({
           slides={slides}
           on={{ view: ({ index: i }) => setIndex(i) }}
         />
+        {videoLightbox}
       </div>
     </div>
   )

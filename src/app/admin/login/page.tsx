@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
       </div>
       <div className="admin-card w-full max-w-md p-8 sm:p-10">
         <div className="flex justify-center">
-          <YadahLogo alt="Yadah" treatment="inDarkPill" height={40} />
+          <YadahLogo alt="Yadah" treatment="inDarkPill" height={48} />
         </div>
         <p className="mt-6 text-center text-[0.65rem] font-medium uppercase tracking-[0.22em] text-admin-muted">
           Studio sign in

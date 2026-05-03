@@ -5,9 +5,11 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { PublicVideo } from '@/lib/site-content'
+import { usePublicVideoLightbox } from '@/components/media/usePublicVideoLightbox'
 
 export default function VideosSection({ videos }: { videos: PublicVideo[] }) {
   const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true })
+  const { openAtVideoIndex, videoLightbox } = usePublicVideoLightbox(videos)
 
   return (
     <section ref={ref} className="px-8 md:px-20 py-[clamp(6rem,12vw,14rem)]">
@@ -29,16 +31,16 @@ export default function VideosSection({ videos }: { videos: PublicVideo[] }) {
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {videos.slice(0, 6).map((video, i) => (
-            <motion.a
+            <motion.button
               key={video.id}
-              href={video.youtubeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              type="button"
+              aria-label={`Play video: ${video.title}`}
+              onClick={() => openAtVideoIndex(i)}
               initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: i * 0.1, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
               whileHover={{ y: -4 }}
-              className="relative group overflow-hidden aspect-video block manuscript-frame shadow-[0_4px_24px_rgba(13,11,8,0.08)]"
+              className="relative group overflow-hidden aspect-video block w-full cursor-pointer text-left manuscript-frame shadow-[0_4px_24px_rgba(13,11,8,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <Image
                 src={video.thumbnail}
@@ -58,9 +60,10 @@ export default function VideosSection({ videos }: { videos: PublicVideo[] }) {
               <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-deep/90 to-transparent">
                 <p className="font-playfair text-xl text-ivory">{video.title}</p>
               </div>
-            </motion.a>
+            </motion.button>
           ))}
         </div>
+        {videoLightbox}
       </div>
     </section>
   )

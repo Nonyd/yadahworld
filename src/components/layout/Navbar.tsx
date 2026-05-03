@@ -47,7 +47,7 @@ export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
         `}
       >
         <Link href="/" className="relative z-10 flex shrink-0 items-center" aria-label={`${siteName} home`}>
-          <YadahLogo alt={siteName} treatment={onDarkHero ? 'onDarkHero' : 'inDarkPill'} height={28} priority />
+          <YadahLogo alt={siteName} treatment={onDarkHero ? 'onDarkHero' : 'inDarkPill'} height={38} priority />
         </Link>
 
         <nav className="hidden lg:flex flex-1 items-center justify-end gap-8 xl:gap-10">

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { getAdminJwt } from '@/lib/admin-auth'
 import { isCloudinaryUploadConfigured, uploadImageBuffer } from '@/lib/cloudinary-server'
 import { resolveImageMime } from '@/lib/upload-mime'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 const MAX_BYTES = 12 * 1024 * 1024
 const ALLOWED = new Set([
@@ -25,8 +25,10 @@ const FOLDERS: Record<string, string> = {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const token = await getAdminJwt(req)
+  if (!token?.email && !token?.sub) {
+    return NextResponse.json({ error: 'Unauthorized — sign in again, then retry the upload.' }, { status: 401 })
+  }
 
   if (!isCloudinaryUploadConfigured()) {
     return NextResponse.json(

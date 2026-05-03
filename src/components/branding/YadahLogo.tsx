@@ -1,40 +1,56 @@
-import Image from 'next/image'
-
-const LOGO_SRC = '/branding/yadah-logo.png'
-
 export type YadahLogoTreatment = 'onDarkHero' | 'inDarkPill' | 'admin'
 
-/** Asset is white-on-black. Hero: as-is. Light chrome: invert → black-on-white; dark theme: restore original. */
-const treatmentClass: Record<YadahLogoTreatment, string> = {
-  onDarkHero: '',
-  inDarkPill: 'invert dark:invert-0',
-  admin: 'invert dark:invert-0',
+const treatmentText: Record<YadahLogoTreatment, string> = {
+  onDarkHero: 'text-[var(--white)]',
+  inDarkPill: 'text-[var(--body)] dark:text-[var(--white)]',
+  admin: 'text-admin-text',
 }
 
+/**
+ * Vector wordmark — no bitmap, no white box. Color follows theme via `currentColor`.
+ */
 export default function YadahLogo({
   alt = 'Yadah',
   treatment,
   className = '',
-  height = 32,
-  priority = false,
+  height = 40,
+  priority: _priority,
 }: {
   alt?: string
   treatment: YadahLogoTreatment
   className?: string
-  /** CSS height in px for the image */
+  /** Approximate cap height in px */
   height?: number
+  /** Ignored — kept for call-site compatibility with the old Next/Image logo. */
   priority?: boolean
 }) {
+  void _priority
+  const w = Math.round(height * 3.2)
+
   return (
-    <Image
-      src={LOGO_SRC}
-      alt={alt}
-      width={320}
-      height={120}
-      unoptimized
-      className={`w-auto ${treatmentClass[treatment]} ${className}`.trim()}
+    <svg
+      role="img"
+      aria-label={alt}
+      width={w}
+      height={height}
+      viewBox="0 0 200 52"
+      className={`shrink-0 overflow-visible ${treatmentText[treatment]} ${className}`.trim()}
       style={{ height, width: 'auto' }}
-      priority={priority}
-    />
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <title>{alt}</title>
+      <text
+        x="0"
+        y="40"
+        fontFamily="var(--font-playfair), 'Playfair Display', Georgia, serif"
+        fontSize="44"
+        fontStyle="italic"
+        fontWeight="500"
+        letterSpacing="-0.02em"
+        fill="currentColor"
+      >
+        Yadah
+      </text>
+    </svg>
   )
 }
