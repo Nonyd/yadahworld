@@ -4,9 +4,8 @@ import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import { images } from '@/lib/imagePlaceholders'
 
-export default function AboutSnippet() {
+export default function AboutSnippet({ editorialImage }: { editorialImage: string }) {
   const { ref, inView } = useInView({ threshold: 0.15, triggerOnce: true })
 
   return (
@@ -19,7 +18,7 @@ export default function AboutSnippet() {
           className="manuscript-frame relative aspect-[3/4] overflow-hidden order-2 md:order-1"
         >
           <Image
-            src={images.editorial}
+            src={editorialImage}
             alt="Minister Yadah"
             fill
             className="object-cover object-top"

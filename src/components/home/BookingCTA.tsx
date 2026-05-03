@@ -3,9 +3,8 @@
 import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { images } from '@/lib/imagePlaceholders'
 
-export default function BookingCTA() {
+export default function BookingCTA({ worshipBg }: { worshipBg: string }) {
   const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true })
 
   return (
@@ -13,7 +12,7 @@ export default function BookingCTA() {
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: `url('${images.worshipBg}')`,
+          backgroundImage: `url('${worshipBg}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
@@ -66,7 +65,7 @@ export default function BookingCTA() {
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ delay: 0.6 }}
-          className="font-baskerville italic text-[rgba(253,250,245,0.45)] text-lg mt-8 mb-12"
+          className="font-jost font-light italic text-[rgba(253,250,245,0.45)] text-lg mt-8 mb-12"
         >
           Concert · Church Conference · Worship Night · Album Launch
         </motion.p>

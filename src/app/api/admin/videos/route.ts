@@ -2,30 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { uniqueReleaseSlug } from '@/lib/site-content'
-import { slugify } from '@/lib/slug'
 import { z } from 'zod'
 
 const createSchema = z.object({
   title: z.string().min(1),
-  slug: z.string().optional().nullable(),
-  description: z.string().optional().nullable(),
-  feat: z.string().optional().nullable(),
-  type: z.string().min(1),
-  year: z.string().min(1),
-  cover: z.string().min(1),
-  spotify: z.string().optional().nullable(),
-  apple: z.string().optional().nullable(),
-  youtube: z.string().optional().nullable(),
-  isNew: z.boolean().optional(),
+  youtubeUrl: z.string().min(1),
+  thumbnailUrl: z.string().optional().nullable(),
   order: z.number().int().optional(),
+  isActive: z.boolean().optional(),
 })
 
 export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
-    const items = await prisma.siteRelease.findMany({
+    const items = await prisma.siteVideo.findMany({
       orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
     })
     return NextResponse.json(items)
@@ -48,33 +39,20 @@ export async function POST(req: NextRequest) {
 
   const parsed = createSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Invalid data', details: parsed.error.flatten() }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid data' }, { status: 400 })
   }
 
   const d = parsed.data
-  const emptyToNull = (s: string | null | undefined) => {
-    const t = s?.trim()
-    return t ? t : null
-  }
-
-  const baseSlug = d.slug?.trim() ? slugify(d.slug) : slugify(d.title)
-  const slug = await uniqueReleaseSlug(baseSlug)
+  const thumb = d.thumbnailUrl?.trim() || null
 
   try {
-    const row = await prisma.siteRelease.create({
+    const row = await prisma.siteVideo.create({
       data: {
         title: d.title.trim(),
-        slug,
-        description: emptyToNull(d.description),
-        feat: emptyToNull(d.feat),
-        type: d.type.trim(),
-        year: d.year.trim(),
-        cover: d.cover.trim(),
-        spotify: emptyToNull(d.spotify),
-        apple: emptyToNull(d.apple),
-        youtube: emptyToNull(d.youtube),
-        isNew: d.isNew ?? false,
+        youtubeUrl: d.youtubeUrl.trim(),
+        thumbnailUrl: thumb,
         order: d.order ?? 0,
+        isActive: d.isActive ?? true,
       },
     })
     return NextResponse.json(row)

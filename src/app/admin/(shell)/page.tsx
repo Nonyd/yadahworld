@@ -7,6 +7,7 @@ export default async function AdminOverview() {
   let pendingBookings = 0
   let releases = 0
   let events = 0
+  let videos = 0
 
   const safeCount = async (fn: () => Promise<number>) => {
     try {
@@ -21,12 +22,14 @@ export default async function AdminOverview() {
   pendingBookings = await safeCount(() => prisma.bookingRequest.count({ where: { status: 'PENDING' } }))
   releases = await safeCount(() => prisma.siteRelease.count())
   events = await safeCount(() => prisma.siteEvent.count())
+  videos = await safeCount(() => prisma.siteVideo.count())
 
   const stats = [
     { label: 'Bookings', value: bookings, hint: `${pendingBookings} pending`, href: '/admin/bookings' },
     { label: 'Messages', value: messages, hint: 'Inbox', href: '/admin/messages' },
-    { label: 'Releases', value: releases, hint: 'Homepage music', href: '/admin/releases' },
+    { label: 'Releases', value: releases, hint: 'Discography pages', href: '/admin/releases' },
     { label: 'Events', value: events, hint: 'On the road', href: '/admin/events' },
+    { label: 'Videos', value: videos, hint: 'YouTube grid', href: '/admin/videos' },
   ]
 
   return (
@@ -36,7 +39,7 @@ export default async function AdminOverview() {
         <p className="mt-2 text-sm text-admin-muted">Welcome back. Here is a snapshot of your studio.</p>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
         {stats.map(({ label, value, hint, href }) => (
           <Link
             key={label}
@@ -80,8 +83,14 @@ export default async function AdminOverview() {
             <Link href="/admin/events/new" className="admin-btn admin-btn-secondary text-[10px]">
               New event
             </Link>
+            <Link href="/admin/videos/new" className="admin-btn admin-btn-secondary text-[10px]">
+              New video
+            </Link>
             <Link href="/admin/media" className="admin-btn admin-btn-secondary text-[10px]">
-              Media library
+              Media preview
+            </Link>
+            <Link href="/admin/settings" className="admin-btn admin-btn-secondary text-[10px]">
+              Settings
             </Link>
           </div>
         </div>

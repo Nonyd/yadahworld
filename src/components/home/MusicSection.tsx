@@ -6,6 +6,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { PublicRelease } from '@/lib/site-content'
 
+const MotionLink = motion(Link)
+
 export default function MusicSection({ releases }: { releases: PublicRelease[] }) {
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true })
 
@@ -20,22 +22,17 @@ export default function MusicSection({ releases }: { releases: PublicRelease[] }
             <em className="font-playfair italic">Releases.</em>
           </h2>
         </div>
-        <Link href="/media" className="btn-ghost hidden md:flex">
+        <Link href="/releases" className="btn-ghost hidden md:flex">
           <span className="arrow-line" />
           All Releases
         </Link>
       </div>
 
       <div className="max-w-screen-xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-        {releases.map((release, i) => {
-          const href = release.spotify ?? '/media'
-          const external = href.startsWith('http')
-          return (
-          <motion.a
-            key={`${release.title}-${release.year}`}
-            href={href}
-            target={external ? '_blank' : undefined}
-            rel={external ? 'noopener noreferrer' : undefined}
+        {releases.map((release, i) => (
+          <MotionLink
+            key={release.slug}
+            href={`/releases/${release.slug}`}
             initial={{ opacity: 0, y: 30 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: i * 0.1, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -46,7 +43,7 @@ export default function MusicSection({ releases }: { releases: PublicRelease[] }
             <div className="manuscript-frame relative aspect-square overflow-hidden mb-4">
               <Image
                 src={release.cover}
-                alt={release.title}
+                alt=""
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                 sizes="(max-width: 768px) 50vw, 25vw"
@@ -66,7 +63,7 @@ export default function MusicSection({ releases }: { releases: PublicRelease[] }
             >
               {release.title}
               {release.feat && (
-                <span className="font-baskerville italic text-sm" style={{ color: 'var(--muted)' }}>
+                <span className="font-jost italic text-sm font-light" style={{ color: 'var(--muted)' }}>
                   {' '}
                   {release.feat}
                 </span>
@@ -75,8 +72,8 @@ export default function MusicSection({ releases }: { releases: PublicRelease[] }
             <p className="ui-label" style={{ color: 'var(--muted)' }}>
               {release.type} · {release.year}
             </p>
-          </motion.a>
-        )})}
+          </MotionLink>
+        ))}
       </div>
     </section>
   )

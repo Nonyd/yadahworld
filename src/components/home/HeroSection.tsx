@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import Link from 'next/link'
-import { images } from '@/lib/imagePlaceholders'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -22,7 +21,7 @@ const CHAR_VARIANTS = {
   }),
 }
 
-export default function HeroSection() {
+export default function HeroSection({ heroImage }: { heroImage: string }) {
   const sectionRef = useRef<HTMLElement>(null)
   const imgRef = useRef<HTMLDivElement>(null)
   const textRef = useRef<HTMLDivElement>(null)
@@ -65,7 +64,7 @@ export default function HeroSection() {
         ref={imgRef}
         className="absolute inset-0 scale-[1.15]"
         style={{
-          backgroundImage: `url('${images.hero}')`,
+          backgroundImage: `url('${heroImage}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center 20%',
         }}
@@ -118,7 +117,7 @@ export default function HeroSection() {
             initial={{ y: '100%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.75, duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="font-baskerville italic text-[clamp(1rem,2.5vw,1.5rem)] text-[rgba(253,250,245,0.55)] max-w-xl mb-10"
+            className="font-jost font-light italic text-[clamp(1rem,2.5vw,1.5rem)] text-[rgba(253,250,245,0.55)] max-w-xl mb-10"
           >
             Gospel music minister · 100M+ streams · Abuja, Nigeria
           </motion.p>

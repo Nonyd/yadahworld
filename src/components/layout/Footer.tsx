@@ -6,6 +6,7 @@ const FOOTER_COLS = [
     links: [
       { label: 'Home', href: '/' },
       { label: 'Media', href: '/media' },
+      { label: 'Releases', href: '/releases' },
       { label: 'About', href: '/about' },
       { label: 'Contact', href: '/contact' },
       { label: 'Booking', href: '/booking' },
@@ -30,15 +31,35 @@ const FOOTER_COLS = [
   },
 ]
 
-const SOCIALS = [
-  { label: 'IG', href: 'https://instagram.com/ministersings' },
-  { label: 'YT', href: 'https://youtube.com/@yadah' },
-  { label: 'SP', href: 'https://open.spotify.com/artist/xxx' },
-  { label: 'FB', href: 'https://facebook.com/yadahsings' },
-  { label: 'X', href: 'https://x.com/ministeryadah' },
-]
+const DEFAULT_TAGLINE = 'The Voice of Jesus Christ to Nations. Gospel music minister based in Abuja, Nigeria.'
+const DEFAULT_CONTACT = 'yadahsings@gmail.com · +234 808 188 1365'
 
-export default function Footer() {
+export type FooterSocial = { label: string; href: string }
+
+export default function Footer({
+  siteName = 'Yadah',
+  tagline,
+  contactLine,
+  socials,
+}: {
+  siteName?: string
+  tagline?: string | null
+  contactLine?: string
+  socials?: FooterSocial[]
+}) {
+  const displayTagline = tagline?.trim() || DEFAULT_TAGLINE
+  const displayContact = contactLine?.trim() || DEFAULT_CONTACT
+  const socialList =
+    socials && socials.length > 0
+      ? socials
+      : [
+          { label: 'IG', href: 'https://instagram.com/ministersings' },
+          { label: 'YT', href: 'https://youtube.com/@yadah' },
+          { label: 'SP', href: 'https://open.spotify.com/artist/xxx' },
+          { label: 'FB', href: 'https://facebook.com/yadahsings' },
+          { label: 'X', href: 'https://x.com/ministeryadah' },
+        ]
+
   return (
     <footer
       className="border-t px-8 md:px-20 pt-20 pb-10"
@@ -49,14 +70,12 @@ export default function Footer() {
           <div>
             <Link href="/">
               <span className="font-playfair text-3xl italic" style={{ color: 'var(--body)' }}>
-                Yadah
+                {siteName}
               </span>
             </Link>
-            <p className="body-sm mt-4 max-w-xs">
-              The Voice of Jesus Christ to Nations. Gospel music minister based in Abuja, Nigeria.
-            </p>
+            <p className="body-sm mt-4 max-w-xs">{displayTagline}</p>
             <div className="flex gap-4 mt-8 flex-wrap">
-              {SOCIALS.map(({ label, href }) => (
+              {socialList.map(({ label, href }) => (
                 <a
                   key={label}
                   href={href}
@@ -104,7 +123,7 @@ export default function Footer() {
           style={{ borderColor: 'rgba(201,168,76,0.15)' }}
         >
           <p className="ui-label" style={{ color: 'var(--muted)' }}>
-            © {new Date().getFullYear()} Yadah. Powered & managed by{' '}
+            © {new Date().getFullYear()} {siteName}. Powered & managed by{' '}
             <a
               href="https://sonshubmedia.com"
               target="_blank"
@@ -116,7 +135,7 @@ export default function Footer() {
             </a>
           </p>
           <p className="ui-label" style={{ color: 'var(--muted)', opacity: 0.5 }}>
-            yadahsings@gmail.com · +234 808 188 1365
+            {displayContact}
           </p>
         </div>
       </div>

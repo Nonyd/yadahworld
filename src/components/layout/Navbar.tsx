@@ -7,6 +7,7 @@ import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'Media', href: '/media' },
+  { label: 'Releases', href: '/releases' },
   { label: 'About', href: '/about' },
   { label: 'Room For You', href: 'https://rfyglobal.org', external: true },
   { label: 'Contact', href: '/contact' },
@@ -14,7 +15,7 @@ const NAV_LINKS = [
   { label: 'Shop', href: '/shop' },
 ]
 
-export default function Navbar() {
+export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
   const [hidden, setHidden] = useState(false)
   const [atTop, setAtTop] = useState(true)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -46,7 +47,7 @@ export default function Navbar() {
             className="font-playfair text-xl font-normal italic tracking-wide"
             style={{ color: atTop ? 'var(--white)' : 'var(--body)' }}
           >
-            Yadah
+            {siteName}
           </span>
         </Link>
 

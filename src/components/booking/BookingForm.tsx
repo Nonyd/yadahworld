@@ -208,7 +208,7 @@ export default function BookingForm() {
                         {...register('whatExpected')}
                         className="w-4 h-4 accent-[var(--accent)] border border-[rgba(42,37,32,0.25)] cursor-pointer"
                       />
-                      <span className="font-baskerville text-sm text-[var(--muted)] group-hover:text-[var(--body)] transition-colors">
+                      <span className="font-jost text-sm text-[var(--muted)] group-hover:text-[var(--body)] transition-colors">
                         {opt}
                       </span>
                     </label>

@@ -78,19 +78,61 @@ model OrderItem {
   price     Int
 }
 
+model SiteSettings {
+  id        Int      @id @default(1)
+  updatedAt DateTime @updatedAt
+
+  siteName        String  @default("Yadah")
+  siteTagline     String?
+  metaDescription String?
+  metaTitleSuffix String? @default("| Yadah")
+
+  contactEmail String?
+  contactPhone String?
+  bookingEmail String?
+
+  socialInstagram String?
+  socialYoutube   String?
+  socialSpotify   String?
+  socialFacebook  String?
+  socialX         String?
+
+  imageHero          String?
+  imageEditorial     String?
+  imageAboutHero     String?
+  imageAboutPortrait String?
+  imageWorshipBg     String?
+
+  galleryImageUrls String[] @default([])
+}
+
+model SiteVideo {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  title        String
+  youtubeUrl   String
+  thumbnailUrl String?
+  order        Int      @default(0)
+  isActive     Boolean  @default(true)
+}
+
 model SiteRelease {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  title     String
-  feat      String?
-  type      String
-  year      String
-  cover     String
-  spotify   String?
-  apple     String?
-  youtube   String?
-  isNew     Boolean  @default(false)
-  order     Int      @default(0)
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  slug        String   @unique
+  description String?
+  feat        String?
+  type        String
+  year        String
+  cover       String
+  spotify     String?
+  apple       String?
+  youtube     String?
+  isNew       Boolean  @default(false)
+  order       Int      @default(0)
 }
 
 model SiteEvent {

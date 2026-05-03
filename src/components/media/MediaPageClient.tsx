@@ -5,27 +5,20 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Lightbox from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
-import { images } from '@/lib/imagePlaceholders'
+import type { PublicVideo } from '@/lib/site-content'
 
-const videos = [
-  {
-    title: 'Never Seen (Live)',
-    thumbnail: images.videoNeverSeen,
-    href: 'https://www.youtube.com/results?search_query=yadah+never+seen+live',
-  },
-  {
-    title: 'Na Your Hand',
-    thumbnail: images.videoNaYourHand,
-    href: 'https://www.youtube.com/results?search_query=yadah+na+your+hand',
-  },
-]
-
-export default function MediaPageClient() {
+export default function MediaPageClient({
+  videos,
+  galleryUrls,
+}: {
+  videos: PublicVideo[]
+  galleryUrls: string[]
+}) {
   const [tab, setTab] = useState<'videos' | 'photos'>('videos')
   const [open, setOpen] = useState(false)
   const [index, setIndex] = useState(0)
 
-  const slides = useMemo(() => images.gallery.map((src) => ({ src })), [])
+  const slides = useMemo(() => galleryUrls.map((src) => ({ src })), [galleryUrls])
 
   return (
     <div className="min-h-screen pt-40 pb-24 px-8 md:px-20 bg-bg">
@@ -56,21 +49,21 @@ export default function MediaPageClient() {
 
         {tab === 'videos' && (
           <div id="videos" className="space-y-12">
-            <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {videos.map((v) => (
                 <Link
-                  key={v.title}
-                  href={v.href}
+                  key={v.id}
+                  href={v.youtubeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="relative group overflow-hidden aspect-video block manuscript-frame shadow-[0_4px_24px_rgba(13,11,8,0.08)] border border-[rgba(42,37,32,0.08)]"
                 >
                   <Image
                     src={v.thumbnail}
-                    alt={v.title}
+                    alt=""
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
                   />
                   <div className="absolute inset-0 bg-deep/35 group-hover:bg-deep/20 transition-all duration-500" />
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -88,8 +81,8 @@ export default function MediaPageClient() {
             </div>
             <div className="border border-[rgba(42,37,32,0.1)] p-6 md:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 bg-surface/40">
               <p className="body-sm max-w-md">
-                Swap thumbnails and links for official YouTube uploads. Embed a Spotify follow widget here once you have the
-                correct artist URI from Spotify for Artists.
+                Videos are managed in the studio under <span className="text-body font-medium">Videos</span>. Photo strips come from{' '}
+                <span className="text-body font-medium">Settings → Photo gallery</span>.
               </p>
               <Link
                 href="https://open.spotify.com/search/yadah%20minister"
@@ -106,10 +99,10 @@ export default function MediaPageClient() {
 
         {tab === 'photos' && (
           <div className="columns-1 sm:columns-2 gap-4 space-y-4">
-            {images.gallery.map((src, i) => (
+            {galleryUrls.map((src, i) => (
               <button
                 type="button"
-                key={src}
+                key={`${src}-${i}`}
                 onClick={() => {
                   setIndex(i)
                   setOpen(true)

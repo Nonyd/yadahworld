@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Playfair_Display, Libre_Baskerville, Jost } from 'next/font/google'
+import { Playfair_Display, Jost } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
 import SessionProvider from '@/components/providers/SessionProvider'
 import './globals.css'
@@ -9,13 +9,6 @@ const playfair = Playfair_Display({
   weight: ['400', '500', '700', '900'],
   style: ['normal', 'italic'],
   variable: '--font-playfair',
-  display: 'swap',
-})
-const baskerville = Libre_Baskerville({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-baskerville',
   display: 'swap',
 })
 const jost = Jost({
@@ -38,7 +31,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${baskerville.variable} ${jost.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${jost.variable}`}>
       <body>
         <SessionProvider>{children}</SessionProvider>
         <Analytics />

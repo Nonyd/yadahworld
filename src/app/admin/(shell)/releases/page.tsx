@@ -32,6 +32,7 @@ export default async function AdminReleasesPage() {
               <tr className="border-b border-admin-border bg-black/[0.02] text-[10px] font-medium uppercase tracking-[0.14em] text-admin-muted">
                 <th className="px-4 py-3 font-medium sm:px-6">Cover</th>
                 <th className="px-4 py-3 font-medium sm:px-6">Title</th>
+                <th className="px-4 py-3 font-medium sm:px-6">Slug</th>
                 <th className="px-4 py-3 font-medium sm:px-6">Type</th>
                 <th className="px-4 py-3 font-medium sm:px-6">Year</th>
                 <th className="px-4 py-3 font-medium sm:px-6">Order</th>
@@ -52,6 +53,16 @@ export default async function AdminReleasesPage() {
                         New
                       </span>
                     )}
+                  </td>
+                  <td className="px-4 py-3 sm:px-6">
+                    <Link
+                      href={`/releases/${r.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono text-xs text-admin-accent underline hover:text-admin-text"
+                    >
+                      {r.slug}
+                    </Link>
                   </td>
                   <td className="px-4 py-3 text-admin-muted sm:px-6">{r.type}</td>
                   <td className="px-4 py-3 text-admin-muted sm:px-6">{r.year}</td>

@@ -29,7 +29,7 @@ export default function ContactPage() {
               ].map(({ label, value }) => (
                 <div key={label}>
                   <p className="eyebrow mb-1">{label}</p>
-                  <p className="font-baskerville text-[var(--body)]">{value}</p>
+                  <p className="font-jost text-[var(--body)]">{value}</p>
                 </div>
               ))}
             </div>
