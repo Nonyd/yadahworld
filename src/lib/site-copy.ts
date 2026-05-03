@@ -94,8 +94,8 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     streamMarqueeLines:
       'Beyond Me\n· 100M+ Streams ·\nOnye Nwere Jesus\n· God in All Seasons ·\nFathered By The Best\n· Never Seen ·\nFree of Charge\n· Na Your Hand ·',
     eventsEyebrow: '06 — On the Road',
-    eventsHeading1: 'Upcoming',
-    eventsHeading2: 'Moments.',
+    eventsHeading1: 'Ministry',
+    eventsHeading2: 'Expressions.',
     eventsDetails: 'Details',
     eventsBookInquire: 'Book / inquire',
     bookingEyebrow: '07 — Invite Yadah',

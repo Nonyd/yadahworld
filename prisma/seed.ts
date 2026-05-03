@@ -74,10 +74,19 @@ async function main() {
     })
   }
 
-  if (!(await prisma.siteEvent.findFirst({ where: { title: 'Room For You Global' } }))) {
+  await prisma.siteEvent.updateMany({
+    where: { title: 'Room For You Global' },
+    data: { title: 'Room For You' },
+  })
+  await prisma.siteEvent.updateMany({
+    where: { title: 'Worship Night with Yadah' },
+    data: { title: 'Campus Tour', link: '/campus-tour' },
+  })
+
+  if (!(await prisma.siteEvent.findFirst({ where: { title: 'Room For You' } }))) {
     await prisma.siteEvent.create({
       data: {
-        title: 'Room For You Global',
+        title: 'Room For You',
         description: null,
         date: new Date('2026-06-01T12:00:00.000Z'),
         dateCaption: 'TBA',
@@ -88,15 +97,15 @@ async function main() {
     })
   }
 
-  if (!(await prisma.siteEvent.findFirst({ where: { title: 'Worship Night with Yadah' } }))) {
+  if (!(await prisma.siteEvent.findFirst({ where: { title: 'Campus Tour' } }))) {
     await prisma.siteEvent.create({
       data: {
-        title: 'Worship Night with Yadah',
+        title: 'Campus Tour',
         description: null,
         date: new Date('2026-12-01T12:00:00.000Z'),
         dateCaption: 'Coming soon',
         location: 'Abuja, Nigeria',
-        link: '/booking',
+        link: '/campus-tour',
         isActive: true,
       },
     })

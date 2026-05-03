@@ -15,7 +15,7 @@ export default async function AdminEventsPage() {
     <div>
       <AdminPageHeader
         title="Events"
-        description="Upcoming moments on the homepage. Inactive rows are hidden from the public site."
+        description="Ministry Expressions on the homepage. Inactive rows are hidden from the public site."
         actions={
           <Link href="/admin/events/new" className="admin-btn admin-btn-primary">
             New event

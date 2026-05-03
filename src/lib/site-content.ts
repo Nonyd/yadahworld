@@ -99,17 +99,17 @@ const FALLBACK_RELEASES: PublicRelease[] = [
 
 const FALLBACK_EVENTS: PublicEvent[] = [
   {
-    title: 'Room For You Global',
+    title: 'Room For You',
     dateLabel: 'TBA',
     location: 'Multiple cities',
     href: 'https://rfyglobal.org',
     external: true,
   },
   {
-    title: 'Worship Night with Yadah',
+    title: 'Campus Tour',
     dateLabel: 'Coming soon',
     location: 'Abuja, Nigeria',
-    href: '/booking',
+    href: '/campus-tour',
     external: false,
   },
 ]
