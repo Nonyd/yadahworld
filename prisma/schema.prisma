@@ -172,6 +172,8 @@ model SiteRelease {
   apple              String?
   youtube            String?
   musicVideoYoutube  String?
+  /// Extra listen links: `[{ "label": "Audiomack", "url": "https://..." }, ...]`. Shown as buttons after Spotify/Apple/YouTube.
+  streamingLinks     Json?
   isNew              Boolean  @default(false)
   /// Display order on the homepage among releases with `showOnHomepage` (lower first).
   order              Int      @default(0)

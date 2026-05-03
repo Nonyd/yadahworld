@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { images } from '@/lib/imagePlaceholders'
 import { slugify } from '@/lib/slug'
+import { normalizeStreamingLinksJson, type StreamingLink } from '@/lib/streaming-links'
 import { youtubeThumbnailFromUrl } from '@/lib/youtube'
 
 export type PublicRelease = {
@@ -17,6 +18,7 @@ export type PublicRelease = {
   apple: string | null
   youtube: string | null
   musicVideoYoutube: string | null
+  streamingLinks: StreamingLink[]
   isNew: boolean
   description: string | null
 }
@@ -50,6 +52,7 @@ const FALLBACK_RELEASES: PublicRelease[] = [
     apple: null,
     youtube: null,
     musicVideoYoutube: null,
+    streamingLinks: [],
     isNew: true,
     description: null,
   },
@@ -66,6 +69,7 @@ const FALLBACK_RELEASES: PublicRelease[] = [
     apple: null,
     youtube: null,
     musicVideoYoutube: null,
+    streamingLinks: [],
     isNew: false,
     description: null,
   },
@@ -82,6 +86,7 @@ const FALLBACK_RELEASES: PublicRelease[] = [
     apple: null,
     youtube: null,
     musicVideoYoutube: null,
+    streamingLinks: [],
     isNew: false,
     description: null,
   },
@@ -98,6 +103,7 @@ const FALLBACK_RELEASES: PublicRelease[] = [
     apple: null,
     youtube: null,
     musicVideoYoutube: null,
+    streamingLinks: [],
     isNew: false,
     description: null,
   },
@@ -156,6 +162,7 @@ function mapReleaseRow(r: {
   apple: string | null
   youtube: string | null
   musicVideoYoutube: string | null
+  streamingLinks: unknown
   isNew: boolean
   description: string | null
 }): PublicRelease {
@@ -172,6 +179,7 @@ function mapReleaseRow(r: {
     apple: r.apple,
     youtube: r.youtube,
     musicVideoYoutube: r.musicVideoYoutube,
+    streamingLinks: normalizeStreamingLinksJson(r.streamingLinks),
     isNew: r.isNew,
     description: r.description,
   }

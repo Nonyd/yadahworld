@@ -5,6 +5,7 @@ import { useState } from 'react'
 import type { SiteRelease } from '@prisma/client'
 import { slugify } from '@/lib/slug'
 import { toDateInputValue } from '@/lib/release-date'
+import { normalizeStreamingLinksJson } from '@/lib/streaming-links'
 import AdminImageUpload from '@/components/admin/AdminImageUpload'
 
 type Mode = 'create' | 'edit'
@@ -23,6 +24,9 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
   const [apple, setApple] = useState(initial?.apple ?? '')
   const [youtube, setYoutube] = useState(initial?.youtube ?? '')
   const [musicVideoYoutube, setMusicVideoYoutube] = useState(initial?.musicVideoYoutube ?? '')
+  const [streamingLinks, setStreamingLinks] = useState<{ label: string; url: string }[]>(() =>
+    normalizeStreamingLinksJson(initial?.streamingLinks ?? undefined),
+  )
   const [isNew, setIsNew] = useState(initial?.isNew ?? false)
   const [releasedAt, setReleasedAt] = useState(toDateInputValue(initial?.releasedAt))
   const [showOnHomepage, setShowOnHomepage] = useState(initial?.showOnHomepage ?? false)
@@ -52,6 +56,9 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
       apple: apple || null,
       youtube: youtube || null,
       musicVideoYoutube: musicVideoYoutube.trim() || null,
+      streamingLinks: streamingLinks
+        .map(({ label, url }) => ({ label: label.trim(), url: url.trim() }))
+        .filter((l) => l.label && l.url),
       isNew,
       order: Number(order) || 0,
       releasedAt,
@@ -187,6 +194,60 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
             placeholder="https://www.youtube.com/watch?v=… for the official video embed on this page"
           />
         </div>
+
+        <div className="sm:col-span-2 space-y-3 border-t border-admin-border pt-6">
+          <div>
+            <label className="admin-label">More streaming links</label>
+            <p className="mt-1 text-xs text-admin-muted">
+              Add any platform (Audiomack, Boomplay, Deezer, etc.). <strong>Label</strong> is the button text (e.g.{' '}
+              <span className="font-mono">Listen on Audiomack</span> or <span className="font-mono">Audiomack</span>).{' '}
+              <strong>URL</strong> must start with <span className="font-mono">https://</span>.
+            </p>
+          </div>
+          {streamingLinks.map((row, i) => (
+            <div key={i} className="flex flex-col gap-2 rounded-md border border-admin-border/80 bg-black/[0.02] p-3 sm:flex-row sm:items-end">
+              <div className="min-w-0 flex-1">
+                <label className="admin-label text-[10px]">Button label</label>
+                <input
+                  className="admin-input"
+                  value={row.label}
+                  onChange={(e) => {
+                    const v = e.target.value
+                    setStreamingLinks((rows) => rows.map((r, j) => (j === i ? { ...r, label: v } : r)))
+                  }}
+                  placeholder="e.g. Audiomack"
+                />
+              </div>
+              <div className="min-w-0 flex-[2]">
+                <label className="admin-label text-[10px]">URL</label>
+                <input
+                  className="admin-input font-mono text-xs"
+                  value={row.url}
+                  onChange={(e) => {
+                    const v = e.target.value
+                    setStreamingLinks((rows) => rows.map((r, j) => (j === i ? { ...r, url: v } : r)))
+                  }}
+                  placeholder="https://..."
+                />
+              </div>
+              <button
+                type="button"
+                className="admin-btn admin-btn-ghost shrink-0 self-end text-[10px] sm:self-auto"
+                onClick={() => setStreamingLinks((rows) => rows.filter((_, j) => j !== i))}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary text-[10px]"
+            onClick={() => setStreamingLinks((rows) => [...rows, { label: '', url: '' }])}
+          >
+            Add streaming link
+          </button>
+        </div>
+
         <div className="sm:col-span-2 border-t border-admin-border pt-6">
           <label className="flex cursor-pointer items-center gap-3 text-sm text-admin-text">
             <input

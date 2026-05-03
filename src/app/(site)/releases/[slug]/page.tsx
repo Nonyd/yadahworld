@@ -90,6 +90,17 @@ export default async function ReleaseDetailPage({ params }: Props) {
                   {d('listenYoutube')}
                 </a>
               )}
+              {release.streamingLinks.map((link) => (
+                <a
+                  key={`${link.url}-${link.label}`}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full max-w-sm items-center justify-center rounded-full border border-gold-light/35 bg-transparent px-5 py-3 font-jost text-[11px] font-medium uppercase tracking-[0.12em] text-body transition-colors hover:border-accent hover:text-accent"
+                >
+                  {link.label}
+                </a>
+              ))}
             </div>
           </div>
 

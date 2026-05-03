@@ -7,7 +7,13 @@ import { slugify } from '@/lib/slug'
 import { parseReleasedAtInput } from '@/lib/release-date'
 import { parseSpotifyEmbedUrl } from '@/lib/spotify-embed'
 import { extractYoutubeVideoId } from '@/lib/youtube'
+import { normalizeStreamingLinksJson } from '@/lib/streaming-links'
 import { z } from 'zod'
+
+const streamingLinkInput = z.object({
+  label: z.string().min(1).max(120),
+  url: z.string().min(1).max(2000),
+})
 
 const createSchema = z.object({
   title: z.string().min(1),
@@ -26,6 +32,7 @@ const createSchema = z.object({
   order: z.number().int().optional(),
   releasedAt: z.string().optional().nullable(),
   showOnHomepage: z.boolean().optional(),
+  streamingLinks: z.array(streamingLinkInput).optional(),
 })
 
 export async function GET() {
@@ -70,6 +77,7 @@ export async function POST(req: NextRequest) {
 
   const releasedAt = parseReleasedAtInput(d.releasedAt, new Date())
   const showOnHomepage = d.showOnHomepage ?? false
+  const streamingLinks = normalizeStreamingLinksJson(d.streamingLinks ?? [])
 
   const baseSlug = d.slug?.trim() ? slugify(d.slug) : slugify(d.title)
   const slug = await uniqueReleaseSlug(baseSlug)
@@ -93,6 +101,7 @@ export async function POST(req: NextRequest) {
         order: d.order ?? 0,
         releasedAt,
         showOnHomepage,
+        streamingLinks,
       },
     })
     return NextResponse.json(row)
