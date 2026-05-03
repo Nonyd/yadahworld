@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminJwt } from '@/lib/admin-auth'
+import { resolveAdminUploadFolder } from '@/lib/admin-cloudinary-folders'
 import { isCloudinaryUploadConfigured, uploadImageBuffer } from '@/lib/cloudinary-server'
 import { resolveImageMime } from '@/lib/upload-mime'
 
@@ -8,7 +9,8 @@ export const dynamic = 'force-dynamic'
 /** Large hero images on slow connections */
 export const maxDuration = 120
 
-const MAX_BYTES = 12 * 1024 * 1024
+/** Keep small: hosts (e.g. Vercel) often reject bodies > ~4.5MB before this route runs. Prefer direct upload via `/api/admin/cloudinary-upload-params`. */
+const MAX_BYTES = 4 * 1024 * 1024
 const ALLOWED = new Set([
   'image/jpeg',
   'image/png',
@@ -18,14 +20,6 @@ const ALLOWED = new Set([
   'image/heif',
   'image/avif',
 ])
-
-const FOLDERS: Record<string, string> = {
-  releases: 'yadahworld/releases',
-  site: 'yadahworld/site',
-  videos: 'yadahworld/videos',
-  gallery: 'yadahworld/gallery',
-  products: 'yadahworld/products',
-}
 
 /** Whether signed-in admin can upload (server has Cloudinary API credentials). */
 export async function GET(req: NextRequest) {
@@ -61,7 +55,7 @@ export async function POST(req: NextRequest) {
 
   const file = formData.get('file')
   const folderKey = String(formData.get('folder') ?? '')
-  const folder = FOLDERS[folderKey]
+  const folder = resolveAdminUploadFolder(folderKey)
   if (!folder) {
     return NextResponse.json({ error: 'Invalid folder' }, { status: 400 })
   }
@@ -71,7 +65,13 @@ export async function POST(req: NextRequest) {
   }
 
   if (file.size > MAX_BYTES) {
-    return NextResponse.json({ error: 'File too large (max 12MB)' }, { status: 400 })
+    return NextResponse.json(
+      {
+        error:
+          'File too large for this upload path (max 4MB). The admin UI uses direct Cloudinary upload for larger files — refresh the page and try again.',
+      },
+      { status: 400 },
+    )
   }
 
   const mime = resolveImageMime(file)
