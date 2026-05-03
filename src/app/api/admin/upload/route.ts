@@ -5,6 +5,8 @@ import { resolveImageMime } from '@/lib/upload-mime'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+/** Large hero images on slow connections */
+export const maxDuration = 120
 
 const MAX_BYTES = 12 * 1024 * 1024
 const ALLOWED = new Set([
@@ -23,6 +25,18 @@ const FOLDERS: Record<string, string> = {
   videos: 'yadahworld/videos',
   gallery: 'yadahworld/gallery',
   products: 'yadahworld/products',
+}
+
+/** Whether signed-in admin can upload (server has Cloudinary API credentials). */
+export async function GET(req: NextRequest) {
+  const token = await getAdminJwt(req)
+  if (!token?.email && !token?.sub) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  const serverUploadReady = isCloudinaryUploadConfigured()
+  const publicCloudNameSet = Boolean(process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME?.trim())
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME?.trim() ?? ''
+  return NextResponse.json({ serverUploadReady, publicCloudNameSet, cloudName })
 }
 
 export async function POST(req: NextRequest) {

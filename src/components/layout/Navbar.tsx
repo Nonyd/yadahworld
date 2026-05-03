@@ -59,9 +59,9 @@ export default function Navbar({
             width={320}
             height={80}
             priority
-            className="h-[30px] w-auto md:h-10"
+            className="h-9 w-auto md:h-12"
             style={onDarkHero ? undefined : { filter: 'brightness(0)' }}
-            sizes="(max-width: 768px) 120px, 160px"
+            sizes="(max-width: 768px) 140px, 180px"
           />
         </Link>
 

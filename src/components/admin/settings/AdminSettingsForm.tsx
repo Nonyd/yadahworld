@@ -1,11 +1,11 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import type { SiteSettings } from '@prisma/client'
 import AdminImageUpload from '@/components/admin/AdminImageUpload'
 import { cloudinaryCloudName } from '@/lib/cloudinary'
-import { uploadAdminImage } from '@/lib/admin-upload-client'
+import { getAdminUploadStatus, uploadAdminImage, type AdminUploadStatus } from '@/lib/admin-upload-client'
 import { SocialIcon } from '@/components/ui/SocialIcons'
 
 const TABS = ['General', 'Contact', 'Social', 'Images', 'Gallery', 'Integrations'] as const
@@ -176,6 +176,12 @@ export default function AdminSettingsForm({
   const [msg, setMsg] = useState('')
   const [galleryBusy, setGalleryBusy] = useState(false)
   const [galleryErr, setGalleryErr] = useState('')
+  const [galleryProgress, setGalleryProgress] = useState<number | null>(null)
+  const [uploadStatus, setUploadStatus] = useState<AdminUploadStatus | null>(null)
+
+  useEffect(() => {
+    void getAdminUploadStatus().then(setUploadStatus)
+  }, [])
   const [testBusy, setTestBusy] = useState(false)
   const [testMsg, setTestMsg] = useState('')
 
@@ -196,11 +202,24 @@ export default function AdminSettingsForm({
     if (!files?.length) return
     setGalleryErr('')
     setGalleryBusy(true)
+    setGalleryProgress(0)
+    const fileArray = Array.from(files)
     try {
       const urls: string[] = []
-      for (const file of Array.from(files)) {
-        urls.push(await uploadAdminImage(file, 'gallery'))
+      for (let i = 0; i < fileArray.length; i++) {
+        const file = fileArray[i]
+        const url = await uploadAdminImage(file, 'gallery', (p) => {
+          if (p === null) {
+            setGalleryProgress(null)
+            return
+          }
+          const base = (i / fileArray.length) * 100
+          const slice = (1 / fileArray.length) * p
+          setGalleryProgress(Math.round(base + slice))
+        })
+        urls.push(url)
       }
+      setGalleryProgress(100)
       setForm((f) => ({
         ...f,
         galleryText: [f.galleryText.trim(), ...urls].filter(Boolean).join('\n'),
@@ -209,8 +228,11 @@ export default function AdminSettingsForm({
       setGalleryErr(e instanceof Error ? e.message : 'Upload failed')
     } finally {
       setGalleryBusy(false)
+      setGalleryProgress(null)
     }
   }
+
+  const galleryUploadReady = uploadStatus?.serverUploadReady === true
 
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -406,8 +428,10 @@ export default function AdminSettingsForm({
           <h2 className="font-playfair text-lg text-admin-text">Images</h2>
           <p className="text-sm text-admin-muted">
             Upload to Cloudinary or paste URLs. Leave blank to use built-in placeholders.{' '}
-            {cloudinaryCloudName ? (
-              <span className="font-mono text-[11px] text-admin-text">Cloud: {cloudinaryCloudName}</span>
+            {(uploadStatus?.cloudName?.trim() || cloudinaryCloudName) ? (
+              <span className="font-mono text-[11px] text-admin-text">
+                Cloud: {uploadStatus?.cloudName?.trim() || cloudinaryCloudName}
+              </span>
             ) : null}
           </p>
           <div className="space-y-8">
@@ -472,7 +496,7 @@ export default function AdminSettingsForm({
               accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,image/avif,.heic,.heif"
               multiple
               className="sr-only"
-              disabled={!cloudinaryCloudName || galleryBusy}
+              disabled={!galleryUploadReady || galleryBusy || uploadStatus === null}
               onChange={(e) => {
                 void appendGalleryFiles(e.target.files)
                 e.target.value = ''
@@ -481,11 +505,36 @@ export default function AdminSettingsForm({
             <label
               htmlFor={galleryFilesId}
               className={`admin-btn admin-btn-secondary inline-flex cursor-pointer text-[10px] ${
-                !cloudinaryCloudName || galleryBusy ? 'pointer-events-none opacity-50' : ''
+                !galleryUploadReady || galleryBusy || uploadStatus === null ? 'pointer-events-none opacity-50' : ''
               }`}
             >
-              {galleryBusy ? 'Uploading…' : 'Upload images to gallery'}
+              {uploadStatus === null ? 'Checking…' : galleryBusy ? 'Uploading…' : 'Upload images to gallery'}
             </label>
+            {galleryBusy ? (
+              <div
+                className="mt-3 h-1.5 w-full max-w-md overflow-hidden rounded-full bg-admin-border"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={galleryProgress === null ? undefined : galleryProgress ?? 0}
+              >
+                <div
+                  className={`h-full rounded-full bg-admin-accent transition-[width] duration-150 ease-out ${
+                    galleryProgress === null ? 'w-1/3 animate-pulse' : ''
+                  }`}
+                  style={
+                    galleryProgress !== null ? { width: `${Math.min(100, Math.max(0, galleryProgress))}%` } : undefined
+                  }
+                />
+              </div>
+            ) : null}
+            {uploadStatus && !galleryUploadReady ? (
+              <p className="mt-2 max-w-xl text-xs text-amber-800">
+                {uploadStatus.publicCloudNameSet
+                  ? 'Server is missing CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET — uploads are disabled until those are set on the server.'
+                  : 'Configure Cloudinary (public cloud name + API key + secret) to enable gallery uploads, or paste URLs in the field above.'}
+              </p>
+            ) : null}
             {galleryErr && <p className="mt-2 text-xs text-red-700">{galleryErr}</p>}
           </div>
           {galleryUrls.length > 0 && (

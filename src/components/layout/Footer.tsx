@@ -73,10 +73,10 @@ export default function Footer({
             <Image
               src={DEFAULT_SITE_LOGO_URL}
               alt={siteName}
-              width={280}
-              height={48}
-              className="h-12 w-auto"
-              sizes="140px"
+              width={300}
+              height={56}
+              className="h-14 w-auto"
+              sizes="160px"
             />
           </Link>
           <p
