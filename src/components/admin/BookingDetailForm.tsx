@@ -42,16 +42,10 @@ export default function BookingDetailForm({
   }
 
   return (
-    <form onSubmit={onSave} className="border-t pt-10 space-y-6" style={{ borderColor: 'rgba(201,168,76,0.2)' }}>
+    <form onSubmit={onSave} className="admin-card space-y-6 p-6 sm:p-8">
       <div>
-        <label className="ui-label mb-2 block" style={{ color: 'var(--muted)' }}>
-          Status
-        </label>
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value as BookingStatus)}
-          className="field-input border border-[rgba(42,37,32,0.15)] px-3 py-2"
-        >
+        <label className="admin-label">Status</label>
+        <select value={status} onChange={(e) => setStatus(e.target.value as BookingStatus)} className="admin-input">
           {STATUSES.map((s) => (
             <option key={s} value={s}>
               {s}
@@ -60,17 +54,11 @@ export default function BookingDetailForm({
         </select>
       </div>
       <div>
-        <label className="ui-label mb-2 block" style={{ color: 'var(--muted)' }}>
-          Admin notes
-        </label>
-        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="field-textarea" rows={4} />
+        <label className="admin-label">Admin notes</label>
+        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="admin-input min-h-[120px] resize-y" rows={4} />
       </div>
-      {msg && (
-        <p className="font-jost text-sm" style={{ color: 'var(--muted)' }}>
-          {msg}
-        </p>
-      )}
-      <button type="submit" disabled={saving} className="btn-primary">
+      {msg && <p className="text-sm text-admin-muted">{msg}</p>}
+      <button type="submit" disabled={saving} className="admin-btn admin-btn-primary">
         {saving ? 'Saving…' : 'Save changes'}
       </button>
     </form>

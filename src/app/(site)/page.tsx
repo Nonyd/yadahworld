@@ -6,19 +6,22 @@ import VideosSection from '@/components/home/VideosSection'
 import StreamMarquee from '@/components/home/StreamMarquee'
 import UpcomingEvents from '@/components/home/UpcomingEvents'
 import BookingCTA from '@/components/home/BookingCTA'
+import { getPublicEvents, getPublicReleases } from '@/lib/site-content'
 
-export default function Home() {
+export default async function Home() {
+  const [releases, events] = await Promise.all([getPublicReleases(), getPublicEvents()])
+
   return (
     <>
       <HeroSection />
       <MantraSection />
       <AboutSnippet />
       <div className="section-rule mx-16 md:mx-24" />
-      <MusicSection />
+      <MusicSection releases={releases} />
       <div className="section-rule mx-16 md:mx-24" />
       <VideosSection />
       <StreamMarquee />
-      <UpcomingEvents />
+      <UpcomingEvents events={events} />
       <BookingCTA />
     </>
   )

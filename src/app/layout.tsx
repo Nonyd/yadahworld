@@ -2,11 +2,6 @@ import type { Metadata } from 'next'
 import { Playfair_Display, Libre_Baskerville, Jost } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
 import SessionProvider from '@/components/providers/SessionProvider'
-import LenisProvider from '@/components/providers/LenisProvider'
-import Navbar from '@/components/layout/Navbar'
-import Footer from '@/components/layout/Footer'
-import CustomCursor from '@/components/ui/CustomCursor'
-import 'lenis/dist/lenis.css'
 import './globals.css'
 
 const playfair = Playfair_Display({
@@ -45,14 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${playfair.variable} ${baskerville.variable} ${jost.variable}`}>
       <body>
-        <SessionProvider>
-          <LenisProvider>
-            <CustomCursor />
-            <Navbar />
-            <main>{children}</main>
-            <Footer />
-          </LenisProvider>
-        </SessionProvider>
+        <SessionProvider>{children}</SessionProvider>
         <Analytics />
       </body>
     </html>

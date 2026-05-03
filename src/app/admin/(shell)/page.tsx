@@ -1,51 +1,90 @@
+import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 
 export default async function AdminOverview() {
   let bookings = 0
   let messages = 0
   let pendingBookings = 0
-  try {
-    ;[bookings, messages, pendingBookings] = await Promise.all([
-      prisma.bookingRequest.count(),
-      prisma.contactMessage.count(),
-      prisma.bookingRequest.count({ where: { status: 'PENDING' } }),
-    ])
-  } catch {
-    // DB unavailable — show zeros
+  let releases = 0
+  let events = 0
+
+  const safeCount = async (fn: () => Promise<number>) => {
+    try {
+      return await fn()
+    } catch {
+      return 0
+    }
   }
 
+  bookings = await safeCount(() => prisma.bookingRequest.count())
+  messages = await safeCount(() => prisma.contactMessage.count())
+  pendingBookings = await safeCount(() => prisma.bookingRequest.count({ where: { status: 'PENDING' } }))
+  releases = await safeCount(() => prisma.siteRelease.count())
+  events = await safeCount(() => prisma.siteEvent.count())
+
   const stats = [
-    { label: 'Total Bookings', value: bookings, note: `${pendingBookings} pending` },
-    { label: 'Messages', value: messages, note: 'Inbox' },
+    { label: 'Bookings', value: bookings, hint: `${pendingBookings} pending`, href: '/admin/bookings' },
+    { label: 'Messages', value: messages, hint: 'Inbox', href: '/admin/messages' },
+    { label: 'Releases', value: releases, hint: 'Homepage music', href: '/admin/releases' },
+    { label: 'Events', value: events, hint: 'On the road', href: '/admin/events' },
   ]
 
   return (
     <div>
-      <h1 className="font-playfair text-3xl font-normal mb-2" style={{ color: 'var(--body)' }}>
-        Overview
-      </h1>
-      <p className="ui-label mb-12" style={{ color: 'var(--muted)' }}>
-        Welcome back.
-      </p>
+      <header className="mb-10">
+        <h1 className="font-playfair text-3xl font-normal tracking-tight text-admin-text md:text-[2rem]">Overview</h1>
+        <p className="mt-2 text-sm text-admin-muted">Welcome back. Here is a snapshot of your studio.</p>
+      </header>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-        {stats.map(({ label, value, note }) => (
-          <div
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map(({ label, value, hint, href }) => (
+          <Link
             key={label}
-            className="p-6 border"
-            style={{ background: 'var(--bg)', borderColor: 'rgba(201,168,76,0.2)' }}
+            href={href}
+            className="admin-card group block p-6 transition-shadow hover:shadow-md"
           >
-            <p className="font-playfair text-4xl font-normal mb-1" style={{ color: 'var(--accent)' }}>
-              {value}
-            </p>
-            <p className="ui-label mb-1" style={{ color: 'var(--body)' }}>
-              {label}
-            </p>
-            <p className="ui-label" style={{ color: 'var(--muted)', opacity: 0.6 }}>
-              {note}
-            </p>
-          </div>
+            <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-admin-muted">{label}</p>
+            <p className="mt-3 font-playfair text-4xl font-normal text-admin-accent">{value}</p>
+            <p className="mt-2 text-xs text-admin-muted">{hint}</p>
+            <span className="mt-4 inline-flex items-center text-[10px] font-medium uppercase tracking-wider text-admin-accent opacity-0 transition-opacity group-hover:opacity-100">
+              Open →
+            </span>
+          </Link>
         ))}
+      </div>
+
+      <div className="mt-10 grid gap-4 lg:grid-cols-2">
+        <div className="admin-card p-6">
+          <h2 className="font-playfair text-lg text-admin-text">Content checklist</h2>
+          <ul className="mt-4 space-y-3 text-sm text-admin-muted">
+            <li className="flex gap-2">
+              <span className="text-admin-accent">·</span>
+              Add at least one release so the homepage reflects your catalogue.
+            </li>
+            <li className="flex gap-2">
+              <span className="text-admin-accent">·</span>
+              Keep events dated and toggled active when you want them live.
+            </li>
+            <li className="flex gap-2">
+              <span className="text-admin-accent">·</span>
+              Mark contact messages as read after you respond.
+            </li>
+          </ul>
+        </div>
+        <div className="admin-card p-6">
+          <h2 className="font-playfair text-lg text-admin-text">Shortcuts</h2>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link href="/admin/releases/new" className="admin-btn admin-btn-secondary text-[10px]">
+              New release
+            </Link>
+            <Link href="/admin/events/new" className="admin-btn admin-btn-secondary text-[10px]">
+              New event
+            </Link>
+            <Link href="/admin/media" className="admin-btn admin-btn-secondary text-[10px]">
+              Media library
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   )

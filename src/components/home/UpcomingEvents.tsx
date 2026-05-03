@@ -3,25 +3,9 @@
 import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import type { PublicEvent } from '@/lib/site-content'
 
-const events = [
-  {
-    title: 'Room For You Global',
-    date: 'TBA',
-    location: 'Multiple cities',
-    href: 'https://rfyglobal.org',
-    external: true,
-  },
-  {
-    title: 'Worship Night with Yadah',
-    date: 'Coming soon',
-    location: 'Abuja, Nigeria',
-    href: '/booking',
-    external: false,
-  },
-]
-
-export default function UpcomingEvents() {
+export default function UpcomingEvents({ events }: { events: PublicEvent[] }) {
   const { ref, inView } = useInView({ threshold: 0.15, triggerOnce: true })
 
   return (
@@ -39,7 +23,7 @@ export default function UpcomingEvents() {
         <ul className="divide-y divide-[rgba(42,37,32,0.08)] border border-[rgba(42,37,32,0.1)]">
           {events.map((ev, i) => (
             <motion.li
-              key={ev.title}
+              key={`${ev.title}-${ev.dateLabel}`}
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.1 + i * 0.1, duration: 0.6, ease: [0.77, 0, 0.175, 1] }}
@@ -48,7 +32,7 @@ export default function UpcomingEvents() {
               <div>
                 <p className="font-playfair text-2xl md:text-3xl text-[var(--body)]">{ev.title}</p>
                 <p className="font-jost text-sm tracking-wide text-[var(--muted)] mt-2">
-                  {ev.date} · {ev.location}
+                  {ev.dateLabel} · {ev.location}
                 </p>
               </div>
               {ev.external ? (

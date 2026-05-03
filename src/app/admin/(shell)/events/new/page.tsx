@@ -1,10 +1,11 @@
+import EventForm from '@/components/admin/cms/EventForm'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
+
 export default function NewEventPage() {
   return (
     <div>
-      <h1 className="font-playfair text-3xl mb-4" style={{ color: 'var(--body)' }}>
-        New event
-      </h1>
-      <p className="body-lg">Form placeholder — hook to Prisma create when ready.</p>
+      <AdminPageHeader title="New event" description="Use a full URL for external links, or a path like /booking for on-site actions." />
+      <EventForm mode="create" />
     </div>
   )
 }

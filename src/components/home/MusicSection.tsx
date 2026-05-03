@@ -4,48 +4,9 @@ import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import { images } from '@/lib/imagePlaceholders'
+import type { PublicRelease } from '@/lib/site-content'
 
-const RELEASES = [
-  {
-    title: 'Never Seen (Live)',
-    feat: 'ft. Sunmisola Agbebi',
-    type: 'Single',
-    year: '2024',
-    cover: images.releaseNeverSeen,
-    spotify: 'https://open.spotify.com/search/yadah%20never%20seen',
-    isNew: true,
-  },
-  {
-    title: 'Fathered By The Best',
-    feat: '',
-    type: 'Album',
-    year: '2023',
-    cover: images.releaseFathered,
-    spotify: 'https://open.spotify.com/search/yadah%20fathered',
-    isNew: false,
-  },
-  {
-    title: 'Onye Nwere Jesus',
-    feat: '',
-    type: 'Single',
-    year: '2023',
-    cover: images.releaseOnye,
-    spotify: 'https://open.spotify.com/search/yadah%20onye',
-    isNew: false,
-  },
-  {
-    title: 'Beyond Me',
-    feat: '',
-    type: 'Single',
-    year: '2022',
-    cover: images.releaseBeyond,
-    spotify: 'https://open.spotify.com/search/yadah%20beyond%20me',
-    isNew: false,
-  },
-]
-
-export default function MusicSection() {
+export default function MusicSection({ releases }: { releases: PublicRelease[] }) {
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true })
 
   return (
@@ -66,12 +27,15 @@ export default function MusicSection() {
       </div>
 
       <div className="max-w-screen-xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-        {RELEASES.map((release, i) => (
+        {releases.map((release, i) => {
+          const href = release.spotify ?? '/media'
+          const external = href.startsWith('http')
+          return (
           <motion.a
-            key={release.title}
-            href={release.spotify}
-            target="_blank"
-            rel="noopener noreferrer"
+            key={`${release.title}-${release.year}`}
+            href={href}
+            target={external ? '_blank' : undefined}
+            rel={external ? 'noopener noreferrer' : undefined}
             initial={{ opacity: 0, y: 30 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: i * 0.1, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -112,7 +76,7 @@ export default function MusicSection() {
               {release.type} · {release.year}
             </p>
           </motion.a>
-        ))}
+        )})}
       </div>
     </section>
   )
