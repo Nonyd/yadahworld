@@ -1,8 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
+import { Prisma } from '@prisma/client'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+
+function describeDbError(e: unknown): string {
+  if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    if (e.code === 'P2021') {
+      return 'The SiteVideo table is missing. From the project root run: npx prisma db push'
+    }
+    if (e.code === 'P2002') {
+      return 'A unique constraint failed. Check for duplicate data.'
+    }
+  }
+  if (e instanceof Prisma.PrismaClientInitializationError) {
+    return 'Database connection failed. Check DATABASE_URL and that the database is reachable.'
+  }
+  if (process.env.NODE_ENV === 'development' && e instanceof Prisma.PrismaClientKnownRequestError) {
+    return `Database error (${e.code}). Check the terminal where next dev is running for details.`
+  }
+  return 'Create failed'
+}
 
 const createSchema = z.object({
   title: z.string().min(1),
@@ -58,6 +77,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(row)
   } catch (e) {
     console.error(e)
-    return NextResponse.json({ error: 'Create failed' }, { status: 500 })
+    return NextResponse.json({ error: describeDbError(e) }, { status: 500 })
   }
 }
