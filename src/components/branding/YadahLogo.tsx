@@ -31,6 +31,7 @@ export default function YadahLogo({
       alt={alt}
       width={320}
       height={120}
+      unoptimized
       className={`w-auto ${treatmentClass[treatment]} ${className}`.trim()}
       style={{ height, width: 'auto' }}
       priority={priority}

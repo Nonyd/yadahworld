@@ -48,7 +48,7 @@ export default function AdminImageUpload({ label, value, onChange, folder, hint,
         <input
           id={`${inputId}-file`}
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
+          accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,image/avif,.heic,.heif"
           className="sr-only"
           disabled={!uploadsEnabled || busy}
           onChange={(e) => {

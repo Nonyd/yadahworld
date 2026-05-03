@@ -2,11 +2,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { isCloudinaryUploadConfigured, uploadImageBuffer } from '@/lib/cloudinary-server'
+import { resolveImageMime } from '@/lib/upload-mime'
 
 export const runtime = 'nodejs'
 
 const MAX_BYTES = 12 * 1024 * 1024
-const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+const ALLOWED = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/heic',
+  'image/heif',
+  'image/avif',
+])
 
 const FOLDERS: Record<string, string> = {
   releases: 'yadahworld/releases',
@@ -48,9 +57,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'File too large (max 12MB)' }, { status: 400 })
   }
 
-  const mime = file.type || 'application/octet-stream'
-  if (!ALLOWED.has(mime)) {
-    return NextResponse.json({ error: 'Only JPEG, PNG, WebP, and GIF images are allowed' }, { status: 400 })
+  const mime = resolveImageMime(file)
+  if (!mime || !ALLOWED.has(mime)) {
+    return NextResponse.json(
+      {
+        error:
+          'Unsupported or unknown image type. Use JPEG, PNG, WebP, GIF, HEIC, or AVIF. If Windows hid the file type, rename with a .jpg / .png extension and try again.',
+      },
+      { status: 400 },
+    )
   }
 
   try {

@@ -9,10 +9,10 @@ export default async function AdminSettingsPage() {
   return (
     <div>
       <AdminPageHeader
-        title="Settings"
-        description="Site identity, contact details, social links, and front-page imagery. Changes apply on save; the public site reads from the database."
+        title="All settings"
+        description="Full editor for every site field. For a focused layout, use Pages in the sidebar (Home, Media, About, Contact). Changes apply on save."
       />
-      <AdminSettingsForm initial={initial} />
+      <AdminSettingsForm initial={initial} variant="full" />
       <AdminEnvPanel />
     </div>
   )
