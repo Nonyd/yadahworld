@@ -198,7 +198,7 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
             Show on homepage (music section)
           </label>
           <p className="mt-2 text-xs text-admin-muted pl-7">
-            Only checked releases appear on the home page. Order below applies among those picks only.
+            Checked releases are candidates for the home music grid. Only the first four are shown, sorted by homepage order (then release date — newer first when order matches).
           </p>
         </div>
         <div>
@@ -209,7 +209,7 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
             value={order}
             onChange={(e) => setOrder(Number(e.target.value))}
           />
-          <p className="mt-1 text-xs text-admin-muted">Lower numbers first (only when “Show on homepage” is on).</p>
+          <p className="mt-1 text-xs text-admin-muted">Lower numbers first among homepage picks (ties broken by newer release date).</p>
         </div>
         <div className="flex items-end">
           <label className="flex cursor-pointer items-center gap-3 text-sm text-admin-text">

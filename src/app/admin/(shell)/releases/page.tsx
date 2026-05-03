@@ -17,7 +17,7 @@ export default async function AdminReleasesPage() {
     <div>
       <AdminPageHeader
         title="Releases"
-        description="Release date sets catalog order on /releases (newest first). Check “Show on homepage” for the home music grid; homepage order uses the numeric order field among those picks only."
+        description="Release date sets catalog order on /releases (newest first). Check “Show on homepage” for the home music grid (first 4 by homepage order only); lower order numbers appear first."
         actions={
           <Link href="/admin/releases/new" className="admin-btn admin-btn-primary">
             New release

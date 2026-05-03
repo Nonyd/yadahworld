@@ -180,12 +180,13 @@ export async function getPublicReleases(): Promise<PublicRelease[]> {
   }
 }
 
-/** Homepage music grid — only releases flagged by admin; `order` is ascending within that set. */
+/** Homepage music grid — up to 4 releases flagged by admin; `order` ascending, then `releasedAt`. */
 export async function getHomepageReleases(): Promise<PublicRelease[]> {
   try {
     const rows = await prisma.siteRelease.findMany({
       where: { showOnHomepage: true },
       orderBy: [{ order: 'asc' }, { releasedAt: 'desc' }],
+      take: 4,
     })
     return rows.map(mapReleaseRow)
   } catch {
