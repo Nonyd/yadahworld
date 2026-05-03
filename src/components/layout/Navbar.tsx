@@ -17,7 +17,7 @@ const NAV_LINKS: NavLink[] = [
   { label: 'Media', href: '/media' },
   { label: 'About', href: '/about' },
   { label: 'Room For You', href: 'https://rfyglobal.org', external: true },
-  { label: 'Campus Tour', href: '/campus-tour' },
+  { label: 'Releases', href: '/releases' },
   { label: 'Contact', href: '/contact' },
   { label: 'Booking', href: '/booking' },
   { label: 'Shop', href: '/shop' },
