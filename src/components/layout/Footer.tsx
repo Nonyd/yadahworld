@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import YadahLogo from '@/components/branding/YadahLogo'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 const FOOTER_COLS = [
   {
@@ -68,11 +70,12 @@ export default function Footer({
       <div className="max-w-screen-xl mx-auto">
         <div className="grid md:grid-cols-[4fr_2fr_2fr_2fr] gap-12 md:gap-16 mb-16">
           <div>
-            <Link href="/">
-              <span className="font-playfair text-3xl italic" style={{ color: 'var(--body)' }}>
-                {siteName}
-              </span>
-            </Link>
+            <div className="flex flex-wrap items-center gap-4">
+              <Link href="/" aria-label={`${siteName} home`}>
+                <YadahLogo alt={siteName} treatment="inDarkPill" height={36} />
+              </Link>
+              <ThemeToggle className="shrink-0" />
+            </div>
             <p className="body-sm mt-4 max-w-xs">{displayTagline}</p>
             <div className="flex gap-4 mt-8 flex-wrap">
               {socialList.map(({ label, href }) => (

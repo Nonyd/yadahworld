@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import YadahLogo from '@/components/branding/YadahLogo'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -30,10 +32,17 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="admin-app min-h-screen flex items-center justify-center px-4 py-16">
+    <div className="admin-app relative min-h-screen flex items-center justify-center px-4 py-16">
+      <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+        <ThemeToggle variant="admin" />
+      </div>
       <div className="admin-card w-full max-w-md p-8 sm:p-10">
-        <p className="font-playfair text-2xl font-normal italic text-admin-text">Yadah</p>
-        <p className="mt-1 text-[0.65rem] font-medium uppercase tracking-[0.22em] text-admin-muted">Studio sign in</p>
+        <div className="flex justify-center">
+          <YadahLogo alt="Yadah" treatment="inDarkPill" height={40} />
+        </div>
+        <p className="mt-6 text-center text-[0.65rem] font-medium uppercase tracking-[0.22em] text-admin-muted">
+          Studio sign in
+        </p>
 
         <form onSubmit={onSubmit} className="mt-10 flex flex-col gap-6">
           <div>

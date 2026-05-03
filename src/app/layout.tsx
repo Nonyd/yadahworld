@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Playfair_Display, Jost } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
 import SessionProvider from '@/components/providers/SessionProvider'
+import ThemeProvider from '@/components/providers/ThemeProvider'
 import './globals.css'
 
 const playfair = Playfair_Display({
@@ -31,9 +32,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${jost.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${jost.variable}`} suppressHydrationWarning>
       <body>
-        <SessionProvider>{children}</SessionProvider>
+        <ThemeProvider>
+          <SessionProvider>{children}</SessionProvider>
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>

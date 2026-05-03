@@ -14,8 +14,37 @@
   --gold-light: #c9a84c;
   --white: #fdfaf5;
 
+  --admin-app-bg: #f4f2ef;
+  --admin-app-surface: #ffffff;
+  --admin-app-text: #1c1917;
+  --admin-app-muted: #78716c;
+  --admin-app-border: rgba(13, 11, 8, 0.08);
+  --admin-app-accent: #6b2737;
+  --admin-app-input-bg: #ffffff;
+
   --ease-out-quint: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-reveal: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.dark {
+  --bg: #12100e;
+  --surface: #1c1a17;
+  --deep: #0d0b08;
+  --body: #e8e2d9;
+  --muted: #a39a8e;
+  --accent: #c98391;
+  --accent-light: #dfa5b0;
+  --gold: #dfc06a;
+  --gold-light: #e6d08a;
+  --white: #fdfaf5;
+
+  --admin-app-bg: #12100e;
+  --admin-app-surface: #1c1a17;
+  --admin-app-text: #f5f2ec;
+  --admin-app-muted: #a8a29e;
+  --admin-app-border: rgba(255, 255, 255, 0.09);
+  --admin-app-accent: #c98391;
+  --admin-app-input-bg: #262320;
 }
 
 * {
@@ -327,36 +356,48 @@ html.lenis {
 /* —— Admin (minimal dashboard) —— */
 .admin-app {
   --admin-ring: rgba(107, 39, 55, 0.25);
-  background-color: #f4f2ef;
-  color: #1c1917;
+  background-color: var(--admin-app-bg);
+  color: var(--admin-app-text);
   font-family: var(--font-jost), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
+.dark .admin-app {
+  --admin-ring: rgba(201, 131, 145, 0.35);
+}
+
 .admin-app ::selection {
   background: rgba(107, 39, 55, 0.2);
-  color: #1c1917;
+  color: var(--admin-app-text);
+}
+
+.dark .admin-app ::selection {
+  background: rgba(201, 131, 145, 0.25);
 }
 
 .admin-input {
   width: 100%;
   border-radius: 0.5rem;
-  border: 1px solid rgba(13, 11, 8, 0.1);
-  background: #fff;
+  border: 1px solid var(--admin-app-border);
+  background: var(--admin-app-input-bg);
   padding: 0.625rem 0.875rem;
   font-size: 0.875rem;
-  color: #1c1917;
+  color: var(--admin-app-text);
   outline: none;
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
 }
 .admin-input::placeholder {
-  color: #a8a29e;
+  color: var(--admin-app-muted);
 }
 .admin-input:focus {
   border-color: rgba(107, 39, 55, 0.35);
   box-shadow: 0 0 0 3px var(--admin-ring);
+}
+
+.dark .admin-input:focus {
+  border-color: rgba(201, 131, 145, 0.45);
 }
 
 .admin-label {
@@ -365,7 +406,7 @@ html.lenis {
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #78716c;
+  color: var(--admin-app-muted);
   margin-bottom: 0.375rem;
 }
 
@@ -392,37 +433,46 @@ html.lenis {
   cursor: not-allowed;
 }
 .admin-btn-primary {
-  background: #6b2737;
+  background: var(--admin-app-accent);
   color: #fafaf9;
 }
 .admin-btn-primary:hover:not(:disabled) {
-  background: #521f2c;
+  filter: brightness(0.92);
 }
 .admin-btn-secondary {
-  background: #fff;
-  color: #44403c;
-  border: 1px solid rgba(13, 11, 8, 0.1);
+  background: var(--admin-app-surface);
+  color: var(--admin-app-text);
+  border: 1px solid var(--admin-app-border);
 }
 .admin-btn-secondary:hover:not(:disabled) {
-  border-color: rgba(13, 11, 8, 0.18);
-  background: #fafaf9;
+  filter: brightness(0.97);
 }
 .admin-btn-ghost {
   background: transparent;
-  color: #78716c;
+  color: var(--admin-app-muted);
   padding: 0.5rem 0.75rem;
   letter-spacing: 0.08em;
 }
 .admin-btn-ghost:hover:not(:disabled) {
-  color: #6b2737;
+  color: var(--admin-app-accent);
   background: rgba(107, 39, 55, 0.06);
 }
 
+.dark .admin-btn-ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
 .admin-card {
-  background: #ffffff;
-  border: 1px solid rgba(13, 11, 8, 0.08);
+  background: var(--admin-app-surface);
+  border: 1px solid var(--admin-app-border);
   border-radius: 0.75rem;
   box-shadow:
     0 1px 2px rgba(13, 11, 8, 0.04),
     0 4px 24px rgba(13, 11, 8, 0.06);
+}
+
+.dark .admin-card {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 4px 24px rgba(0, 0, 0, 0.35);
 }

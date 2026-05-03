@@ -1,7 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import AdminSidebar from '@/components/admin/AdminSidebar'
+import YadahLogo from '@/components/branding/YadahLogo'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 export default function AdminAppShell({
   children,
@@ -14,7 +17,7 @@ export default function AdminAppShell({
 
   return (
     <div className="admin-app min-h-screen">
-      <div className="lg:hidden sticky top-0 z-40 flex items-center justify-between gap-4 border-b border-admin-border bg-admin-surface/95 px-4 py-3 backdrop-blur-md shadow-sm">
+      <div className="lg:hidden sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-admin-border bg-admin-surface/95 px-4 py-3 backdrop-blur-md shadow-sm">
         <button
           type="button"
           className="admin-btn admin-btn-secondary px-3 py-2 text-[10px]"
@@ -24,8 +27,10 @@ export default function AdminAppShell({
         >
           Menu
         </button>
-        <span className="font-playfair text-lg italic text-admin-text">Yadah</span>
-        <span className="w-14" aria-hidden />
+        <Link href="/admin" className="flex shrink-0 justify-center" aria-label="Admin home">
+          <YadahLogo alt="Yadah" treatment="admin" height={22} />
+        </Link>
+        <ThemeToggle variant="admin" className="shrink-0" />
       </div>
 
       {mobileOpen && (

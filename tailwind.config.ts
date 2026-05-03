@@ -1,26 +1,27 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: 'class',
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
     extend: {
       colors: {
-        bg: '#F7F3EC',
-        surface: '#EDE8DF',
-        deep: '#0D0B08',
-        body: '#2A2520',
-        muted: '#8A7F72',
-        accent: '#6B2737',
-        'accent-light': '#A03848',
-        gold: '#8B6914',
-        'gold-light': '#C9A84C',
-        ivory: '#FDFAF5',
-        'admin-bg': '#f4f2ef',
-        'admin-surface': '#ffffff',
-        'admin-border': 'rgba(13, 11, 8, 0.08)',
-        'admin-muted': '#6f6a64',
-        'admin-text': '#1c1917',
-        'admin-accent': '#6b2737',
+        bg: 'var(--bg)',
+        surface: 'var(--surface)',
+        deep: 'var(--deep)',
+        body: 'var(--body)',
+        muted: 'var(--muted)',
+        accent: 'var(--accent)',
+        'accent-light': 'var(--accent-light)',
+        gold: 'var(--gold)',
+        'gold-light': 'var(--gold-light)',
+        ivory: 'var(--white)',
+        'admin-bg': 'var(--admin-app-bg)',
+        'admin-surface': 'var(--admin-app-surface)',
+        'admin-border': 'var(--admin-app-border)',
+        'admin-muted': 'var(--admin-app-muted)',
+        'admin-text': 'var(--admin-app-text)',
+        'admin-accent': 'var(--admin-app-accent)',
       },
       boxShadow: {
         'admin-card': '0 1px 2px rgba(13, 11, 8, 0.04), 0 4px 24px rgba(13, 11, 8, 0.06)',

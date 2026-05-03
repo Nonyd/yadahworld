@@ -3,6 +3,8 @@
 import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
+import YadahLogo from '@/components/branding/YadahLogo'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -36,22 +38,21 @@ export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
         transition={{ duration: 0.5, ease: [0.77, 0, 0.175, 1] }}
         className={`
           fixed top-0 left-0 right-0 z-50
-          flex items-center justify-between
+          flex items-center justify-between gap-4
           px-8 md:px-16 py-6
           transition-all duration-700
-          ${!atTop ? 'bg-[#F7F3EC]/90 backdrop-blur-md border-b border-[#C9A84C]/15' : 'bg-transparent'}
+          ${
+            !atTop
+              ? 'border-b border-gold-light/15 bg-[color-mix(in_srgb,var(--bg)_92%,transparent)] backdrop-blur-md'
+              : 'bg-transparent'
+          }
         `}
       >
-        <Link href="/" className="relative z-10 group">
-          <span
-            className="font-playfair text-xl font-normal italic tracking-wide"
-            style={{ color: atTop ? 'var(--white)' : 'var(--body)' }}
-          >
-            {siteName}
-          </span>
+        <Link href="/" className="relative z-10 flex shrink-0 items-center" aria-label={`${siteName} home`}>
+          <YadahLogo alt={siteName} treatment={atTop ? 'onDarkHero' : 'inDarkPill'} height={28} priority />
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-10">
+        <nav className="hidden lg:flex flex-1 items-center justify-end gap-8 xl:gap-10">
           {NAV_LINKS.map((link) =>
             link.external ? (
               <a
@@ -75,12 +76,15 @@ export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
               </Link>
             ),
           )}
+          <ThemeToggle variant="navbar" onDarkBackdrop={atTop} className="shrink-0" />
         </nav>
 
-        <button
+        <div className="flex items-center gap-2 lg:hidden">
+          <ThemeToggle variant="navbar" onDarkBackdrop={atTop} />
+          <button
           type="button"
           onClick={() => setMenuOpen(true)}
-          className="lg:hidden flex flex-col gap-[5px] p-2"
+          className="flex flex-col gap-[5px] p-2"
           aria-label="Open menu"
         >
           {[0, 1, 2].map((i) => (
@@ -91,13 +95,15 @@ export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
             />
           ))}
         </button>
+        </div>
       </motion.header>
 
       <motion.div
         initial={false}
         animate={{ opacity: menuOpen ? 1 : 0, pointerEvents: menuOpen ? 'auto' : 'none' }}
         transition={{ duration: 0.5 }}
-        className="fixed inset-0 z-[100] bg-[#F7F3EC] flex flex-col items-center justify-center gap-10"
+        className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-10"
+        style={{ background: 'var(--bg)' }}
       >
         <button
           type="button"

@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
+import YadahLogo from '@/components/branding/YadahLogo'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 const ADMIN_LINKS: {
   label: string
@@ -103,9 +105,14 @@ export default function AdminSidebar({
 
   return (
     <aside className="flex h-full min-h-screen flex-col border-admin-border bg-admin-surface shadow-admin-sidebar lg:min-h-0 lg:border-r">
-      <div className="border-b border-admin-border px-5 py-8">
-        <p className="font-playfair text-xl font-normal italic text-admin-text">Yadah</p>
-        <p className="mt-1 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-admin-muted">Studio</p>
+      <div className="border-b border-admin-border px-5 py-6">
+        <Link href="/admin" className="inline-block" aria-label="Admin home">
+          <YadahLogo alt="Yadah Studio" treatment="admin" height={26} />
+        </Link>
+        <p className="mt-3 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-admin-muted">Studio</p>
+        <div className="mt-4">
+          <ThemeToggle variant="admin" />
+        </div>
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5 p-3">
@@ -118,7 +125,7 @@ export default function AdminSidebar({
               onClick={() => onNavigate?.()}
               className={`
                 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
-                ${active ? 'bg-admin-accent/10 text-admin-accent' : 'text-admin-muted hover:bg-black/[0.03] hover:text-admin-text'}
+                ${active ? 'bg-admin-accent/10 text-admin-accent' : 'text-admin-muted hover:bg-black/[0.03] hover:text-admin-text dark:hover:bg-white/[0.06]'}
               `}
             >
               <span className={active ? 'text-admin-accent' : 'text-admin-muted'}>{icon}</span>
