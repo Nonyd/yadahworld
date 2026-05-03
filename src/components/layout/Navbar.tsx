@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { label: 'Media', href: '/media' },
   { label: 'About', href: '/about' },
   { label: 'Room For You', href: 'https://rfyglobal.org', external: true },
+  { label: 'Campus Tour', href: '/campus-tour' },
   { label: 'Contact', href: '/contact' },
   { label: 'Booking', href: '/booking' },
   { label: 'Shop', href: '/shop' },

@@ -121,6 +121,15 @@ export default function Footer({
             <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
               Events
             </p>
+            <Link href="/#events" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              Upcoming
+            </Link>
+          </div>
+
+          <div>
+            <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
+              Ministry
+            </p>
             <a
               href="https://rfyglobal.org"
               target="_blank"
@@ -133,15 +142,6 @@ export default function Footer({
             <Link href="/campus-tour" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
               Campus Tour
             </Link>
-            <Link href="/#events" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              Upcoming
-            </Link>
-          </div>
-
-          <div>
-            <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
-              Ministry
-            </p>
             <Link href="/privacy-policy" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
               Privacy Policy
             </Link>
