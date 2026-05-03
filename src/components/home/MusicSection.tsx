@@ -31,53 +31,36 @@ export default function MusicSection({ releases, copy }: { releases: PublicRelea
         </Link>
       </div>
 
-      <div className="max-w-screen-xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+      <ul className="max-w-screen-xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
         {releases.map((release, i) => (
-          <MotionLink
-            key={release.slug}
-            href={`/releases/${release.slug}`}
-            initial={{ opacity: 0, y: 30 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: i * 0.1, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
-            whileHover={{ y: -4 }}
-            className="group block"
-            style={{ textDecoration: 'none', boxShadow: '0 4px 24px rgba(13,11,8,0.06)' }}
-          >
-            <div className="manuscript-frame relative aspect-square overflow-hidden mb-4">
-              <Image
-                src={release.cover}
-                alt=""
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-              {release.isNew && (
-                <span
-                  className="absolute top-3 left-3 ui-label px-2 py-1 text-[10px]"
-                  style={{ background: 'var(--accent)', color: 'var(--white)' }}
-                >
-                  {badgeNew}
-                </span>
-              )}
-            </div>
-            <p
-              className="font-playfair text-base font-normal leading-snug mb-1 group-hover:text-[var(--accent)] transition-colors"
-              style={{ color: 'var(--body)' }}
+          <li key={release.slug}>
+            <MotionLink
+              href={`/releases/${release.slug}`}
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: i * 0.1, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="group block"
             >
-              {release.title}
-              {release.feat && (
-                <span className="font-jost italic text-sm font-light" style={{ color: 'var(--muted)' }}>
-                  {' '}
-                  {release.feat}
-                </span>
-              )}
-            </p>
-            <p className="ui-label" style={{ color: 'var(--muted)' }}>
-              {release.type} · {release.year}
-            </p>
-          </MotionLink>
+              <div className="manuscript-frame relative mb-4 aspect-square overflow-hidden shadow-[0_4px_24px_rgba(13,11,8,0.06)]">
+                <Image
+                  src={release.cover}
+                  alt=""
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                />
+                {release.isNew && (
+                  <span className="absolute left-3 top-3 ui-label bg-accent px-2 py-1 text-[10px] text-ivory">{badgeNew}</span>
+                )}
+              </div>
+              <p className="font-playfair text-base text-body transition-colors group-hover:text-accent">{release.title}</p>
+              <p className="ui-label mt-1 text-muted">
+                {release.type} · {release.year}
+              </p>
+            </MotionLink>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   )
 }
