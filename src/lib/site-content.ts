@@ -261,3 +261,5 @@ export async function uniqueReleaseSlug(base: string, excludeId?: string): Promi
   }
   return `${s}-${Date.now()}`
 }
+
+export { DEFAULT_SITE_LOGO_URL } from '@/lib/default-branding'

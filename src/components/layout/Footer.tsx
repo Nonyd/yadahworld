@@ -1,154 +1,256 @@
+import Image from 'next/image'
 import Link from 'next/link'
-import YadahLogo from '@/components/branding/YadahLogo'
-import { SocialIcon } from '@/components/ui/SocialIcons'
+import { DEFAULT_SITE_LOGO_URL } from '@/lib/default-branding'
 
-const FOOTER_COLS = [
-  {
-    heading: 'Navigate',
-    links: [
-      { label: 'Home', href: '/' },
-      { label: 'Media', href: '/media' },
-      { label: 'Releases', href: '/releases' },
-      { label: 'About', href: '/about' },
-      { label: 'Contact', href: '/contact' },
-      { label: 'Booking', href: '/booking' },
-      { label: 'Shop', href: '/shop' },
-    ],
-  },
-  {
-    heading: 'Events',
-    links: [
-      { label: 'Room For You', href: 'https://rfyglobal.org', external: true },
-      { label: 'Campus Tour', href: '/media' },
-      { label: 'Upcoming', href: '/#events' },
-    ],
-  },
-  {
-    heading: 'Legal',
-    links: [
-      { label: 'Privacy Policy', href: '/privacy-policy' },
-      { label: 'Refund & Returns', href: '/refund-policy' },
-      { label: 'About SonsHub', href: 'https://sonshubmedia.com', external: true },
-    ],
-  },
-]
+const linkClass =
+  'font-jost text-[11px] tracking-[0.15em] uppercase block mb-3 transition-colors duration-300 hover:text-[#C9A84C]'
 
-const DEFAULT_TAGLINE = 'The Voice of Jesus Christ to Nations. Gospel music minister based in Abuja, Nigeria.'
-const DEFAULT_CONTACT = 'yadahsings@gmail.com · +234 808 188 1365'
+export type FooterSocialConnect = {
+  instagram: string
+  youtube: string
+  spotify: string
+  facebook: string
+  x: string
+  tiktok: string
+}
 
-export type FooterSocial = { label: string; href: string }
+const defaultSocial: FooterSocialConnect = {
+  instagram: '#',
+  youtube: '#',
+  spotify: '#',
+  facebook: '#',
+  x: '#',
+  tiktok: '#',
+}
 
 export default function Footer({
   siteName = 'Yadah',
-  tagline,
   contactLine,
-  socials,
+  socialConnect,
   copyrightLine,
 }: {
   siteName?: string
-  tagline?: string | null
   contactLine?: string
-  socials?: FooterSocial[]
-  /** When set, replaces the default © line (year + SonsHub still applied unless you include them). */
+  socialConnect?: Partial<FooterSocialConnect>
   copyrightLine?: string | null
 }) {
-  const displayTagline = tagline?.trim() || DEFAULT_TAGLINE
-  const displayContact = contactLine?.trim() || DEFAULT_CONTACT
-  const socialList =
-    socials && socials.length > 0
-      ? socials
-      : [
-          { label: 'IG', href: 'https://instagram.com/ministersings' },
-          { label: 'YT', href: 'https://youtube.com/@yadah' },
-          { label: 'SP', href: 'https://open.spotify.com/artist/xxx' },
-          { label: 'FB', href: 'https://facebook.com/yadahsings' },
-          { label: 'X', href: 'https://x.com/ministeryadah' },
-          { label: 'TT', href: 'https://www.tiktok.com/@yadah' },
-        ]
+  const social = { ...defaultSocial, ...socialConnect }
+  const displayContact = contactLine?.trim() || 'yadahsings@gmail.com · +234 808 188 1365'
 
   return (
-    <footer
-      className="border-t px-8 md:px-20 pt-20 pb-10"
-      style={{ background: 'var(--surface)', borderColor: 'rgba(201,168,76,0.18)' }}
-    >
-      <div className="max-w-screen-xl mx-auto">
-        <div className="grid md:grid-cols-[4fr_2fr_2fr_2fr] gap-12 md:gap-16 mb-16">
-          <div>
-            <div className="flex flex-wrap items-center gap-4">
-              <Link href="/" aria-label={`${siteName} home`}>
-                <YadahLogo alt={siteName} treatment="inDarkPill" height={44} />
-              </Link>
-            </div>
-            <p className="body-sm mt-4 max-w-xs">{displayTagline}</p>
-            <div className="flex gap-3 mt-8 flex-wrap items-center">
-              {socialList.map(({ label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--body)_12%,transparent)] px-3 py-2 text-[11px] font-medium uppercase tracking-wider transition-colors hover:border-[color-mix(in_srgb,var(--accent)_45%,transparent)] hover:text-[var(--accent)]"
-                  style={{ color: 'var(--muted)' }}
-                  aria-label={label}
-                >
-                  <SocialIcon label={label} href={href} className="h-4 w-4 shrink-0 opacity-80 group-hover:opacity-100" />
-                  <span className="link-underline decoration-transparent group-hover:decoration-current">{label}</span>
-                </a>
-              ))}
-            </div>
-          </div>
+    <footer className="w-full">
+      {/* Part A — pre-footer */}
+      <section
+        className="py-20 px-8 md:px-20"
+        style={{ background: '#EDE8DF' }}
+      >
+        <div className="mx-auto max-w-4xl text-center">
+          <h2 className="font-playfair italic text-[clamp(2rem,5vw,4rem)] text-[var(--body)] text-center">
+            Have you heard the good news?
+          </h2>
+          <p className="font-baskerville italic text-lg text-[var(--muted)] text-center mt-4 mb-10">
+            You can live forever by believing in Jesus.
+          </p>
+          <a href="/booking" className="btn-primary mx-auto inline-flex">
+            Book Yadah
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+              <path
+                d="M1 7h12M7 1l6 6-6 6"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
+        </div>
+      </section>
 
-          {FOOTER_COLS.map((col) => (
-            <div key={col.heading}>
-              <p className="eyebrow mb-6">{col.heading}</p>
-              <ul className="flex flex-col gap-3">
-                {col.links.map((link) => (
-                  <li key={link.label}>
-                    {'external' in link && link.external ? (
-                      <a
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="body-sm link-underline"
-                        style={{ color: 'var(--muted)' }}
-                      >
-                        {link.label}
-                      </a>
-                    ) : (
-                      <Link href={link.href} className="body-sm link-underline" style={{ color: 'var(--muted)' }}>
-                        {link.label}
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+      {/* Part B — main footer */}
+      <div className="px-8 md:px-20" style={{ background: '#0D0B08' }}>
+        <div className="flex justify-between items-center py-16 gap-8 flex-col sm:flex-row sm:items-center">
+          <Link href="/" className="shrink-0" aria-label={`${siteName} home`}>
+            <Image
+              src={DEFAULT_SITE_LOGO_URL}
+              alt={siteName}
+              width={280}
+              height={48}
+              className="h-12 w-auto"
+              sizes="140px"
+            />
+          </Link>
+          <p
+            className="font-playfair italic text-[clamp(1rem,3vw,2rem)] text-center sm:text-right max-w-xl"
+            style={{ color: 'rgba(201,168,76,0.35)' }}
+          >
+            &ldquo;The Voice of Jesus Christ to Nations.&rdquo;
+          </p>
         </div>
 
-        <div
-          className="pt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-t"
-          style={{ borderColor: 'rgba(201,168,76,0.15)' }}
-        >
-          <p className="ui-label max-w-xl" style={{ color: 'var(--muted)' }}>
-            {copyrightLine?.trim() ? (
-              copyrightLine.trim()
-            ) : (
-              <>
-                © {new Date().getFullYear()} {siteName}. Powered & managed by{' '}
-                <a
-                  href="https://sonshubmedia.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link-underline"
-                  style={{ color: 'var(--accent)' }}
-                >
-                  SonsHub Media
-                </a>
-              </>
-            )}
-          </p>
-          <p className="ui-label" style={{ color: 'var(--muted)', opacity: 0.5 }}>
+        <div style={{ height: '1px', background: 'rgba(201,168,76,0.12)' }} />
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 py-16">
+          <div>
+            <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
+              Navigate
+            </p>
+            <Link href="/" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              Home
+            </Link>
+            <Link href="/media" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              Media
+            </Link>
+            <Link href="/about" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              About
+            </Link>
+            <Link href="/releases" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              Releases
+            </Link>
+            <Link href="/contact" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              Contact
+            </Link>
+            <Link href="/booking" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              Booking
+            </Link>
+            <Link href="/shop" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              Shop
+            </Link>
+          </div>
+
+          <div>
+            <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
+              Events
+            </p>
+            <a
+              href="https://rfyglobal.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+              style={{ color: 'rgba(253,250,245,0.4)' }}
+            >
+              Room For You
+            </a>
+            <Link href="/campus-tour" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              Campus Tour
+            </Link>
+            <Link href="/#events" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              Upcoming
+            </Link>
+          </div>
+
+          <div>
+            <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
+              Ministry
+            </p>
+            <Link href="/privacy-policy" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              Privacy Policy
+            </Link>
+            <Link href="/refund-policy" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              Refund & Returns
+            </Link>
+            <a
+              href="https://sonshubmedia.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+              style={{ color: 'rgba(253,250,245,0.4)' }}
+            >
+              About SonsHub
+            </a>
+          </div>
+
+          <div>
+            <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
+              Connect
+            </p>
+            <a
+              href={social.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+              style={{ color: 'rgba(253,250,245,0.4)' }}
+            >
+              Instagram
+            </a>
+            <a
+              href={social.youtube}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+              style={{ color: 'rgba(253,250,245,0.4)' }}
+            >
+              YouTube
+            </a>
+            <a
+              href={social.spotify}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+              style={{ color: 'rgba(253,250,245,0.4)' }}
+            >
+              Spotify
+            </a>
+            <a
+              href={social.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+              style={{ color: 'rgba(253,250,245,0.4)' }}
+            >
+              Facebook
+            </a>
+            <a
+              href={social.x}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+              style={{ color: 'rgba(253,250,245,0.4)' }}
+            >
+              X (Twitter)
+            </a>
+            <a
+              href={social.tiktok}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+              style={{ color: 'rgba(253,250,245,0.4)' }}
+            >
+              TikTok
+            </a>
+          </div>
+        </div>
+
+        <div style={{ height: '1px', background: 'rgba(201,168,76,0.12)' }} />
+
+        <div className="flex flex-col md:flex-row justify-between items-center gap-2 py-6">
+          {copyrightLine?.trim() ? (
+            <p
+              className="font-jost text-[10px] tracking-[0.15em] uppercase text-center md:text-left"
+              style={{ color: 'rgba(253,250,245,0.2)' }}
+            >
+              {copyrightLine.trim()}
+            </p>
+          ) : (
+            <p
+              className="font-jost text-[10px] tracking-[0.15em] uppercase text-center md:text-left"
+              style={{ color: 'rgba(253,250,245,0.2)' }}
+            >
+              © {new Date().getFullYear()} {siteName}. Powered & managed by{' '}
+              <a
+                href="https://sonshubmedia.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#C9A84C] transition-colors"
+                style={{ color: 'rgba(253,250,245,0.35)' }}
+              >
+                SonsHub Media
+              </a>
+            </p>
+          )}
+          <p
+            className="font-jost text-[10px] tracking-[0.15em] uppercase text-center md:text-right"
+            style={{ color: 'rgba(253,250,245,0.2)' }}
+          >
             {displayContact}
           </p>
         </div>

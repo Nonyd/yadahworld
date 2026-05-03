@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Playfair_Display, Jost } from 'next/font/google'
+import { Libre_Baskerville, Playfair_Display, Jost } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
 import SessionProvider from '@/components/providers/SessionProvider'
 import ThemeProvider from '@/components/providers/ThemeProvider'
@@ -18,6 +18,13 @@ const jost = Jost({
   variable: '--font-jost',
   display: 'swap',
 })
+const baskerville = Libre_Baskerville({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-baskerville',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yadahworld.com'),
@@ -32,7 +39,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`light ${playfair.variable} ${jost.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`light ${playfair.variable} ${jost.variable} ${baskerville.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <ThemeProvider>
           <SessionProvider>{children}</SessionProvider>

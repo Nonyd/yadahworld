@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import AdminSidebar from '@/components/admin/AdminSidebar'
-import YadahLogo from '@/components/branding/YadahLogo'
+
 export default function AdminAppShell({
   children,
   userLabel,
@@ -29,8 +29,12 @@ export default function AdminAppShell({
         >
           Menu
         </button>
-        <Link href="/admin" className="flex shrink-0 justify-center" aria-label="Admin home">
-          <YadahLogo alt="Yadah" treatment="admin" height={34} />
+        <Link
+          href="/admin"
+          className="flex shrink-0 justify-center font-playfair text-2xl font-medium italic text-admin-text"
+          aria-label="Admin home"
+        >
+          Yadah
         </Link>
         <span className="w-10 shrink-0" aria-hidden />
       </div>

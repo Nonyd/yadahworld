@@ -1,4 +1,5 @@
 import type { SiteSettings } from '@prisma/client'
+import { DEFAULT_SITE_LOGO_URL } from '@/lib/default-branding'
 import { prisma } from '@/lib/prisma'
 import { images } from '@/lib/imagePlaceholders'
 
@@ -78,6 +79,8 @@ export async function getGalleryUrls(): Promise<string[]> {
 
 export type PublicSiteBranding = {
   siteName: string
+  /** Default raster logo (Cloudinary); use on public site chrome. */
+  logoUrl: string
   siteTagline: string | null
   metaDescription: string | null
   metaTitleSuffix: string | null
@@ -94,6 +97,7 @@ export async function getPublicBranding(): Promise<PublicSiteBranding> {
   const row = await getSiteSettingsRow()
   return {
     siteName: row?.siteName?.trim() || 'Yadah',
+    logoUrl: DEFAULT_SITE_LOGO_URL,
     siteTagline: row?.siteTagline?.trim() || null,
     metaDescription: row?.metaDescription?.trim() || null,
     metaTitleSuffix: row?.metaTitleSuffix?.trim() || '| Yadah',

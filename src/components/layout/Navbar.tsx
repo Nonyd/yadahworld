@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
-import YadahLogo from '@/components/branding/YadahLogo'
+import { DEFAULT_SITE_LOGO_URL } from '@/lib/default-branding'
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -16,7 +17,13 @@ const NAV_LINKS = [
   { label: 'Shop', href: '/shop' },
 ]
 
-export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
+export default function Navbar({
+  siteName = 'Yadah',
+  logoUrl = DEFAULT_SITE_LOGO_URL,
+}: {
+  siteName?: string
+  logoUrl?: string
+}) {
   const pathname = usePathname()
   const [heroMode, setHeroMode] = useState(true)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -28,6 +35,7 @@ export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
 
   /** Light text + logo only on home over the dark hero. Else use body-colored chrome. */
   const onDarkHero = pathname === '/' && heroMode
+  const navMuted = 'rgba(253,250,245,0.6)'
 
   return (
     <>
@@ -45,7 +53,16 @@ export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
         `}
       >
         <Link href="/" className="relative z-10 flex shrink-0 items-center" aria-label={`${siteName} home`}>
-          <YadahLogo alt={siteName} treatment={onDarkHero ? 'onDarkHero' : 'inDarkPill'} height={38} priority />
+          <Image
+            src={logoUrl}
+            alt={siteName}
+            width={320}
+            height={80}
+            priority
+            className="h-[30px] w-auto md:h-10"
+            style={onDarkHero ? undefined : { filter: 'brightness(0)' }}
+            sizes="(max-width: 768px) 120px, 160px"
+          />
         </Link>
 
         <nav className="hidden lg:flex flex-1 items-center justify-end gap-8 xl:gap-10">
@@ -57,7 +74,7 @@ export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ui-label link-underline"
-                style={{ color: onDarkHero ? 'rgba(253,250,245,0.72)' : 'var(--muted)' }}
+                style={{ color: onDarkHero ? navMuted : 'var(--muted)' }}
               >
                 {link.label}
               </a>
@@ -66,7 +83,7 @@ export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
                 key={link.label}
                 href={link.href}
                 className="ui-label link-underline"
-                style={{ color: onDarkHero ? 'rgba(253,250,245,0.72)' : 'var(--muted)' }}
+                style={{ color: onDarkHero ? navMuted : 'var(--muted)' }}
               >
                 {link.label}
               </Link>
@@ -76,19 +93,19 @@ export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
 
         <div className="flex items-center gap-2 lg:hidden">
           <button
-          type="button"
-          onClick={() => setMenuOpen(true)}
-          className="flex flex-col gap-[5px] p-2"
-          aria-label="Open menu"
-        >
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              className="block w-5 h-px transition-colors duration-300"
-              style={{ background: onDarkHero ? 'var(--white)' : 'var(--body)' }}
-            />
-          ))}
-        </button>
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            className="flex flex-col gap-[5px] p-2"
+            aria-label="Open menu"
+          >
+            {[0, 1, 2].map((i) => (
+              <span
+                key={i}
+                className="block w-5 h-px transition-colors duration-300"
+                style={{ background: onDarkHero ? 'var(--white)' : 'var(--body)' }}
+              />
+            ))}
+          </button>
         </div>
       </header>
 

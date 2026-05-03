@@ -29,6 +29,7 @@ const config: Config = {
       },
       fontFamily: {
         playfair: ['var(--font-playfair)', 'Georgia', 'serif'],
+        baskerville: ['var(--font-baskerville)', 'Georgia', 'serif'],
         jost: ['var(--font-jost)', 'system-ui', 'sans-serif'],
         sans: ['var(--font-jost)', 'system-ui', 'sans-serif'],
       },

@@ -3,9 +3,6 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import YadahLogo from '@/components/branding/YadahLogo'
-import ThemeToggle from '@/components/ui/ThemeToggle'
-
 export default function AdminLoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
@@ -33,12 +30,9 @@ export default function AdminLoginPage() {
 
   return (
     <div className="admin-app relative min-h-screen flex items-center justify-center px-4 py-16">
-      <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
-        <ThemeToggle variant="admin" />
-      </div>
       <div className="admin-card w-full max-w-md p-8 sm:p-10">
         <div className="flex justify-center">
-          <YadahLogo alt="Yadah" treatment="inDarkPill" height={48} />
+          <p className="font-playfair text-4xl font-medium italic text-admin-text">Yadah</p>
         </div>
         <p className="mt-6 text-center text-[0.65rem] font-medium uppercase tracking-[0.22em] text-admin-muted">
           Studio sign in
