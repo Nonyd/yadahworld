@@ -116,9 +116,6 @@ export default function Footer({
             <Link href="/shop" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
               {g('linkShop')}
             </Link>
-            <Link href="/refund-policy" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              {g('refundLink')}
-            </Link>
           </div>
 
           <div>
@@ -206,17 +203,30 @@ export default function Footer({
         <div style={{ height: '1px', background: 'rgba(201,168,76,0.12)' }} />
 
         <div className="flex flex-col items-center gap-4 py-8 text-center">
-          <div className="flex flex-wrap justify-center gap-x-8 gap-y-2">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-jost text-[10px] tracking-[0.2em] uppercase">
             <Link
               href="/privacy-policy"
-              className="font-jost text-[10px] tracking-[0.2em] uppercase transition-colors hover:text-[#C9A84C]"
+              className="transition-colors hover:text-[#C9A84C]"
               style={{ color: 'rgba(253,250,245,0.45)' }}
             >
               {g('bottomPrivacy')}
             </Link>
+            <span style={{ color: 'rgba(253,250,245,0.25)' }} aria-hidden>
+              ·
+            </span>
+            <Link
+              href="/refund-policy"
+              className="transition-colors hover:text-[#C9A84C]"
+              style={{ color: 'rgba(253,250,245,0.45)' }}
+            >
+              {g('refundLink')}
+            </Link>
+            <span style={{ color: 'rgba(253,250,245,0.25)' }} aria-hidden>
+              ·
+            </span>
             <Link
               href="/cookie-policy"
-              className="font-jost text-[10px] tracking-[0.2em] uppercase transition-colors hover:text-[#C9A84C]"
+              className="transition-colors hover:text-[#C9A84C]"
               style={{ color: 'rgba(253,250,245,0.45)' }}
             >
               {g('bottomCookie')}
