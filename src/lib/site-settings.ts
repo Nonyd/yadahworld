@@ -112,6 +112,40 @@ export async function getPublicBranding(): Promise<PublicSiteBranding> {
 }
 
 /** Where admin notifications should go (DB overrides env). */
+export type CampusTourVisuals = {
+  portraitUrl: string
+  marqueeRow1: string[]
+  marqueeRow2: string[]
+}
+
+/**
+ * Visuals for `/campus-tour`. Portrait falls back to About portrait placeholder; marquee rows
+ * fall back to split stock gallery strips until the admin fills **Campus tour** in Settings.
+ */
+export async function getCampusTourVisuals(): Promise<CampusTourVisuals> {
+  const row = await getSiteSettingsRow()
+  const portrait =
+    row?.imageCampusTourPortrait?.trim() || row?.imageAboutPortrait?.trim() || images.aboutPortrait
+  const m1 = row?.campusTourMarquee1Urls?.filter(Boolean) ?? []
+  const m2 = row?.campusTourMarquee2Urls?.filter(Boolean) ?? []
+  const g = [...images.gallery]
+  const marqueeRow1 = m1.length > 0 ? m1 : g.slice(0, Math.min(4, g.length))
+  let marqueeRow2: string[]
+  if (m2.length > 0) {
+    marqueeRow2 = m2
+  } else if (m1.length > 0) {
+    marqueeRow2 = [...m1].reverse()
+  } else {
+    const secondHalf = g.slice(4, 8)
+    marqueeRow2 = secondHalf.length > 0 ? secondHalf : [...marqueeRow1].reverse()
+  }
+  return {
+    portraitUrl: portrait,
+    marqueeRow1,
+    marqueeRow2,
+  }
+}
+
 export async function getNotifyEmail(): Promise<string> {
   const row = await getSiteSettingsRow()
   return row?.brevoNotifyEmail?.trim() || process.env.BREVO_NOTIFY_EMAIL?.trim() || 'yadahsings@gmail.com'

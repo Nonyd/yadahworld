@@ -23,6 +23,9 @@ const patchSchema = z.object({
   imageAboutHero: z.string().optional().nullable(),
   imageAboutPortrait: z.string().optional().nullable(),
   imageWorshipBg: z.string().optional().nullable(),
+  imageCampusTourPortrait: z.string().optional().nullable(),
+  campusTourMarquee1Urls: z.array(z.string()).optional(),
+  campusTourMarquee2Urls: z.array(z.string()).optional(),
   galleryImageUrls: z.array(z.string()).optional(),
   paystackPublicKey: z.string().optional().nullable(),
   paystackSecretKey: z.string().optional().nullable(),
@@ -103,6 +106,13 @@ export async function PATCH(req: NextRequest) {
   if (d.imageAboutHero !== undefined) data.imageAboutHero = emptyToNull(d.imageAboutHero)
   if (d.imageAboutPortrait !== undefined) data.imageAboutPortrait = emptyToNull(d.imageAboutPortrait)
   if (d.imageWorshipBg !== undefined) data.imageWorshipBg = emptyToNull(d.imageWorshipBg)
+  if (d.imageCampusTourPortrait !== undefined) data.imageCampusTourPortrait = emptyToNull(d.imageCampusTourPortrait)
+  if (d.campusTourMarquee1Urls !== undefined) {
+    data.campusTourMarquee1Urls = d.campusTourMarquee1Urls.map((u) => u.trim()).filter(Boolean)
+  }
+  if (d.campusTourMarquee2Urls !== undefined) {
+    data.campusTourMarquee2Urls = d.campusTourMarquee2Urls.map((u) => u.trim()).filter(Boolean)
+  }
   if (d.galleryImageUrls !== undefined) data.galleryImageUrls = d.galleryImageUrls.map((u) => u.trim()).filter(Boolean)
   if (d.paystackPublicKey !== undefined) data.paystackPublicKey = emptyToNull(d.paystackPublicKey)
   if (d.paystackSecretKey !== undefined) data.paystackSecretKey = emptyToNull(d.paystackSecretKey)

@@ -179,6 +179,28 @@ html.lenis {
   animation-play-state: paused;
 }
 
+/* /campus-tour — dual full-bleed image rows */
+@keyframes campus-marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.campus-marquee-row {
+  display: flex;
+  width: max-content;
+  gap: 1rem;
+  animation: campus-marquee-left 50s linear infinite;
+}
+.campus-marquee-row:hover {
+  animation-play-state: paused;
+}
+.campus-marquee-row--reverse {
+  animation: campus-marquee-left 42s linear infinite reverse;
+}
+
 .page-overlay {
   position: fixed;
   inset: 0;

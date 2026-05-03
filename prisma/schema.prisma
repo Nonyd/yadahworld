@@ -103,6 +103,14 @@ model SiteSettings {
   imageAboutPortrait String?
   imageWorshipBg     String?
 
+  /// Large portrait beside copy on /campus-tour
+  imageCampusTourPortrait String?
+
+  /// Top marquee row on /campus-tour (scrolls one direction)
+  campusTourMarquee1Urls String[] @default([])
+  /// Bottom marquee row (scrolls opposite direction)
+  campusTourMarquee2Urls String[] @default([])
+
   galleryImageUrls String[] @default([])
 
   socialTiktok String?

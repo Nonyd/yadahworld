@@ -8,7 +8,7 @@ import { cloudinaryCloudName } from '@/lib/cloudinary'
 import { getAdminUploadStatus, uploadAdminImage, type AdminUploadStatus } from '@/lib/admin-upload-client'
 import { SocialIcon } from '@/components/ui/SocialIcons'
 
-const TABS = ['General', 'Contact', 'Social', 'Images', 'Gallery', 'Integrations'] as const
+const TABS = ['General', 'Contact', 'Social', 'Images', 'Gallery', 'Campus tour', 'Integrations'] as const
 type Tab = (typeof TABS)[number]
 
 export type AdminSettingsIntegrationEnv = {
@@ -41,6 +41,9 @@ type FormState = {
   imageAboutHero: string
   imageAboutPortrait: string
   imageWorshipBg: string
+  imageCampusTourPortrait: string
+  campusTourMarquee1Text: string
+  campusTourMarquee2Text: string
   galleryText: string
   brevoSmtpHost: string
   brevoSmtpPort: string
@@ -85,6 +88,9 @@ function toFormState(row: SiteSettings | null): FormState {
     imageAboutHero: row?.imageAboutHero ?? '',
     imageAboutPortrait: row?.imageAboutPortrait ?? '',
     imageWorshipBg: row?.imageWorshipBg ?? '',
+    imageCampusTourPortrait: row?.imageCampusTourPortrait ?? '',
+    campusTourMarquee1Text: (row?.campusTourMarquee1Urls ?? []).join('\n'),
+    campusTourMarquee2Text: (row?.campusTourMarquee2Urls ?? []).join('\n'),
     galleryText: (row?.galleryImageUrls ?? []).join('\n'),
     brevoSmtpHost: row?.brevoSmtpHost ?? 'smtp-relay.brevo.com',
     brevoSmtpPort: row?.brevoSmtpPort != null ? String(row.brevoSmtpPort) : '587',
@@ -170,6 +176,8 @@ export default function AdminSettingsForm({
 }) {
   const router = useRouter()
   const galleryFilesId = useId()
+  const campusTourM1FilesId = useId()
+  const campusTourM2FilesId = useId()
   const [tab, setTab] = useState<Tab>('General')
   const [form, setForm] = useState<FormState>(() => toFormState(initial))
   const [saving, setSaving] = useState(false)
@@ -184,6 +192,12 @@ export default function AdminSettingsForm({
   }, [])
   const [testBusy, setTestBusy] = useState(false)
   const [testMsg, setTestMsg] = useState('')
+  const [m1Busy, setM1Busy] = useState(false)
+  const [m1Err, setM1Err] = useState('')
+  const [m1Prog, setM1Prog] = useState<number | null>(null)
+  const [m2Busy, setM2Busy] = useState(false)
+  const [m2Err, setM2Err] = useState('')
+  const [m2Prog, setM2Prog] = useState<number | null>(null)
 
   const set = (k: keyof FormState, v: string | boolean) => setForm((f) => ({ ...f, [k]: v }))
 
@@ -234,11 +248,63 @@ export default function AdminSettingsForm({
 
   const galleryUploadReady = uploadStatus?.serverUploadReady === true
 
+  const appendMarqueeRow = async (row: 1 | 2, files: FileList | null) => {
+    if (!files?.length) return
+    const setBusy = row === 1 ? setM1Busy : setM2Busy
+    const setErr = row === 1 ? setM1Err : setM2Err
+    const setProg = row === 1 ? setM1Prog : setM2Prog
+    setErr('')
+    setBusy(true)
+    setProg(0)
+    const fileArray = Array.from(files)
+    try {
+      const urls: string[] = []
+      for (let i = 0; i < fileArray.length; i++) {
+        const file = fileArray[i]
+        const url = await uploadAdminImage(file, 'gallery', (p) => {
+          if (p === null) {
+            setProg(null)
+            return
+          }
+          const base = (i / fileArray.length) * 100
+          const slice = (1 / fileArray.length) * p
+          setProg(Math.round(base + slice))
+        })
+        urls.push(url)
+      }
+      setProg(100)
+      if (row === 1) {
+        setForm((f) => ({
+          ...f,
+          campusTourMarquee1Text: [f.campusTourMarquee1Text.trim(), ...urls].filter(Boolean).join('\n'),
+        }))
+      } else {
+        setForm((f) => ({
+          ...f,
+          campusTourMarquee2Text: [f.campusTourMarquee2Text.trim(), ...urls].filter(Boolean).join('\n'),
+        }))
+      }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Upload failed')
+    } finally {
+      setBusy(false)
+      setProg(null)
+    }
+  }
+
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
     setMsg('')
     const galleryImageUrls = form.galleryText
+      .split(/\r?\n/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+    const campusTourMarquee1Urls = form.campusTourMarquee1Text
+      .split(/\r?\n/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+    const campusTourMarquee2Urls = form.campusTourMarquee2Text
       .split(/\r?\n/)
       .map((s) => s.trim())
       .filter(Boolean)
@@ -270,6 +336,9 @@ export default function AdminSettingsForm({
           imageAboutHero: form.imageAboutHero || null,
           imageAboutPortrait: form.imageAboutPortrait || null,
           imageWorshipBg: form.imageWorshipBg || null,
+          imageCampusTourPortrait: form.imageCampusTourPortrait || null,
+          campusTourMarquee1Urls,
+          campusTourMarquee2Urls,
           galleryImageUrls,
           brevoSmtpHost: form.brevoSmtpHost || null,
           brevoSmtpPort: Number.isFinite(port) ? port : null,
@@ -358,6 +427,15 @@ export default function AdminSettingsForm({
   )
 
   const galleryUrls = form.galleryText
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+
+  const campusTourM1Urls = form.campusTourMarquee1Text
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+  const campusTourM2Urls = form.campusTourMarquee2Text
     .split(/\r?\n/)
     .map((s) => s.trim())
     .filter(Boolean)
@@ -548,6 +626,129 @@ export default function AdminSettingsForm({
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {tab === 'Campus tour' && (
+        <div className="admin-card space-y-10 p-6 sm:p-8">
+          <div>
+            <h2 className="font-playfair text-lg text-admin-text">Campus tour</h2>
+            <p className="mt-2 max-w-2xl text-sm text-admin-muted">
+              Images for <span className="font-mono text-admin-text">/campus-tour</span>: the large portrait beside the
+              copy, and two full-width marquee rows (row 1 moves left; row 2 moves right). Add several images per row
+              for a smooth loop. Leave marquee lists empty to use temporary placeholders until you upload.
+            </p>
+          </div>
+
+          <AdminImageUpload
+            label="Portrait (beside ministry text)"
+            description="Tall image on the right on desktop; keep subject centered for crop."
+            value={form.imageCampusTourPortrait}
+            onChange={(v) => set('imageCampusTourPortrait', v)}
+            folder="site"
+          />
+
+          <div className="space-y-3">
+            <label className="admin-label" htmlFor="campusTourMarquee1Text">
+              Marquee row 1 — image URLs (one per line)
+            </label>
+            <textarea
+              id="campusTourMarquee1Text"
+              className="admin-input min-h-[120px] resize-y font-mono text-xs"
+              value={form.campusTourMarquee1Text}
+              onChange={(e) => set('campusTourMarquee1Text', e.target.value)}
+            />
+            <input
+              id={campusTourM1FilesId}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,image/avif,.heic,.heif"
+              multiple
+              className="sr-only"
+              disabled={!galleryUploadReady || m1Busy || uploadStatus === null}
+              onChange={(e) => {
+                void appendMarqueeRow(1, e.target.files)
+                e.target.value = ''
+              }}
+            />
+            <label
+              htmlFor={campusTourM1FilesId}
+              className={`admin-btn admin-btn-secondary inline-flex cursor-pointer text-[10px] ${
+                !galleryUploadReady || m1Busy || uploadStatus === null ? 'pointer-events-none opacity-50' : ''
+              }`}
+            >
+              {uploadStatus === null ? 'Checking…' : m1Busy ? 'Uploading…' : 'Upload to row 1'}
+            </label>
+            {m1Busy ? (
+              <div className="h-1.5 w-full max-w-md overflow-hidden rounded-full bg-admin-border">
+                <div
+                  className={`h-full rounded-full bg-admin-accent transition-[width] duration-150 ease-out ${
+                    m1Prog === null ? 'w-1/3 animate-pulse' : ''
+                  }`}
+                  style={m1Prog !== null ? { width: `${Math.min(100, Math.max(0, m1Prog))}%` } : undefined}
+                />
+              </div>
+            ) : null}
+            {m1Err ? <p className="text-xs text-red-700">{m1Err}</p> : null}
+            {campusTourM1Urls.length > 0 ? (
+              <div className="flex flex-wrap gap-2 pt-2">
+                {campusTourM1Urls.map((src) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={src} src={src} alt="" className="max-h-[72px] rounded border border-admin-border object-cover" />
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          <div className="space-y-3">
+            <label className="admin-label" htmlFor="campusTourMarquee2Text">
+              Marquee row 2 — image URLs (one per line, scrolls opposite row 1)
+            </label>
+            <textarea
+              id="campusTourMarquee2Text"
+              className="admin-input min-h-[120px] resize-y font-mono text-xs"
+              value={form.campusTourMarquee2Text}
+              onChange={(e) => set('campusTourMarquee2Text', e.target.value)}
+            />
+            <input
+              id={campusTourM2FilesId}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,image/avif,.heic,.heif"
+              multiple
+              className="sr-only"
+              disabled={!galleryUploadReady || m2Busy || uploadStatus === null}
+              onChange={(e) => {
+                void appendMarqueeRow(2, e.target.files)
+                e.target.value = ''
+              }}
+            />
+            <label
+              htmlFor={campusTourM2FilesId}
+              className={`admin-btn admin-btn-secondary inline-flex cursor-pointer text-[10px] ${
+                !galleryUploadReady || m2Busy || uploadStatus === null ? 'pointer-events-none opacity-50' : ''
+              }`}
+            >
+              {uploadStatus === null ? 'Checking…' : m2Busy ? 'Uploading…' : 'Upload to row 2'}
+            </label>
+            {m2Busy ? (
+              <div className="h-1.5 w-full max-w-md overflow-hidden rounded-full bg-admin-border">
+                <div
+                  className={`h-full rounded-full bg-admin-accent transition-[width] duration-150 ease-out ${
+                    m2Prog === null ? 'w-1/3 animate-pulse' : ''
+                  }`}
+                  style={m2Prog !== null ? { width: `${Math.min(100, Math.max(0, m2Prog))}%` } : undefined}
+                />
+              </div>
+            ) : null}
+            {m2Err ? <p className="text-xs text-red-700">{m2Err}</p> : null}
+            {campusTourM2Urls.length > 0 ? (
+              <div className="flex flex-wrap gap-2 pt-2">
+                {campusTourM2Urls.map((src) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={src} src={src} alt="" className="max-h-[72px] rounded border border-admin-border object-cover" />
+                ))}
+              </div>
+            ) : null}
+          </div>
         </div>
       )}
 
