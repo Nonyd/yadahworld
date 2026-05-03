@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Lightbox from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
 import type { PublicVideo } from '@/lib/site-content'
-import { extractYoutubeVideoId, youtubeWatchUrl } from '@/lib/youtube'
+import PublicVideoCard from '@/components/media/PublicVideoCard'
 import { usePublicVideoLightbox } from '@/components/media/usePublicVideoLightbox'
 import type { SiteCopy } from '@/lib/site-copy'
 import { getCopyString } from '@/lib/site-copy'
@@ -57,47 +57,15 @@ export default function MediaPageClient({
         {tab === 'videos' && (
           <div id="videos" className="space-y-12">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {videos.map((v, vi) => {
-                const yid = extractYoutubeVideoId(v.youtubeUrl)
-                const watch = yid ? youtubeWatchUrl(yid) : v.youtubeUrl
-                return (
-                  <div key={v.id} className="flex flex-col gap-3">
-                    <button
-                      type="button"
-                      aria-label={`Play video: ${v.title}`}
-                      onClick={() => openAtVideoIndex(vi)}
-                      className="relative group aspect-video w-full cursor-pointer overflow-hidden text-left manuscript-frame border border-[rgba(42,37,32,0.08)] shadow-[0_4px_24px_rgba(13,11,8,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                    >
-                      <Image
-                        src={v.thumbnail}
-                        alt=""
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                      />
-                      <div className="absolute inset-0 bg-deep/35 transition-all duration-500 group-hover:bg-deep/20" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-ivory bg-ivory/10 backdrop-blur-sm transition-colors group-hover:border-gold-light/60">
-                          <svg className="ml-1 h-6 w-6 fill-ivory" viewBox="0 0 24 24" aria-hidden>
-                            <path d="M8 5v14l11-7z" />
-                          </svg>
-                        </span>
-                      </div>
-                    </button>
-                    <div>
-                      <p className="font-playfair text-lg text-body">{v.title}</p>
-                      <a
-                        href={watch}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-1 inline-block ui-label text-muted hover:text-accent"
-                      >
-                        {m('watchYoutube')}
-                      </a>
-                    </div>
-                  </div>
-                )
-              })}
+              {videos.map((v, vi) => (
+                <PublicVideoCard
+                  key={v.id}
+                  video={v}
+                  videoIndex={vi}
+                  onPlayClick={openAtVideoIndex}
+                  watchYoutubeLabel={m('watchYoutube')}
+                />
+              ))}
             </div>
           </div>
         )}
