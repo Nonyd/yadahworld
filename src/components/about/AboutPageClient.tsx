@@ -2,9 +2,9 @@
 
 import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
-import Link from 'next/link'
 import Image from 'next/image'
-import { getCopyString, type SiteCopy } from '@/lib/site-copy'
+import PublicHrefLink from '@/components/ui/PublicHrefLink'
+import { bookingHrefFromCopy, getCopyString, type SiteCopy } from '@/lib/site-copy'
 
 export default function AboutPageClient({
   aboutHero,
@@ -17,6 +17,7 @@ export default function AboutPageClient({
 }) {
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true })
   const a = (k: string) => getCopyString(copy, `aboutPage.${k}`)
+  const bookingHref = bookingHrefFromCopy(copy)
 
   return (
     <div className="min-h-screen">
@@ -114,10 +115,10 @@ export default function AboutPageClient({
 
       <section className="py-20 px-8 md:px-20 text-center border-t border-gold-light/15 bg-surface/40">
         <p className="font-playfair text-2xl font-normal italic text-muted mb-6">{a('ctaLine')}</p>
-        <Link href="/booking" className="btn-primary">
+        <PublicHrefLink href={bookingHref} className="btn-primary">
           {a('ctaButton')}
           <span aria-hidden>→</span>
-        </Link>
+        </PublicHrefLink>
       </section>
     </div>
   )

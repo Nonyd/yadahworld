@@ -12,6 +12,7 @@ import {
   listSiteCopyDotPaths,
   mergeSiteContent,
 } from '@/lib/site-copy'
+import { SITE_TEXT_URL_FIELDS, SITE_TEXT_URL_PATH_SET } from '@/lib/site-text-url-fields'
 import { SocialIcon } from '@/components/ui/SocialIcons'
 
 const TABS = ['General', 'Contact', 'Social', 'Images', 'Gallery', 'Campus tour', 'Site text', 'Integrations'] as const
@@ -273,17 +274,19 @@ export default function AdminSettingsForm({
   const copyPathsByGroup = useMemo(() => {
     const g: Record<string, string[]> = {}
     for (const p of listSiteCopyDotPaths()) {
+      if (SITE_TEXT_URL_PATH_SET.has(p)) continue
       const seg = p.split('.')[0]!
       if (!g[seg]) g[seg] = []
       g[seg].push(p)
     }
     const out: { key: string; paths: string[] }[] = []
     for (const k of SITE_TEXT_GROUP_ORDER) {
-      if (g[k]?.length) out.push({ key: k, paths: [...g[k]!].sort() })
+      const paths = g[k]?.length ? [...g[k]!].sort() : []
+      if (paths.length) out.push({ key: k, paths })
     }
     const orderStr = SITE_TEXT_GROUP_ORDER as readonly string[]
     for (const k of Object.keys(g)) {
-      if (!orderStr.includes(k)) {
+      if (!orderStr.includes(k) && g[k]?.length) {
         out.push({ key: k, paths: [...g[k]!].sort() })
       }
     }
@@ -1010,13 +1013,41 @@ export default function AdminSettingsForm({
           <div>
             <h2 className="font-playfair text-lg text-admin-text">Site text</h2>
             <p className="mt-2 text-sm text-admin-muted">
-              Public copy for pages and chrome. Values merge with built-in defaults. In <strong>Contact page → body</strong>,
+              Public copy for pages and chrome. Values merge with built-in defaults. Use <strong>Links &amp; URLs</strong>{' '}
+              below for destinations (navbar, footer, booking, Room For You). In <strong>Contact page → body</strong>,
               include <code className="rounded bg-admin-bg px-1 py-0.5 font-mono text-[11px]">{'{{booking}}'}</code> where
-              the booking link should appear. In <strong>Campus tour → body1</strong>, include{' '}
+              the booking link label should appear (the actual URL is set under Links). In <strong>Campus tour → body1</strong>, include{' '}
               <code className="rounded bg-admin-bg px-1 py-0.5 font-mono text-[11px]">{'{{rfy}}'}</code> for the Room For
-              You link.
+              You link text — its URL is also under Links.
             </p>
           </div>
+
+          <div className="space-y-4 rounded-lg border border-admin-border bg-black/[0.02] p-5 sm:p-6">
+            <h3 className="font-jost text-xs font-semibold uppercase tracking-[0.2em] text-admin-muted">Links &amp; URLs</h3>
+            <p className="text-xs text-admin-muted">
+              These control where buttons and nav items go. Use a full <span className="font-mono">https://…</span> address
+              for external sites, or a path like <span className="font-mono">/booking</span> for pages on this site.
+            </p>
+            <div className="grid gap-5 pt-2">
+              {SITE_TEXT_URL_FIELDS.map(({ path, title, hint }) => (
+                <div key={path} className="rounded-md border border-admin-border/80 bg-admin-surface/40 p-4">
+                  <p className="font-jost text-sm font-medium text-admin-text">{title}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-admin-muted">{hint}</p>
+                  <p className="mt-3 font-mono text-[10px] tracking-tight text-admin-muted/90">{path}</p>
+                  <input
+                    type="text"
+                    className="admin-input mt-2 font-mono text-xs"
+                    autoComplete="off"
+                    spellCheck={false}
+                    placeholder="https://… or /page"
+                    value={copyForm[path] ?? ''}
+                    onChange={(e) => setCopyForm((c) => ({ ...c, [path]: e.target.value }))}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
           {copyPathsByGroup.map(({ key, paths }) => (
             <div key={key} className="space-y-4 border-t border-admin-border pt-6 first:border-t-0 first:pt-0">
               <h3 className="font-jost text-xs font-semibold uppercase tracking-[0.2em] text-admin-muted">

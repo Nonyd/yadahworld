@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { DEFAULT_SITE_LOGO_URL } from '@/lib/default-branding'
-import { getCopyString, type SiteCopy } from '@/lib/site-copy'
+import PublicHrefLink from '@/components/ui/PublicHrefLink'
+import { bookingHrefFromCopy, getCopyString, roomForYouHrefFromCopy, type SiteCopy } from '@/lib/site-copy'
 
 const linkClass =
   'font-jost text-[11px] tracking-[0.15em] uppercase block mb-3 transition-colors duration-300 hover:text-[#C9A84C]'
@@ -42,6 +43,8 @@ export default function Footer({
   const social = { ...defaultSocial, ...socialConnect }
   const displayContact = contactLine?.trim() || 'yadahsings@gmail.com · +234 808 188 1365'
   const g = (k: string) => getCopyString(copy, `footer.${k}`)
+  const bookingHref = bookingHrefFromCopy(copy)
+  const roomForYouHref = roomForYouHrefFromCopy(copy)
 
   return (
     <footer className="w-full">
@@ -53,7 +56,7 @@ export default function Footer({
           <p className="font-baskerville italic text-lg text-[var(--muted)] text-center mt-4 mb-10">
             {g('preFooterSubtitle')}
           </p>
-          <a href="/booking" className="btn-primary mx-auto inline-flex">
+          <PublicHrefLink href={bookingHref} className="btn-primary mx-auto inline-flex">
             {g('preFooterCta')}
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
               <path
@@ -64,7 +67,7 @@ export default function Footer({
                 strokeLinejoin="round"
               />
             </svg>
-          </a>
+          </PublicHrefLink>
         </div>
       </section>
 
@@ -110,9 +113,9 @@ export default function Footer({
             <Link href="/contact" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
               {g('linkContact')}
             </Link>
-            <Link href="/booking" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+            <PublicHrefLink href={bookingHref} className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
               {g('linkBooking')}
-            </Link>
+            </PublicHrefLink>
             <Link href="/shop" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
               {g('linkShop')}
             </Link>
@@ -122,15 +125,9 @@ export default function Footer({
             <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
               {g('colMinistry')}
             </p>
-            <a
-              href="https://rfyglobal.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={linkClass}
-              style={{ color: 'rgba(253,250,245,0.4)' }}
-            >
+            <PublicHrefLink href={roomForYouHref} className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
               {g('ministryRoomForYou')}
-            </a>
+            </PublicHrefLink>
             <Link href="/campus-tour" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
               {g('ministryCampusTour')}
             </Link>

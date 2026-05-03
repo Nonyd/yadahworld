@@ -2,7 +2,8 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { getCopyString } from '@/lib/site-copy'
+import PublicHrefLink from '@/components/ui/PublicHrefLink'
+import { bookingHrefFromCopy, getCopyString } from '@/lib/site-copy'
 import { getPublicReleases, getReleaseBySlug } from '@/lib/site-content'
 import { getPublicBranding, getSiteCopy } from '@/lib/site-settings'
 import { extractYoutubeVideoId } from '@/lib/youtube'
@@ -27,6 +28,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
 
   const [all, copy] = await Promise.all([getPublicReleases(), getSiteCopy()])
   const more = all.filter((r) => r.slug !== release.slug).slice(0, 3)
+  const bookingHref = bookingHrefFromCopy(copy)
   const d = (k: string) => getCopyString(copy, `releaseDetail.${k}`)
   const badgeNew = getCopyString(copy, 'releases.badgeNew')
 
@@ -138,9 +140,9 @@ export default async function ReleaseDetailPage({ params }: Props) {
 
             <p className="body-sm mt-12 max-w-md text-muted">
               {d('bookingTeaserBefore')}
-              <Link href="/booking" className="link-underline text-accent">
+              <PublicHrefLink href={bookingHref} className="link-underline text-accent">
                 {d('bookingTeaserLink')}
-              </Link>
+              </PublicHrefLink>
               {d('bookingTeaserAfter')}
             </p>
           </div>

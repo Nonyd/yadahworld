@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import PublicHrefLink from '@/components/ui/PublicHrefLink'
 import type { CampusTourVisuals } from '@/lib/site-settings'
-import { getCopyString, type SiteCopy } from '@/lib/site-copy'
+import { bookingHrefFromCopy, getCopyString, roomForYouHrefFromCopy, type SiteCopy } from '@/lib/site-copy'
 
 function MarqueeStrip({ urls, reverse }: { urls: string[]; reverse?: boolean }) {
   if (!urls.length) return null
@@ -29,6 +30,8 @@ export default function CampusTourView({
   copy,
 }: CampusTourVisuals & { copy: SiteCopy }) {
   const c = (k: string) => getCopyString(copy, `campusTour.${k}`)
+  const roomForYouHref = roomForYouHrefFromCopy(copy)
+  const bookingHref = bookingHrefFromCopy(copy)
   const body1 = c('body1')
   const [beforeRfy, afterRfy] = body1.includes('{{rfy}}')
     ? body1.split('{{rfy}}')
@@ -49,21 +52,16 @@ export default function CampusTourView({
             <div className="max-w-xl space-y-6 body-sm text-[var(--muted)]">
               <p>
                 {beforeRfy}
-                <a
-                  href="https://rfyglobal.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link-underline text-accent"
-                >
+                <PublicHrefLink href={roomForYouHref} className="link-underline text-accent">
                   {c('rfyLinkLabel')}
-                </a>
+                </PublicHrefLink>
                 {afterRfy}
               </p>
               <p>{c('body2')}</p>
             </div>
 
             <div className="mt-14 flex flex-wrap gap-6">
-              <Link href="/booking" className="btn-primary">
+              <PublicHrefLink href={bookingHref} className="btn-primary">
                 {c('bookCta')}
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
                   <path
@@ -74,7 +72,7 @@ export default function CampusTourView({
                     strokeLinejoin="round"
                   />
                 </svg>
-              </Link>
+              </PublicHrefLink>
               <Link href="/contact" className="btn-ghost">
                 <span className="arrow-line" />
                 {c('contactCta')}

@@ -28,6 +28,7 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     media: 'Media',
     about: 'About',
     roomForYou: 'Room For You',
+    roomForYouUrl: 'https://rfyglobal.org',
     releases: 'Releases',
     contact: 'Contact',
     booking: 'Booking',
@@ -144,6 +145,7 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     title: 'Contact.',
     body:
       "For general enquiries, press, partnerships, or questions about Yadah's ministry. For event bookings, please use the {{booking}}.",
+    bookingUrl: '/booking',
     bookingLinkLabel: 'Booking page',
     labelLocation: 'Location',
     labelPhone: 'Phone',
@@ -249,16 +251,44 @@ export function getCopyString(copy: SiteCopy, path: string): string {
   return typeof cur === 'string' ? cur : ''
 }
 
-/** Map nav `href` → label for `Navbar` (internal paths + RFY external). */
+export function roomForYouHrefFromCopy(copy: SiteCopy): string {
+  return getCopyString(copy, 'nav.roomForYouUrl').trim() || 'https://rfyglobal.org'
+}
+
+export function bookingHrefFromCopy(copy: SiteCopy): string {
+  return getCopyString(copy, 'contactPage.bookingUrl').trim() || '/booking'
+}
+
+export type PublicNavLink = { label: string; href: string; external?: boolean }
+
+/** Navbar rows — hrefs for Room For You and Booking follow Site text URLs. */
+export function buildPublicNavLinks(copy: SiteCopy): PublicNavLink[] {
+  const rfy = roomForYouHrefFromCopy(copy)
+  const book = bookingHrefFromCopy(copy)
+  return [
+    { label: 'Home', href: '/' },
+    { label: 'Media', href: '/media' },
+    { label: 'About', href: '/about' },
+    { label: 'Room For You', href: rfy, external: /^https?:\/\//i.test(rfy) },
+    { label: 'Releases', href: '/releases' },
+    { label: 'Contact', href: '/contact' },
+    { label: 'Booking', href: book, external: /^https?:\/\//i.test(book) },
+    { label: 'Shop', href: '/shop' },
+  ]
+}
+
+/** Map nav `href` → label for `Navbar` (internal paths + configurable URLs). */
 export function navLabelsFromCopy(copy: SiteCopy): Record<string, string> {
+  const rfy = roomForYouHrefFromCopy(copy)
+  const book = bookingHrefFromCopy(copy)
   return {
     '/': getCopyString(copy, 'nav.home'),
     '/media': getCopyString(copy, 'nav.media'),
     '/about': getCopyString(copy, 'nav.about'),
-    'https://rfyglobal.org': getCopyString(copy, 'nav.roomForYou'),
+    [rfy]: getCopyString(copy, 'nav.roomForYou'),
     '/releases': getCopyString(copy, 'nav.releases'),
     '/contact': getCopyString(copy, 'nav.contact'),
-    '/booking': getCopyString(copy, 'nav.booking'),
+    [book]: getCopyString(copy, 'nav.booking'),
     '/shop': getCopyString(copy, 'nav.shop'),
   }
 }

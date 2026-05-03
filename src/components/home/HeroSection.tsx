@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
-import Link from 'next/link'
+import PublicHrefLink from '@/components/ui/PublicHrefLink'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -28,12 +28,15 @@ export default function HeroSection({
   heroImage,
   heroEyebrow,
   heroSubline,
+  bookingHref = '/booking',
 }: {
   heroImage: string
   /** Line above the Yadah title (e.g. 01 — The Voice of Jesus Christ to Nations). */
   heroEyebrow?: string | null
   /** Italic line under the title. */
   heroSubline?: string | null
+  /** From Site text → Links (booking). */
+  bookingHref?: string
 }) {
   const sectionRef = useRef<HTMLElement>(null)
   const imgRef = useRef<HTMLDivElement>(null)
@@ -150,7 +153,7 @@ export default function HeroSection({
           transition={{ delay: 1.0, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="mt-10 flex flex-wrap items-center gap-6"
         >
-          <Link href="/booking" className="btn-primary">
+          <PublicHrefLink href={bookingHref} className="btn-primary">
             Book Yadah
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
               <path
@@ -161,7 +164,7 @@ export default function HeroSection({
                 strokeLinejoin="round"
               />
             </svg>
-          </Link>
+          </PublicHrefLink>
           <a href="#music" className="btn-ghost" style={{ color: 'rgba(253,250,245,0.5)' }}>
             <span className="arrow-line" />
             Explore Music

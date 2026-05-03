@@ -2,12 +2,13 @@
 
 import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
-import Link from 'next/link'
-import { getCopyString, type SiteCopy } from '@/lib/site-copy'
+import PublicHrefLink from '@/components/ui/PublicHrefLink'
+import { bookingHrefFromCopy, getCopyString, type SiteCopy } from '@/lib/site-copy'
 
 export default function BookingCTA({ worshipBg, copy }: { worshipBg: string; copy: SiteCopy }) {
   const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true })
   const h = (k: string) => getCopyString(copy, `home.${k}`)
+  const bookingHref = bookingHrefFromCopy(copy)
   const lines = [h('bookingLine1'), h('bookingLine2'), h('bookingLine3')]
 
   return (
@@ -79,8 +80,8 @@ export default function BookingCTA({ worshipBg, copy }: { worshipBg: string; cop
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.8 }}
         >
-          <Link
-            href="/booking"
+          <PublicHrefLink
+            href={bookingHref}
             className="inline-flex items-center gap-4 border text-[var(--white)] px-10 py-5 font-jost text-[0.7rem] tracking-[0.2em] uppercase hover:bg-[var(--white)] hover:text-[var(--accent)] transition-all duration-500"
             style={{ borderColor: 'rgba(253,250,245,0.3)' }}
           >
@@ -94,7 +95,7 @@ export default function BookingCTA({ worshipBg, copy }: { worshipBg: string; cop
                 strokeLinejoin="round"
               />
             </svg>
-          </Link>
+          </PublicHrefLink>
         </motion.div>
       </div>
     </section>

@@ -8,28 +8,18 @@ import { usePathname } from 'next/navigation'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import { useTheme } from 'next-themes'
 import { DEFAULT_SITE_LOGO_URL } from '@/lib/default-branding'
+import type { PublicNavLink } from '@/lib/site-copy'
 import ThemeToggle from '@/components/ui/ThemeToggle'
-
-type NavLink = { label: string; href: string; external?: boolean }
-
-const NAV_LINKS: NavLink[] = [
-  { label: 'Home', href: '/' },
-  { label: 'Media', href: '/media' },
-  { label: 'About', href: '/about' },
-  { label: 'Room For You', href: 'https://rfyglobal.org', external: true },
-  { label: 'Releases', href: '/releases' },
-  { label: 'Contact', href: '/contact' },
-  { label: 'Booking', href: '/booking' },
-  { label: 'Shop', href: '/shop' },
-]
 
 export default function Navbar({
   siteName = 'Yadah',
   logoUrl = DEFAULT_SITE_LOGO_URL,
+  navLinks,
   navLabels,
 }: {
   siteName?: string
   logoUrl?: string
+  navLinks: PublicNavLink[]
   navLabels: Record<string, string>
 }) {
   const pathname = usePathname()
@@ -85,7 +75,7 @@ export default function Navbar({
         </Link>
 
         <nav className="hidden lg:flex flex-1 items-center justify-end gap-6 xl:gap-8">
-          {NAV_LINKS.map((link) =>
+          {navLinks.map((link) =>
             link.external ? (
               <a
                 key={link.href}
@@ -150,7 +140,7 @@ export default function Navbar({
         >
           Close
         </button>
-        {NAV_LINKS.map((link, i) => (
+        {navLinks.map((link, i) => (
           <motion.div
             key={link.href}
             initial={{ opacity: 0, y: 30 }}

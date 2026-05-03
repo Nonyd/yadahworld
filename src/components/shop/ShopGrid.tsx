@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Product } from '@prisma/client'
-import { getCopyString, type SiteCopy } from '@/lib/site-copy'
+import PublicHrefLink from '@/components/ui/PublicHrefLink'
+import { getCopyString, roomForYouHrefFromCopy, type SiteCopy } from '@/lib/site-copy'
 
 function formatMoney(currency: string, amountMinor: number) {
   const major = amountMinor / 100
@@ -21,18 +22,19 @@ function formatMoney(currency: string, amountMinor: number) {
 
 export default function ShopGrid({ products, copy }: { products: Product[]; copy: SiteCopy }) {
   const s = (k: string) => getCopyString(copy, `shop.${k}`)
+  const roomForYouHref = roomForYouHrefFromCopy(copy)
 
   if (!products.length) {
     return (
       <div className="max-w-xl">
         <p className="body-lg mb-6 text-muted">{s('emptyTitle')}</p>
         <p className="body-sm text-muted">{s('emptyBody')}</p>
-        <a href="https://rfyglobal.org" target="_blank" rel="noopener noreferrer" className="btn-outline mt-6 inline-flex">
+        <PublicHrefLink href={roomForYouHref} className="btn-outline mt-6 inline-flex">
           {s('emptyCta')}
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
             <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-        </a>
+        </PublicHrefLink>
       </div>
     )
   }

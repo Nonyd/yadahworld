@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import ContactForm from '@/components/contact/ContactForm'
-import { getCopyString } from '@/lib/site-copy'
+import PublicHrefLink from '@/components/ui/PublicHrefLink'
+import { bookingHrefFromCopy, getCopyString } from '@/lib/site-copy'
 import { getPublicBranding, getSiteCopy } from '@/lib/site-settings'
 
 export const metadata: Metadata = { title: 'Contact' }
@@ -9,6 +9,7 @@ export const metadata: Metadata = { title: 'Contact' }
 export default async function ContactPage() {
   const [copy, branding] = await Promise.all([getSiteCopy(), getPublicBranding()])
   const c = (k: string) => getCopyString(copy, `contactPage.${k}`)
+  const bookingHref = bookingHrefFromCopy(copy)
   const body = c('body')
   const bookingToken = '{{booking}}'
   const [bodyBefore, bodyAfter] = body.includes(bookingToken)
@@ -31,9 +32,9 @@ export default async function ContactPage() {
               {body.includes(bookingToken) ? (
                 <>
                   {bodyBefore}
-                  <Link href="/booking" className="link-underline text-accent">
+                  <PublicHrefLink href={bookingHref} className="link-underline text-accent">
                     {c('bookingLinkLabel')}
-                  </Link>
+                  </PublicHrefLink>
                   {bodyAfter}
                 </>
               ) : (
