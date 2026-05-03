@@ -4,11 +4,11 @@ const LOGO_SRC = '/branding/yadah-logo.png'
 
 export type YadahLogoTreatment = 'onDarkHero' | 'inDarkPill' | 'admin'
 
-/** Transparent white wordmark: plain on dark hero; dark glyph on light chrome via brightness in light mode only */
+/** Asset is white-on-black. Hero: as-is. Light chrome: invert → black-on-white; dark theme: restore original. */
 const treatmentClass: Record<YadahLogoTreatment, string> = {
   onDarkHero: '',
-  inDarkPill: 'brightness-0 dark:brightness-100',
-  admin: 'brightness-0 dark:brightness-100',
+  inDarkPill: 'invert dark:invert-0',
+  admin: 'invert dark:invert-0',
 }
 
 export default function YadahLogo({

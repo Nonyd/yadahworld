@@ -11,8 +11,10 @@ export type PublicRelease = {
   year: string
   cover: string
   spotify: string | null
+  spotifyEmbed: string | null
   apple: string | null
   youtube: string | null
+  musicVideoYoutube: string | null
   isNew: boolean
   description: string | null
 }
@@ -41,8 +43,10 @@ const FALLBACK_RELEASES: PublicRelease[] = [
     year: '2024',
     cover: images.releaseNeverSeen,
     spotify: 'https://open.spotify.com/search/yadah%20never%20seen',
+    spotifyEmbed: null,
     apple: null,
     youtube: null,
+    musicVideoYoutube: null,
     isNew: true,
     description: null,
   },
@@ -54,8 +58,10 @@ const FALLBACK_RELEASES: PublicRelease[] = [
     year: '2023',
     cover: images.releaseFathered,
     spotify: 'https://open.spotify.com/search/yadah%20fathered',
+    spotifyEmbed: null,
     apple: null,
     youtube: null,
+    musicVideoYoutube: null,
     isNew: false,
     description: null,
   },
@@ -67,8 +73,10 @@ const FALLBACK_RELEASES: PublicRelease[] = [
     year: '2023',
     cover: images.releaseOnye,
     spotify: 'https://open.spotify.com/search/yadah%20onye',
+    spotifyEmbed: null,
     apple: null,
     youtube: null,
+    musicVideoYoutube: null,
     isNew: false,
     description: null,
   },
@@ -80,8 +88,10 @@ const FALLBACK_RELEASES: PublicRelease[] = [
     year: '2022',
     cover: images.releaseBeyond,
     spotify: 'https://open.spotify.com/search/yadah%20beyond%20me',
+    spotifyEmbed: null,
     apple: null,
     youtube: null,
+    musicVideoYoutube: null,
     isNew: false,
     description: null,
   },
@@ -135,8 +145,10 @@ function mapReleaseRow(r: {
   year: string
   cover: string
   spotify: string | null
+  spotifyEmbed: string | null
   apple: string | null
   youtube: string | null
+  musicVideoYoutube: string | null
   isNew: boolean
   description: string | null
 }): PublicRelease {
@@ -148,8 +160,10 @@ function mapReleaseRow(r: {
     year: r.year,
     cover: r.cover,
     spotify: r.spotify,
+    spotifyEmbed: r.spotifyEmbed,
     apple: r.apple,
     youtube: r.youtube,
+    musicVideoYoutube: r.musicVideoYoutube,
     isNew: r.isNew,
     description: r.description,
   }

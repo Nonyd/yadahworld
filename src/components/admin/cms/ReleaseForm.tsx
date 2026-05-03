@@ -17,8 +17,10 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
   const [year, setYear] = useState(initial?.year ?? new Date().getFullYear().toString())
   const [cover, setCover] = useState(initial?.cover ?? '')
   const [spotify, setSpotify] = useState(initial?.spotify ?? '')
+  const [spotifyEmbed, setSpotifyEmbed] = useState(initial?.spotifyEmbed ?? '')
   const [apple, setApple] = useState(initial?.apple ?? '')
   const [youtube, setYoutube] = useState(initial?.youtube ?? '')
+  const [musicVideoYoutube, setMusicVideoYoutube] = useState(initial?.musicVideoYoutube ?? '')
   const [isNew, setIsNew] = useState(initial?.isNew ?? false)
   const [order, setOrder] = useState(initial?.order ?? 0)
   const [saving, setSaving] = useState(false)
@@ -38,8 +40,10 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
       year,
       cover,
       spotify: spotify || null,
+      spotifyEmbed: spotifyEmbed.trim() || null,
       apple: apple || null,
       youtube: youtube || null,
+      musicVideoYoutube: musicVideoYoutube.trim() || null,
       isNew,
       order: Number(order) || 0,
     }
@@ -128,12 +132,33 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
           <input className="admin-input" value={spotify} onChange={(e) => setSpotify(e.target.value)} placeholder="https://..." />
         </div>
         <div className="sm:col-span-2">
+          <label className="admin-label">Spotify embed (optional)</label>
+          <textarea
+            className="admin-input min-h-[120px] resize-y font-mono text-xs"
+            value={spotifyEmbed}
+            onChange={(e) => setSpotifyEmbed(e.target.value)}
+            placeholder={'Paste the embed iframe from Spotify (Share → Embed), or a URL like https://open.spotify.com/embed/track/…'}
+          />
+          <p className="mt-1 text-xs text-admin-muted">
+            Only Spotify embed URLs are stored. Invalid paste is ignored on save.
+          </p>
+        </div>
+        <div className="sm:col-span-2">
           <label className="admin-label">Apple Music URL</label>
           <input className="admin-input" value={apple} onChange={(e) => setApple(e.target.value)} />
         </div>
         <div className="sm:col-span-2">
           <label className="admin-label">YouTube URL</label>
-          <input className="admin-input" value={youtube} onChange={(e) => setYoutube(e.target.value)} />
+          <input className="admin-input" value={youtube} onChange={(e) => setYoutube(e.target.value)} placeholder="Channel / search / watch link for the “YouTube” button" />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="admin-label">Music video (YouTube, optional)</label>
+          <input
+            className="admin-input"
+            value={musicVideoYoutube}
+            onChange={(e) => setMusicVideoYoutube(e.target.value)}
+            placeholder="https://www.youtube.com/watch?v=… for the official video embed on this page"
+          />
         </div>
         <div>
           <label className="admin-label">Sort order</label>

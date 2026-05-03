@@ -128,10 +128,12 @@ model SiteRelease {
   type        String
   year        String
   cover       String
-  spotify     String?
-  apple       String?
-  youtube     String?
-  isNew       Boolean  @default(false)
+  spotify            String?
+  spotifyEmbed       String?
+  apple              String?
+  youtube            String?
+  musicVideoYoutube  String?
+  isNew              Boolean  @default(false)
   order       Int      @default(0)
 }
 

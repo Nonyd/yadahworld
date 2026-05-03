@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { uniqueReleaseSlug } from '@/lib/site-content'
 import { slugify } from '@/lib/slug'
+import { parseSpotifyEmbedUrl } from '@/lib/spotify-embed'
+import { extractYoutubeVideoId } from '@/lib/youtube'
 import { z } from 'zod'
 
 const createSchema = z.object({
@@ -15,8 +17,10 @@ const createSchema = z.object({
   year: z.string().min(1),
   cover: z.string().min(1),
   spotify: z.string().optional().nullable(),
+  spotifyEmbed: z.string().optional().nullable(),
   apple: z.string().optional().nullable(),
   youtube: z.string().optional().nullable(),
+  musicVideoYoutube: z.string().optional().nullable(),
   isNew: z.boolean().optional(),
   order: z.number().int().optional(),
 })
@@ -57,6 +61,10 @@ export async function POST(req: NextRequest) {
     return t ? t : null
   }
 
+  const musicVideoUrl = emptyToNull(d.musicVideoYoutube)
+  const musicVideoYoutube =
+    musicVideoUrl && extractYoutubeVideoId(musicVideoUrl) ? musicVideoUrl : null
+
   const baseSlug = d.slug?.trim() ? slugify(d.slug) : slugify(d.title)
   const slug = await uniqueReleaseSlug(baseSlug)
 
@@ -71,8 +79,10 @@ export async function POST(req: NextRequest) {
         year: d.year.trim(),
         cover: d.cover.trim(),
         spotify: emptyToNull(d.spotify),
+        spotifyEmbed: parseSpotifyEmbedUrl(d.spotifyEmbed),
         apple: emptyToNull(d.apple),
         youtube: emptyToNull(d.youtube),
+        musicVideoYoutube,
         isNew: d.isNew ?? false,
         order: d.order ?? 0,
       },

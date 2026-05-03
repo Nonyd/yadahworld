@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import YadahLogo from '@/components/branding/YadahLogo'
@@ -18,24 +18,17 @@ const NAV_LINKS = [
 ]
 
 export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
-  const [hidden, setHidden] = useState(false)
   const [atTop, setAtTop] = useState(true)
   const [menuOpen, setMenuOpen] = useState(false)
   const { scrollY } = useScroll()
-  const lastYRef = useRef(0)
 
   useMotionValueEvent(scrollY, 'change', (y) => {
-    const lastY = lastYRef.current
-    setHidden(y > lastY && y > 80)
     setAtTop(y < 40)
-    lastYRef.current = y
   })
 
   return (
     <>
-      <motion.header
-        animate={{ y: hidden ? -100 : 0 }}
-        transition={{ duration: 0.5, ease: [0.77, 0, 0.175, 1] }}
+      <header
         className={`
           fixed top-0 left-0 right-0 z-50
           flex items-center justify-between gap-4
@@ -96,7 +89,7 @@ export default function Navbar({ siteName = 'Yadah' }: { siteName?: string }) {
           ))}
         </button>
         </div>
-      </motion.header>
+      </header>
 
       <motion.div
         initial={false}

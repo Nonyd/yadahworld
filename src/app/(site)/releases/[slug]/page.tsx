@@ -4,6 +4,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getReleaseBySlug } from '@/lib/site-content'
 import { getPublicBranding } from '@/lib/site-settings'
+import { extractYoutubeVideoId } from '@/lib/youtube'
 
 type Props = { params: { slug: string } }
 
@@ -29,6 +30,8 @@ export default async function ReleaseDetailPage({ params }: Props) {
     { label: 'YouTube', href: release.youtube },
   ].filter((x): x is { label: string; href: string } => !!x.href?.trim())
 
+  const musicVideoId = release.musicVideoYoutube ? extractYoutubeVideoId(release.musicVideoYoutube) : null
+
   return (
     <article className="min-h-screen bg-bg pt-32 pb-24 px-8 md:px-20">
       <div className="max-w-screen-lg mx-auto">
@@ -53,6 +56,39 @@ export default async function ReleaseDetailPage({ params }: Props) {
             <p className="ui-label text-muted mt-4">{release.year}</p>
 
             {release.description && <p className="body-lg mt-8 max-w-xl whitespace-pre-wrap">{release.description}</p>}
+
+            {release.spotifyEmbed && (
+              <div className="mt-10 max-w-xl">
+                <h2 className="eyebrow mb-4">Listen on Spotify</h2>
+                <div className="overflow-hidden rounded-lg border border-gold-light/20 bg-[var(--surface)] shadow-[0_4px_24px_rgba(13,11,8,0.06)]">
+                  <iframe
+                    title="Spotify player"
+                    src={release.spotifyEmbed}
+                    width="100%"
+                    height="352"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                    className="block w-full border-0"
+                  />
+                </div>
+              </div>
+            )}
+
+            {musicVideoId && (
+              <div className="mt-10 max-w-3xl">
+                <h2 className="eyebrow mb-4">Music video</h2>
+                <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-gold-light/20 bg-black shadow-[0_4px_24px_rgba(13,11,8,0.08)]">
+                  <iframe
+                    title="YouTube music video"
+                    src={`https://www.youtube.com/embed/${musicVideoId}`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full border-0"
+                  />
+                </div>
+              </div>
+            )}
 
             {links.length > 0 && (
               <div className="mt-10 flex flex-wrap gap-3">

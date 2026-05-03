@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { uniqueReleaseSlug } from '@/lib/site-content'
 import { slugify } from '@/lib/slug'
+import { parseSpotifyEmbedUrl } from '@/lib/spotify-embed'
+import { extractYoutubeVideoId } from '@/lib/youtube'
 import { z } from 'zod'
 
 const patchSchema = z.object({
@@ -15,8 +17,10 @@ const patchSchema = z.object({
   year: z.string().min(1).optional(),
   cover: z.string().min(1).optional(),
   spotify: z.string().optional().nullable(),
+  spotifyEmbed: z.string().optional().nullable(),
   apple: z.string().optional().nullable(),
   youtube: z.string().optional().nullable(),
+  musicVideoYoutube: z.string().optional().nullable(),
   isNew: z.boolean().optional(),
   order: z.number().int().optional(),
 })
@@ -51,8 +55,13 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (d.year !== undefined) data.year = d.year.trim()
   if (d.cover !== undefined) data.cover = d.cover.trim()
   if (d.spotify !== undefined) data.spotify = emptyToNull(d.spotify)
+  if (d.spotifyEmbed !== undefined) data.spotifyEmbed = parseSpotifyEmbedUrl(d.spotifyEmbed)
   if (d.apple !== undefined) data.apple = emptyToNull(d.apple)
   if (d.youtube !== undefined) data.youtube = emptyToNull(d.youtube)
+  if (d.musicVideoYoutube !== undefined) {
+    const u = emptyToNull(d.musicVideoYoutube)
+    data.musicVideoYoutube = u && extractYoutubeVideoId(u) ? u : null
+  }
   if (d.isNew !== undefined) data.isNew = d.isNew
   if (d.order !== undefined) data.order = d.order
 
