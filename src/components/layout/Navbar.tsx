@@ -41,7 +41,7 @@ export default function Navbar({
     <>
       <header
         className={`
-          fixed top-0 left-0 right-0 z-50
+          fixed top-0 left-0 right-0 z-[10050]
           flex items-center justify-between gap-4
           px-8 md:px-16 py-6
           transition-all duration-700
@@ -91,11 +91,11 @@ export default function Navbar({
           )}
         </nav>
 
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex items-center lg:hidden">
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
-            className="flex flex-col gap-[5px] p-2"
+            className="flex flex-col gap-[5px] rounded-none border-0 bg-transparent p-2 shadow-none outline-none ring-0"
             aria-label="Open menu"
           >
             {[0, 1, 2].map((i) => (
@@ -113,7 +113,7 @@ export default function Navbar({
         initial={false}
         animate={{ opacity: menuOpen ? 1 : 0, pointerEvents: menuOpen ? 'auto' : 'none' }}
         transition={{ duration: 0.5 }}
-        className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-10"
+        className="fixed inset-0 z-[10100] flex flex-col items-center justify-center gap-10"
         style={{ background: 'var(--bg)' }}
       >
         <button

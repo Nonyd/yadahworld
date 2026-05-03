@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import Lightbox from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
 import type { PublicVideo } from '@/lib/site-content'
@@ -94,21 +93,6 @@ export default function MediaPageClient({
                   </div>
                 )
               })}
-            </div>
-            <div className="border border-[rgba(42,37,32,0.1)] p-6 md:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 bg-surface/40">
-              <p className="body-sm max-w-md">
-                Videos are managed in the studio under <span className="text-body font-medium">Videos</span>. Photo strips come from{' '}
-                <span className="text-body font-medium">Settings → Photo gallery</span>.
-              </p>
-              <Link
-                href="https://open.spotify.com/search/yadah%20minister"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="shrink-0 btn-outline border-emerald-700/30 hover:border-emerald-700/50"
-              >
-                Spotify
-                <span aria-hidden>→</span>
-              </Link>
             </div>
           </div>
         )}

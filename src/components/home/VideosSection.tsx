@@ -29,7 +29,7 @@ export default function VideosSection({ videos }: { videos: PublicVideo[] }) {
           </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {videos.slice(0, 6).map((video, i) => (
             <motion.button
               key={video.id}
