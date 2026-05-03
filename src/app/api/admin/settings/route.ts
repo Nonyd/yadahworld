@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
@@ -142,6 +143,27 @@ export async function PATCH(req: NextRequest) {
       create: { id: 1, ...(data as object) },
       update: data,
     })
+    /** Site pages read SiteSettings at build/static time — bust cache so hero/editorial/etc. show after save. */
+    try {
+      const paths = [
+        '/',
+        '/about',
+        '/booking',
+        '/campus-tour',
+        '/contact',
+        '/media',
+        '/releases',
+        '/shop',
+        '/privacy-policy',
+        '/refund-policy',
+      ] as const
+      for (const p of paths) {
+        revalidatePath(p)
+      }
+      revalidatePath('/', 'layout')
+    } catch (revErr) {
+      console.warn('revalidatePath after settings save:', revErr)
+    }
     return NextResponse.json(row)
   } catch (e) {
     console.error(e)

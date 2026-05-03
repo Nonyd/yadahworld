@@ -77,6 +77,7 @@ export default function HeroSection({
       className="relative h-screen min-h-[700px] overflow-hidden flex flex-col justify-end pb-20 md:pb-28"
     >
       <div
+        key={heroImage}
         ref={imgRef}
         className="absolute inset-0 scale-[1.15]"
         style={{

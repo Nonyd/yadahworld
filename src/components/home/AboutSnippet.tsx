@@ -27,6 +27,7 @@ export default function AboutSnippet({
           className="manuscript-frame relative aspect-[3/4] overflow-hidden order-2 md:order-1"
         >
           <Image
+            key={editorialImage}
             src={editorialImage}
             alt="Minister Yadah"
             fill
