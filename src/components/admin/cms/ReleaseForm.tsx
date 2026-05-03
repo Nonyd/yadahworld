@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { SiteRelease } from '@prisma/client'
 import { slugify } from '@/lib/slug'
+import AdminImageUpload from '@/components/admin/AdminImageUpload'
 
 type Mode = 'create' | 'edit'
 
@@ -30,6 +31,10 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!cover.trim()) {
+      setError('Add cover art (upload or URL).')
+      return
+    }
     setSaving(true)
     setError('')
     const basePayload = {
@@ -124,8 +129,13 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
           <input className="admin-input" value={year} onChange={(e) => setYear(e.target.value)} required />
         </div>
         <div className="sm:col-span-2">
-          <label className="admin-label">Cover image URL</label>
-          <input className="admin-input" value={cover} onChange={(e) => setCover(e.target.value)} required />
+          <AdminImageUpload
+            label="Cover art"
+            value={cover}
+            onChange={setCover}
+            folder="releases"
+            hint="Upload a square image (recommended 1200×1200 or larger). Stored as a Cloudinary URL, or paste any image URL."
+          />
         </div>
         <div className="sm:col-span-2">
           <label className="admin-label">Spotify URL</label>

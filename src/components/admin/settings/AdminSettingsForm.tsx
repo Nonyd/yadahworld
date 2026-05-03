@@ -1,8 +1,11 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import type { SiteSettings } from '@prisma/client'
+import AdminImageUpload from '@/components/admin/AdminImageUpload'
+import { cloudinaryCloudName } from '@/lib/cloudinary'
+import { uploadAdminImage } from '@/lib/admin-upload-client'
 
 type FormState = {
   siteName: string
@@ -50,11 +53,34 @@ function toFormState(row: SiteSettings | null): FormState {
 
 export default function AdminSettingsForm({ initial }: { initial: SiteSettings | null }) {
   const router = useRouter()
+  const galleryFilesId = useId()
   const [form, setForm] = useState<FormState>(() => toFormState(initial))
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
+  const [galleryBusy, setGalleryBusy] = useState(false)
+  const [galleryErr, setGalleryErr] = useState('')
 
   const set = (k: keyof FormState, v: string) => setForm((f) => ({ ...f, [k]: v }))
+
+  const appendGalleryFiles = async (files: FileList | null) => {
+    if (!files?.length) return
+    setGalleryErr('')
+    setGalleryBusy(true)
+    try {
+      const urls: string[] = []
+      for (const file of Array.from(files)) {
+        urls.push(await uploadAdminImage(file, 'gallery'))
+      }
+      setForm((f) => ({
+        ...f,
+        galleryText: [f.galleryText.trim(), ...urls].filter(Boolean).join('\n'),
+      }))
+    } catch (e) {
+      setGalleryErr(e instanceof Error ? e.message : 'Upload failed')
+    } finally {
+      setGalleryBusy(false)
+    }
+  }
 
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -148,19 +174,49 @@ export default function AdminSettingsForm({ initial }: { initial: SiteSettings |
 
       <div className="admin-card space-y-6 p-6 sm:p-8">
         <h2 className="font-playfair text-lg text-admin-text">Homepage & key visuals</h2>
-        <p className="text-sm text-admin-muted">Paste full image URLs (Cloudinary, CDN, or trusted hosts). Leave blank to use built-in placeholders.</p>
-        <div className="grid gap-6 sm:grid-cols-1">
-          {field('imageHero', 'Hero background (home)')}
-          {field('imageEditorial', 'Home “Artist” section image')}
-          {field('imageAboutHero', 'About page hero')}
-          {field('imageAboutPortrait', 'About page portrait')}
-          {field('imageWorshipBg', 'Booking CTA section background')}
+        <p className="text-sm text-admin-muted">
+          Upload images to Cloudinary or paste URLs. Leave blank to use built-in placeholders.{' '}
+          {cloudinaryCloudName ? (
+            <span className="font-mono text-[11px] text-admin-text">Cloud: {cloudinaryCloudName}</span>
+          ) : null}
+        </p>
+        <div className="grid gap-8 sm:grid-cols-1">
+          <AdminImageUpload
+            label="Hero background (home)"
+            value={form.imageHero}
+            onChange={(v) => set('imageHero', v)}
+            folder="site"
+          />
+          <AdminImageUpload
+            label="Home “Artist” section image"
+            value={form.imageEditorial}
+            onChange={(v) => set('imageEditorial', v)}
+            folder="site"
+          />
+          <AdminImageUpload
+            label="About page hero"
+            value={form.imageAboutHero}
+            onChange={(v) => set('imageAboutHero', v)}
+            folder="site"
+          />
+          <AdminImageUpload
+            label="About page portrait"
+            value={form.imageAboutPortrait}
+            onChange={(v) => set('imageAboutPortrait', v)}
+            folder="site"
+          />
+          <AdminImageUpload
+            label="Booking CTA section background"
+            value={form.imageWorshipBg}
+            onChange={(v) => set('imageWorshipBg', v)}
+            folder="site"
+          />
         </div>
       </div>
 
       <div className="admin-card space-y-6 p-6 sm:p-8">
         <h2 className="font-playfair text-lg text-admin-text">Photo gallery (media page)</h2>
-        <p className="text-sm text-admin-muted">One image URL per line. Shown in the Photos tab on /media.</p>
+        <p className="text-sm text-admin-muted">One image URL per line, or upload multiple images to append Cloudinary URLs.</p>
         <div>
           <label className="admin-label" htmlFor="galleryText">
             Gallery image URLs
@@ -171,6 +227,29 @@ export default function AdminSettingsForm({ initial }: { initial: SiteSettings |
             value={form.galleryText}
             onChange={(e) => set('galleryText', e.target.value)}
           />
+        </div>
+        <div>
+          <input
+            id={galleryFilesId}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            multiple
+            className="sr-only"
+            disabled={!cloudinaryCloudName || galleryBusy}
+            onChange={(e) => {
+              void appendGalleryFiles(e.target.files)
+              e.target.value = ''
+            }}
+          />
+          <label
+            htmlFor={galleryFilesId}
+            className={`admin-btn admin-btn-secondary inline-flex cursor-pointer text-[10px] ${
+              !cloudinaryCloudName || galleryBusy ? 'pointer-events-none opacity-50' : ''
+            }`}
+          >
+            {galleryBusy ? 'Uploading…' : 'Upload images to gallery'}
+          </label>
+          {galleryErr && <p className="mt-2 text-xs text-red-700">{galleryErr}</p>}
         </div>
       </div>
 

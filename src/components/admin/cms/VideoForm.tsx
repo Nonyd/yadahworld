@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { SiteVideo } from '@prisma/client'
+import AdminImageUpload from '@/components/admin/AdminImageUpload'
 
 type Mode = 'create' | 'edit'
 
@@ -77,8 +78,14 @@ export default function VideoForm({ mode, initial }: { mode: Mode; initial?: Sit
           <p className="mt-1 text-xs text-admin-muted">Watch or embed URLs work. Thumbnails use YouTube automatically unless you set an override.</p>
         </div>
         <div className="sm:col-span-2">
-          <label className="admin-label">Thumbnail URL (optional)</label>
-          <input className="admin-input" value={thumbnailUrl} onChange={(e) => setThumbnailUrl(e.target.value)} placeholder="Override default YouTube preview" />
+          <AdminImageUpload
+            label="Thumbnail override (optional)"
+            value={thumbnailUrl}
+            onChange={setThumbnailUrl}
+            folder="videos"
+            hint="Leave empty to use YouTube’s default preview. Upload or paste a custom 16×9 image if you prefer."
+            urlPlaceholder="Or paste thumbnail image URL"
+          />
         </div>
         <div>
           <label className="admin-label">Sort order</label>
