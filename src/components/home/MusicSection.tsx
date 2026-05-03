@@ -4,6 +4,7 @@ import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
+import { releaseTypeDateLine } from '@/lib/release-display'
 import type { PublicRelease } from '@/lib/site-content'
 import { getCopyString, type SiteCopy } from '@/lib/site-copy'
 
@@ -54,9 +55,7 @@ export default function MusicSection({ releases, copy }: { releases: PublicRelea
                 )}
               </div>
               <p className="font-playfair text-base text-body transition-colors group-hover:text-accent">{release.title}</p>
-              <p className="ui-label mt-1 text-muted">
-                {release.type} · {release.year}
-              </p>
+              <p className="ui-label mt-1 text-muted">{releaseTypeDateLine(release)}</p>
             </MotionLink>
           </li>
         ))}

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { getCopyString } from '@/lib/site-copy'
+import { releaseTypeDateLine } from '@/lib/release-display'
 import { getPublicReleases } from '@/lib/site-content'
 import { getSiteCopy } from '@/lib/site-settings'
 
@@ -37,9 +38,7 @@ export default async function ReleasesIndexPage() {
                   )}
                 </div>
                 <p className="font-playfair text-base text-body group-hover:text-accent transition-colors">{rel.title}</p>
-                <p className="ui-label text-muted mt-1">
-                  {rel.type} · {rel.year}
-                </p>
+                <p className="ui-label text-muted mt-1">{releaseTypeDateLine(rel)}</p>
               </Link>
             </li>
           ))}

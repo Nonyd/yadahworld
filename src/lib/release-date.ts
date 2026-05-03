@@ -1,3 +1,11 @@
+/** Public display for catalog / detail (e.g. "20 Aug 2024"). */
+export function formatReleaseDateDisplay(iso: string | undefined | null): string {
+  if (!iso?.trim()) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
 /** Parse admin `YYYY-MM-DD` or ISO datetime into a stable UTC `Date` for storage. */
 export function parseReleasedAtInput(input: string | undefined | null, fallback: Date): Date {
   const t = input?.trim()

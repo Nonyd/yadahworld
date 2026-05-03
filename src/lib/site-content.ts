@@ -9,6 +9,8 @@ export type PublicRelease = {
   feat: string
   type: string
   year: string
+  /** ISO 8601 from `SiteRelease.releasedAt` — use `formatReleaseDateDisplay` for UI. */
+  releasedAt: string
   cover: string
   spotify: string | null
   spotifyEmbed: string | null
@@ -41,6 +43,7 @@ const FALLBACK_RELEASES: PublicRelease[] = [
     feat: 'ft. Sunmisola Agbebi',
     type: 'Single',
     year: '2024',
+    releasedAt: '2024-08-20T12:00:00.000Z',
     cover: images.releaseNeverSeen,
     spotify: 'https://open.spotify.com/search/yadah%20never%20seen',
     spotifyEmbed: null,
@@ -56,6 +59,7 @@ const FALLBACK_RELEASES: PublicRelease[] = [
     feat: '',
     type: 'Album',
     year: '2023',
+    releasedAt: '2023-11-10T12:00:00.000Z',
     cover: images.releaseFathered,
     spotify: 'https://open.spotify.com/search/yadah%20fathered',
     spotifyEmbed: null,
@@ -71,6 +75,7 @@ const FALLBACK_RELEASES: PublicRelease[] = [
     feat: '',
     type: 'Single',
     year: '2023',
+    releasedAt: '2023-05-18T12:00:00.000Z',
     cover: images.releaseOnye,
     spotify: 'https://open.spotify.com/search/yadah%20onye',
     spotifyEmbed: null,
@@ -86,6 +91,7 @@ const FALLBACK_RELEASES: PublicRelease[] = [
     feat: '',
     type: 'Single',
     year: '2022',
+    releasedAt: '2022-04-07T12:00:00.000Z',
     cover: images.releaseBeyond,
     spotify: 'https://open.spotify.com/search/yadah%20beyond%20me',
     spotifyEmbed: null,
@@ -143,6 +149,7 @@ function mapReleaseRow(r: {
   feat: string | null
   type: string
   year: string
+  releasedAt: Date
   cover: string
   spotify: string | null
   spotifyEmbed: string | null
@@ -158,6 +165,7 @@ function mapReleaseRow(r: {
     feat: r.feat ?? '',
     type: r.type,
     year: r.year,
+    releasedAt: r.releasedAt.toISOString(),
     cover: r.cover,
     spotify: r.spotify,
     spotifyEmbed: r.spotifyEmbed,

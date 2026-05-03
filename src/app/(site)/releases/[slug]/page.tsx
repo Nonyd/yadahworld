@@ -4,6 +4,8 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import PublicHrefLink from '@/components/ui/PublicHrefLink'
 import { bookingHrefFromCopy, getCopyString } from '@/lib/site-copy'
+import { formatReleaseDateDisplay } from '@/lib/release-date'
+import { releaseDateThenType, releaseTypeDateLine, releaseTypeUpperThenDate } from '@/lib/release-display'
 import { getPublicReleases, getReleaseBySlug } from '@/lib/site-content'
 import { getPublicBranding, getSiteCopy } from '@/lib/site-settings'
 import { extractYoutubeVideoId } from '@/lib/youtube'
@@ -17,7 +19,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const suffix = branding.metaTitleSuffix?.trim() || '| Yadah'
   return {
     title: `${release.title} ${suffix}`.trim(),
-    description: release.description?.trim() || `${release.title} — ${release.type} (${release.year})`,
+    description:
+      release.description?.trim() ||
+      `${release.title} — ${release.type} (${formatReleaseDateDisplay(release.releasedAt) || release.year})`,
     openGraph: release.cover ? { images: [{ url: release.cover, width: 1200, height: 1200 }] } : undefined,
   }
 }
@@ -43,9 +47,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
           {d('backLink')}
         </Link>
         <p className="eyebrow mb-2 mt-8">{d('eyebrow')}</p>
-        <p className="ui-label mb-10 text-muted">
-          {typeUpper} · {release.year}
-        </p>
+        <p className="ui-label mb-10 text-muted">{releaseTypeUpperThenDate(typeUpper, release)}</p>
 
         <div className="grid gap-12 lg:grid-cols-[2fr_3fr] lg:items-start">
           <div>
@@ -98,9 +100,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
                 {release.feat}
               </p>
             )}
-            <p className="ui-label mt-4 text-muted">
-              {release.year} · {release.type}
-            </p>
+            <p className="ui-label mt-4 text-muted">{releaseDateThenType(release)}</p>
             <div className="my-8 h-px max-w-md bg-gold" />
 
             <p className="body-lg max-w-xl whitespace-pre-wrap text-muted">{bodyText}</p>
@@ -169,9 +169,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
                       )}
                     </div>
                     <p className="font-playfair text-base text-body transition-colors group-hover:text-accent">{r.title}</p>
-                    <p className="ui-label mt-1 text-muted">
-                      {r.type} · {r.year}
-                    </p>
+                    <p className="ui-label mt-1 text-muted">{releaseTypeDateLine(r)}</p>
                   </Link>
                 </li>
               ))}
