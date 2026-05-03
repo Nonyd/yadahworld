@@ -32,11 +32,11 @@ export default async function Home() {
   return (
     <>
       <HeroSection heroImage={visuals.hero} heroEyebrow={heroEyebrow} heroSubline={heroSubline} />
+      <StreamMarquee copy={copy} />
       <MantraSection copy={copy} />
       <AboutSnippet editorialImage={visuals.editorial} aboutBioShort={branding.aboutBioShort} copy={copy} />
       <MusicSection releases={releases} copy={copy} />
       <VideosSection videos={videos} copy={copy} />
-      <StreamMarquee copy={copy} />
       <UpcomingEvents events={events} copy={copy} />
       <BookingCTA worshipBg={visuals.worshipBg} copy={copy} />
     </>
