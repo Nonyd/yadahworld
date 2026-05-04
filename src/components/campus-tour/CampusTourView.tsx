@@ -76,7 +76,7 @@ export default function CampusTourView({
 
             <div className="mt-14 flex flex-wrap gap-6">
               <button type="button" onClick={() => setModalOpen(true)} className="btn-primary">
-                {c('bookCta')}
+                {c('applyCta')}
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
                   <path
                     d="M1 7h12M7 1l6 6-6 6"
@@ -124,7 +124,7 @@ export default function CampusTourView({
           Invite Yadah to your campus.
         </h2>
         <button type="button" onClick={() => setModalOpen(true)} className="btn-primary">
-          {c('bookCta')}
+          {c('applyCta')}
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
             <path
               d="M1 7h12M7 1l6 6-6 6"

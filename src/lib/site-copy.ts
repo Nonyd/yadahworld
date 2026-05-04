@@ -86,6 +86,8 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     aboutStat3l: 'Years of Ministry',
     aboutReadStory: 'Read Her Story',
     musicEyebrow: '04 — The Sound',
+    /** Homepage music block main title (single line). */
+    musicTitle: 'Albums',
     musicHeading1: 'Recent',
     musicHeading2: 'Releases.',
     musicAllReleases: 'All Releases',
@@ -161,6 +163,8 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     body2:
       'Details for upcoming Campus Tour stops, cities, and how to host or partner are shared through official channels. For ministry bookings and appearances, use the booking form — we will respond with next steps.',
     rfyLinkLabel: 'Room For You',
+    /** Primary campus-tour modal CTA — use this key so DB `bookCta` overrides do not show legacy “Book Yadah” copy. */
+    applyCta: 'APPLY FOR YOUR CAMPUS',
     bookCta: 'APPLY FOR YOUR CAMPUS',
     contactCta: 'Contact',
   },

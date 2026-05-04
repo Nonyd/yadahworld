@@ -20,11 +20,7 @@ export default function MusicSection({ releases, copy }: { releases: PublicRelea
       <div className="max-w-screen-xl mx-auto flex items-end justify-between mb-16 flex-wrap gap-8">
         <div>
           <p className="eyebrow mb-6">{h('musicEyebrow')}</p>
-          <h2 className="display-2 text-[var(--body)]">
-            {h('musicHeading1')}
-            <br />
-            <em className="font-playfair italic">{h('musicHeading2')}</em>
-          </h2>
+          <h2 className="display-2 text-[var(--body)]">{h('musicTitle')}</h2>
         </div>
         <Link href="/releases" className="btn-ghost hidden md:flex">
           <span className="arrow-line" />
