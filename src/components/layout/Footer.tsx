@@ -55,22 +55,18 @@ export default function Footer({
       <ConditionalPreFooter>
         <section className="pre-footer-strip py-20 px-8 md:px-20">
           <div className="mx-auto max-w-4xl text-center">
-            <p className="eyebrow mb-6">A Message</p>
-            <h2 className="font-playfair italic text-[clamp(2rem,5vw,4rem)] text-[var(--body)] text-center leading-tight">
-              You can live forever
-              <br />
-              by believing in Jesus.
+            <p className="eyebrow mb-6">{g('preFooterTitle')}</p>
+            <h2 className="font-playfair italic text-[clamp(2rem,5vw,4rem)] text-[var(--body)] text-center leading-tight whitespace-pre-line">
+              {g('preFooterSubtitle')}
             </h2>
-            <p className="font-baskerville italic text-lg text-[var(--muted)] text-center mt-4">
-              — Yadah
-            </p>
+            <p className="font-baskerville italic text-lg text-[var(--muted)] text-center mt-4">{g('preFooterAttribution')}</p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <Link href="/gospel" className="btn-primary">
-                Read the Good News
+                {g('preFooterCta')}
               </Link>
               <Link href="/releases" className="btn-ghost">
                 <span className="arrow-line" />
-                Explore Music
+                {g('preFooterSecondaryCta')}
               </Link>
             </div>
           </div>
@@ -102,10 +98,10 @@ export default function Footer({
         <div className="grid grid-cols-1 gap-10 border-b border-[rgba(201,168,76,0.12)] py-12 md:grid-cols-2 md:items-center md:gap-12">
           <div>
             <p className="eyebrow mb-3" style={{ color: 'rgba(253,250,245,0.25)' }}>
-              Stay Connected
+              {g('newsletterEyebrow')}
             </p>
             <p
-              className="font-playfair italic"
+              className="font-playfair italic whitespace-pre-line"
               style={{
                 fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)',
                 color: '#FDFAF5',
@@ -113,9 +109,7 @@ export default function Footer({
                 marginBottom: '8px',
               }}
             >
-              Ministry updates, new releases,
-              <br />
-              and moments from the field.
+              {g('newsletterBody')}
             </p>
             <p
               style={{
@@ -125,7 +119,7 @@ export default function Footer({
                 fontStyle: 'italic',
               }}
             >
-              No spam. Unsubscribe at any time.
+              {g('newsletterFinePrint')}
             </p>
           </div>
           <div>

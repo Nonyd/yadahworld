@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Fragment } from 'react'
 import ContactForm from '@/components/contact/ContactForm'
+import { bookingHrefFromCopy, getCopyString, splitCopyByToken } from '@/lib/site-copy'
 import { buildSocialLinks, getPublicBranding, getSiteCopy, getSiteSettingsRow } from '@/lib/site-settings'
 
 export const metadata: Metadata = { title: 'Contact' }
@@ -21,40 +23,46 @@ export default async function ContactPage() {
   const yt = hrefFor('YT')
   const sp = hrefFor('SP')
 
+  const c = (k: string) => getCopyString(copy, `contactPage.${k}`)
+  const bookingHref = bookingHrefFromCopy(copy)
+  const bookingPromptParts = splitCopyByToken(c('bookingPrompt'), '{{booking}}')
+
   return (
     <div className="min-h-screen pt-40 pb-32 px-8 md:px-20" style={{ background: 'var(--bg)' }}>
       <div className="max-w-screen-lg mx-auto">
-        <p className="eyebrow mb-6">Reach Out</p>
-        <h1 className="display-2 text-[var(--body)] mb-6">Let&apos;s Connect.</h1>
-        <p className="font-baskerville italic text-lg text-[var(--muted)] max-w-2xl mb-4">
-          Whether you have a testimony to share, a question about the ministry, or simply want to say hello — Yadah&apos;s
-          team would love to hear from you.
-        </p>
+        <p className="eyebrow mb-6">{c('eyebrow')}</p>
+        <h1 className="display-2 text-[var(--body)] mb-6">{c('title')}</h1>
+        <p className="font-baskerville italic text-lg text-[var(--muted)] max-w-2xl mb-4">{c('intro')}</p>
         <p className="body-sm text-[var(--muted)] mb-16 max-w-2xl">
-          For event bookings, please visit the{' '}
-          <Link href="/booking" className="link-underline text-accent">
-            Booking page
-          </Link>{' '}
-          instead.
+          {bookingPromptParts.map((part, i) => (
+            <Fragment key={i}>
+              {part}
+              {i < bookingPromptParts.length - 1 ? (
+                <Link href={bookingHref} className="link-underline text-accent">
+                  {c('bookingLinkLabel')}
+                </Link>
+              ) : null}
+            </Fragment>
+          ))}
         </p>
 
         <div className="grid md:grid-cols-2 gap-16 md:gap-24">
           <div className="space-y-12">
             <section>
-              <p className="eyebrow mb-4">Ministry Office</p>
+              <p className="eyebrow mb-4">{c('officeEyebrow')}</p>
               <ul className="space-y-4 font-jost text-[var(--body)]">
                 <li>
-                  <span className="ui-label block mb-1 text-muted">Location</span>
+                  <span className="ui-label block mb-1 text-muted">{c('labelLocation')}</span>
                   {location}
                 </li>
                 <li>
-                  <span className="ui-label block mb-1 text-muted">Email</span>
+                  <span className="ui-label block mb-1 text-muted">{c('labelEmail')}</span>
                   <a href={`mailto:${email}`} className="link-underline text-accent">
                     {email}
                   </a>
                 </li>
                 <li>
-                  <span className="ui-label block mb-1 text-muted">Phone</span>
+                  <span className="ui-label block mb-1 text-muted">{c('labelPhone')}</span>
                   <a href={`tel:${phone.replace(/\s/g, '')}`} className="link-underline text-accent">
                     {phone}
                   </a>
@@ -63,30 +71,30 @@ export default async function ContactPage() {
             </section>
 
             <section>
-              <p className="eyebrow mb-4">Connect Online</p>
+              <p className="eyebrow mb-4">{c('connectEyebrow')}</p>
               <ul className="flex flex-col gap-2 font-jost text-[var(--body)]">
                 <li>
                   <a href={ig} target="_blank" rel="noopener noreferrer" className="link-underline text-accent w-fit">
-                    Instagram
+                    {c('connectLabelInstagram')}
                   </a>
                 </li>
                 <li>
                   <a href={yt} target="_blank" rel="noopener noreferrer" className="link-underline text-accent w-fit">
-                    YouTube
+                    {c('connectLabelYoutube')}
                   </a>
                 </li>
                 <li>
                   <a href={sp} target="_blank" rel="noopener noreferrer" className="link-underline text-accent w-fit">
-                    Spotify
+                    {c('connectLabelSpotify')}
                   </a>
                 </li>
               </ul>
             </section>
 
             <section>
-              <p className="eyebrow mb-3">Prayer Requests</p>
+              <p className="eyebrow mb-3">{c('prayerEyebrow')}</p>
               <p className="font-baskerville italic text-sm text-[var(--muted)] leading-relaxed max-w-md">
-                Have a testimony or prayer request? We read every message and believe in the power of prayer.
+                {c('prayerBody')}
               </p>
             </section>
           </div>
@@ -94,8 +102,8 @@ export default async function ContactPage() {
           <div>
             <ContactForm
               copy={copy}
-              subjectPlaceholder="Testimony, prayer request, general enquiry..."
-              submitLabel="SEND"
+              subjectPlaceholder={getCopyString(copy, 'contactForm.pageSubjectPlaceholder')}
+              submitLabel={getCopyString(copy, 'contactForm.pageSubmitLabel')}
               simpleSubmit
             />
           </div>

@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import type { Event, TicketTier } from '@prisma/client'
 import type { Metadata } from 'next'
+import { getCopyString, type SiteCopy } from '@/lib/site-copy'
+import { getSiteCopy } from '@/lib/site-settings'
 
 export const metadata: Metadata = {
   title: 'Events — Yadah',
@@ -17,7 +19,8 @@ type EventListRow = Event & {
 export default async function EventsPage() {
   const now = new Date()
 
-  const events = await prisma.event.findMany({
+  const [events, past, copy] = await Promise.all([
+    prisma.event.findMany({
     where: {
       status: { in: ['PUBLISHED', 'COMING_SOON'] },
     },
@@ -32,60 +35,61 @@ export default async function EventsPage() {
       },
     },
     orderBy: { date: 'asc' },
-  })
-
-  const upcoming = events.filter((e) => e.status === 'COMING_SOON' || new Date(e.date) >= now)
-
-  const past = await prisma.event.findMany({
-    where: {
-      status: { in: ['PUBLISHED', 'PAST'] },
-      date: { lt: now },
-    },
-    include: {
-      tiers: { where: { isActive: true } },
-      _count: {
-        select: {
-          registrations: {
-            where: { paymentStatus: { in: ['PAID', 'FREE'] } },
+  }),
+    prisma.event.findMany({
+      where: {
+        status: { in: ['PUBLISHED', 'PAST'] },
+        date: { lt: now },
+      },
+      include: {
+        tiers: { where: { isActive: true } },
+        _count: {
+          select: {
+            registrations: {
+              where: { paymentStatus: { in: ['PAID', 'FREE'] } },
+            },
           },
         },
       },
-    },
-    orderBy: { date: 'desc' },
-    take: 6,
-  })
+      orderBy: { date: 'desc' },
+      take: 6,
+    }),
+    getSiteCopy(),
+  ])
+
+  const upcoming = events.filter((e) => e.status === 'COMING_SOON' || new Date(e.date) >= now)
+
+  const ev = (k: string) => getCopyString(copy, `eventsPage.${k}`)
 
   return (
     <div className="min-h-screen pt-40 pb-32 px-8 md:px-20" style={{ background: 'var(--bg)' }}>
       <div className="max-w-screen-xl mx-auto">
-        <p className="eyebrow mb-6">Ministry</p>
-        <h1 className="display-1 text-[var(--body)] mb-4">Events.</h1>
-        <p className="body-lg max-w-lg mb-20">
-          Join Yadah live — worship nights, live recordings, conferences, and encounters with God.
-        </p>
+        <p className="eyebrow mb-6">{ev('eyebrow')}</p>
+        <h1 className="display-1 text-[var(--body)] mb-4">{ev('title')}</h1>
+        <p className="body-lg max-w-lg mb-20">{ev('intro')}</p>
 
         {upcoming.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-24">
             {upcoming.map((event) => (
-              <EventCard key={event.id} event={event} />
+              <EventCard key={event.id} event={event} copy={copy} />
             ))}
           </div>
         ) : (
           <div className="py-20 text-center border" style={{ borderColor: 'rgba(139,105,20,0.15)' }}>
             <p className="font-playfair italic text-2xl mb-4" style={{ color: 'var(--body)' }}>
-              No upcoming events at this time.
+              {ev('emptyTitle')}
             </p>
-            <p className="body-sm">Check back soon or subscribe to ministry updates.</p>
+            <p className="body-sm">{ev('emptyBody')}</p>
           </div>
         )}
 
         {past.length > 0 && (
           <>
             <div className="section-rule mb-16" />
-            <p className="eyebrow mb-8">Past Events</p>
+            <p className="eyebrow mb-8">{ev('pastEyebrow')}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {past.map((event) => (
-                <EventCard key={event.id} event={event} past />
+                <EventCard key={event.id} event={event} copy={copy} past />
               ))}
             </div>
           </>
@@ -95,7 +99,8 @@ export default async function EventsPage() {
   )
 }
 
-function EventCard({ event, past = false }: { event: EventListRow; past?: boolean }) {
+function EventCard({ event, past = false, copy }: { event: EventListRow; past?: boolean; copy: SiteCopy }) {
+  const ev = (k: string) => getCopyString(copy, `eventsPage.${k}`)
   const isComingSoon = event.status === 'COMING_SOON'
   const eventDate = new Date(event.date)
   const isSoldOut = event.totalCapacity !== null && event._count.registrations >= event.totalCapacity
@@ -121,17 +126,17 @@ function EventCard({ event, past = false }: { event: EventListRow; past?: boolea
           <div className="absolute top-3 left-3">
             {isComingSoon && (
               <span className="ui-label px-3 py-1" style={{ background: 'rgba(139,105,20,0.9)', color: 'white' }}>
-                Coming Soon
+                {ev('badgeComingSoon')}
               </span>
             )}
             {isSoldOut && !isComingSoon && (
               <span className="ui-label px-3 py-1" style={{ background: 'rgba(107,39,55,0.9)', color: 'white' }}>
-                Sold Out
+                {ev('badgeSoldOut')}
               </span>
             )}
             {event.type === 'ONLINE' && !isComingSoon && (
               <span className="ui-label px-3 py-1" style={{ background: 'rgba(13,11,8,0.8)', color: 'rgba(253,250,245,0.8)' }}>
-                Online
+                {ev('badgeOnline')}
               </span>
             )}
           </div>
@@ -140,7 +145,7 @@ function EventCard({ event, past = false }: { event: EventListRow; past?: boolea
         <div>
           <p className="eyebrow mb-2" style={{ color: 'var(--gold)' }}>
             {isComingSoon
-              ? 'Coming Soon'
+              ? ev('badgeComingSoon')
               : eventDate.toLocaleDateString('en-GB', {
                   weekday: 'short',
                   day: 'numeric',
@@ -158,15 +163,15 @@ function EventCard({ event, past = false }: { event: EventListRow; past?: boolea
             {event.venueName
               ? `${event.venueName}${event.venueCity ? ` · ${event.venueCity}` : ''}`
               : event.isOnline
-                ? 'Online'
-                : 'Venue TBA'}
+                ? ev('badgeOnline')
+                : ev('venueTba')}
           </p>
 
           {!isComingSoon && event.tiers?.length > 0 && (
             <p className="ui-label mt-2" style={{ color: 'var(--gold)' }}>
               {event.tiers.some((t) => t.price === 0)
-                ? 'Free'
-                : `From ${event.tiers[0]?.currency} ${(
+                ? ev('tierFree')
+                : `${ev('tierFromPrefix')} ${event.tiers[0]?.currency} ${(
                     Math.min(...event.tiers.map((t) => t.price)) / 100
                   ).toLocaleString()}`}
             </p>

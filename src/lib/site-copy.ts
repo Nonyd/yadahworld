@@ -36,8 +36,13 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
   },
   footer: {
     preFooterTitle: 'A Message',
-    preFooterSubtitle: 'You can live forever by believing in Jesus.',
+    preFooterSubtitle: 'You can live forever\nby believing in Jesus.',
+    preFooterAttribution: '— Yadah',
     preFooterCta: 'Read the Good News',
+    preFooterSecondaryCta: 'Explore Music',
+    newsletterEyebrow: 'Stay Connected',
+    newsletterBody: 'Ministry updates, new releases,\nand moments from the field.',
+    newsletterFinePrint: 'No spam. Unsubscribe at any time.',
     taglineQuote: 'The Voice of Jesus Christ to Nations.',
     colNavigate: 'Navigate',
     colMinistry: 'Ministry',
@@ -121,20 +126,94 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     heroEyebrow: 'The Artist',
     heroTitle: 'Yadah.',
     heroSubtitle: 'The Voice Of Jesus To Nations.',
-    blockquote:
-      'I believe in the one and only true God. I believe in Christ\'s cross and all that it is to a believer!!',
+    mantraEyebrow: 'Her Mantra',
+    mantraQuote:
+      "I believe in the one and only true God. I believe in Christ's cross and all that it is to a believer.",
+    mantraAttribution: '— Yadah Kukeurim Daniel',
+    ministerEyebrow: '03 — The Minister',
+    stageName: 'Yadah',
+    fullName: 'Kukeurim Daniel',
     body1:
       "Yadah Kukeurim Daniel, professionally known as Yadah, is a distinguished Nigerian singer, songwriter, and fashion designer whose impactful music centers on the themes of God's love and grace. Based in Abuja, Nigeria, Yadah has carved a significant niche in contemporary gospel music, captivating audiences worldwide with her soulful melodies and profound lyrical content.",
+    faithDeclaration:
+      'I believe in the one and only true God. I believe that He gave His Son who came as a man to die for our sins — and that through His death on the cross, we have the remission and forgiveness of sins. I believe that whosoever believes in the Son has eternal life and a hope for the coming glory and manifestation of sons. I believe in Christ\'s cross and all that it is to a believer.',
     body2:
       'She made her official debut in 2017 with "Goodie Goodie" under the management of SonsHub Media. Her discography includes hit songs such as "Beyond Me", "Never Seen", "Onye Nwere Jesus", "Free of Charge", and "Na Your Hand" — songs that have reached people across continents, inviting hearts into worship and the presence of God.',
     stat1n: 'Millions',
-    stat1l: 'Lives Impacted Globally',
-    stat2n: '600K+',
-    stat2l: 'Social Followers',
-    stat3n: '7+',
-    stat3l: 'Years Ministry',
+    stat1l: 'Lives Touched Globally',
+    stat2n: '7+',
+    stat2l: 'Years of Ministry',
+    stat3n: 'Nations',
+    stat3l: 'Reached Through Music',
+    ministryEyebrow: 'Ministry',
+    ministryLead: 'Yadah is available to minister.',
+    ministryBody:
+      'If you would like Yadah to minister at your church, conference, or worship event, you are welcome to reach out through the booking page.',
+    ministryCta: 'Submit a Booking Request',
+    blockquote:
+      'I believe in the one and only true God. I believe in Christ\'s cross and all that it is to a believer!!',
     ctaLine: 'Want to invite Yadah to your event?',
     ctaButton: 'Book Yadah',
+  },
+  gospelPage: {
+    heroEyebrow: 'A Message from Yadah',
+    heroTitle: 'The Best News You Will Ever Hear.',
+    section1Body:
+      'We were all born separated from God. Not because He abandoned us — but because sin created a distance between us and Him. And no amount of good works, religion, or effort could bridge that gap.',
+    scripture1Text: 'For all have sinned and fall short of the glory of God.',
+    scripture1Cite: '— Romans 3:23',
+    section2Body:
+      'But God, in His immeasurable love, did something extraordinary. He sent His Son — Jesus Christ — to live the life we couldn\'t live, and die the death we deserved. On the cross, Jesus took our sin, our shame, and our separation — and replaced it with His righteousness.',
+    scripture2Text:
+      'For God so loved the world that He gave His one and only Son, that whoever believes in Him shall not perish but have eternal life.',
+    scripture2Cite: '— John 3:16',
+    section3Body:
+      'Salvation is not earned. It is received. All you have to do is believe — truly believe — that Jesus is Lord, that He died for your sins, and that God raised Him from the dead.',
+    scripture3Text:
+      "If you declare with your mouth, 'Jesus is Lord,' and believe in your heart that God raised him from the dead, you will be saved.",
+    scripture3Cite: '— Romans 10:9',
+    prayerEyebrow: 'A Simple Prayer',
+    prayerBody: `Lord Jesus, I believe You are the Son of God.
+I believe You died for my sins and rose again.
+I receive You as my Lord and Saviour.
+Forgive me of my sins and give me a new life.
+I am Yours.
+Amen.`,
+    closingBody1:
+      'If you just prayed that prayer and meant it — welcome to the family of God. Your life will never be the same.',
+    closingBody2:
+      "We would love to hear from you. Reach out to Yadah's team and let us know. We want to celebrate with you.",
+    ctaContact: 'Get in Touch',
+    ctaMusic: "Explore Yadah's Music",
+    scripture4Text:
+      'Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!',
+    scripture4Cite: '— 2 Corinthians 5:17',
+  },
+  ministrationsPage: {
+    eyebrow: 'Ministry',
+    titleBefore: 'Live',
+    titleEmphasis: 'Ministrations.',
+    intro: 'Watch Yadah minister live — worship sessions, church services, and moments of encounter with God.',
+  },
+  eventsPage: {
+    eyebrow: 'Ministry',
+    title: 'Events.',
+    intro: 'Join Yadah live — worship nights, live recordings, conferences, and encounters with God.',
+    emptyTitle: 'No upcoming events at this time.',
+    emptyBody: 'Check back soon or subscribe to ministry updates.',
+    pastEyebrow: 'Past Events',
+    badgeComingSoon: 'Coming Soon',
+    badgeSoldOut: 'Sold Out',
+    badgeOnline: 'Online',
+    venueTba: 'Venue TBA',
+    tierFree: 'Free',
+    tierFromPrefix: 'From',
+  },
+  unsubscribedPage: {
+    eyebrow: 'Newsletter',
+    title: 'You have been unsubscribed.',
+    body: 'You will no longer receive ministry updates from Yadah. We are sorry to see you go. God bless you.',
+    ctaHome: 'Return Home',
   },
   bookingPage: {
     eyebrow: 'Invitations',
@@ -145,12 +224,23 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     note: 'Note: This form is for scheduling purposes only and does not confirm an event.',
   },
   contactPage: {
-    eyebrow: 'Get in Touch',
-    title: 'Contact.',
+    eyebrow: 'Reach Out',
+    title: "Let's Connect.",
+    intro:
+      "Whether you have a testimony to share, a question about the ministry, or simply want to say hello — Yadah's team would love to hear from you.",
+    bookingPrompt: 'For event bookings, please visit the {{booking}} instead.',
     body:
       "For general enquiries, press, partnerships, or questions about Yadah's ministry. For event bookings, please use the {{booking}}.",
     bookingUrl: '/booking',
     bookingLinkLabel: 'Booking page',
+    officeEyebrow: 'Ministry Office',
+    connectEyebrow: 'Connect Online',
+    prayerEyebrow: 'Prayer Requests',
+    prayerBody:
+      'Have a testimony or prayer request? We read every message and believe in the power of prayer.',
+    connectLabelInstagram: 'Instagram',
+    connectLabelYoutube: 'YouTube',
+    connectLabelSpotify: 'Spotify',
     labelLocation: 'Location',
     labelPhone: 'Phone',
     labelEmail: 'Email',
@@ -225,6 +315,8 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     messagePh: 'Write your message…',
     submit: 'Send message',
     sending: 'Sending…',
+    pageSubjectPlaceholder: 'Testimony, prayer request, general enquiry…',
+    pageSubmitLabel: 'SEND',
   },
 }
 
@@ -255,6 +347,18 @@ export function getCopyString(copy: SiteCopy, path: string): string {
     cur = cur[part]
   }
   return typeof cur === 'string' ? cur : ''
+}
+
+/** Split CMS copy on a placeholder token (e.g. `"{{booking}}"`). */
+export function splitCopyByToken(text: string, token: string): string[] {
+  return text.split(token)
+}
+
+/** Turn the last segment of a dot-path into readable words for admin labels. */
+export function formatSiteTextLeafLabel(path: string): string {
+  const leaf = path.includes('.') ? path.slice(path.lastIndexOf('.') + 1) : path
+  const spaced = leaf.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/_/g, ' ')
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1)
 }
 
 export function roomForYouHrefFromCopy(copy: SiteCopy): string {

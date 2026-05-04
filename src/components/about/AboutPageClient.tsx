@@ -4,16 +4,8 @@ import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getCopyString, type SiteCopy } from '@/lib/site-copy'
+import { bookingHrefFromCopy, getCopyString, type SiteCopy } from '@/lib/site-copy'
 import { proseHtmlFromStored } from '@/lib/rich-text-display'
-
-const STATS = [
-  { number: 'Millions', label: 'Lives Touched Globally' },
-  { number: '7+', label: 'Years of Ministry' },
-  { number: 'Nations', label: 'Reached Through Music' },
-] as const
-
-const FAITH_DECLARATION = `I believe in the one and only true God. I believe that He gave His Son who came as a man to die for our sins — and that through His death on the cross, we have the remission and forgiveness of sins. I believe that whosoever believes in the Son has eternal life and a hope for the coming glory and manifestation of sons. I believe in Christ's cross and all that it is to a believer.`
 
 export default function AboutPageClient({
   aboutHero,
@@ -26,9 +18,16 @@ export default function AboutPageClient({
 }) {
   const { ref: bioRef, inView: bioInView } = useInView({ threshold: 0.08, triggerOnce: true })
   const a = (k: string) => getCopyString(copy, `aboutPage.${k}`)
+  const bookingHref = bookingHrefFromCopy(copy)
 
   const bio1Html = proseHtmlFromStored(a('body1'))
   const bio2Html = proseHtmlFromStored(a('body2'))
+
+  const statRows = [
+    { number: a('stat1n'), label: a('stat1l') },
+    { number: a('stat2n'), label: a('stat2l') },
+    { number: a('stat3n'), label: a('stat3l') },
+  ]
 
   return (
     <div className="min-h-screen">
@@ -71,7 +70,7 @@ export default function AboutPageClient({
         }}
       >
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <p className="eyebrow mb-8">Her Mantra</p>
+          <p className="eyebrow mb-8">{a('mantraEyebrow')}</p>
           <blockquote
             className="font-playfair italic"
             style={{
@@ -82,8 +81,7 @@ export default function AboutPageClient({
               padding: 0,
             }}
           >
-            &ldquo;I believe in the one and only true God. I believe in Christ&apos;s cross and all that it is to a
-            believer.&rdquo;
+            &ldquo;{a('mantraQuote')}&rdquo;
           </blockquote>
           <div
             className="h-px mx-auto mt-10"
@@ -94,7 +92,7 @@ export default function AboutPageClient({
             }}
           />
           <p className="font-jost text-xs tracking-[0.2em] uppercase mt-4" style={{ color: 'var(--muted)' }}>
-            — Yadah Kukeurim Daniel
+            {a('mantraAttribution')}
           </p>
         </div>
       </section>
@@ -131,7 +129,7 @@ export default function AboutPageClient({
               transition={{ duration: 0.75, delay: 0.12, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               <p className="eyebrow mb-8" style={{ color: 'var(--gold)' }}>
-                03 — The Minister
+                {a('ministerEyebrow')}
               </p>
 
               <div style={{ marginBottom: '2.5rem' }}>
@@ -145,7 +143,7 @@ export default function AboutPageClient({
                     marginBottom: '0.5rem',
                   }}
                 >
-                  Yadah
+                  {a('stageName')}
                 </h2>
                 <p
                   className="font-playfair italic"
@@ -154,7 +152,7 @@ export default function AboutPageClient({
                     color: 'var(--muted)',
                   }}
                 >
-                  Kukeurim Daniel
+                  {a('fullName')}
                 </p>
               </div>
 
@@ -179,7 +177,7 @@ export default function AboutPageClient({
                   color: 'var(--body)',
                 }}
               >
-                &ldquo;{FAITH_DECLARATION}&rdquo;
+                &ldquo;{a('faithDeclaration')}&rdquo;
               </blockquote>
 
               <div
@@ -205,7 +203,7 @@ export default function AboutPageClient({
               borderBottom: '1px solid rgba(139, 105, 20, 0.15)',
             }}
           >
-            {STATS.map(({ number, label }) => (
+            {statRows.map(({ number, label }) => (
               <div
                 key={label}
                 className="py-12 text-center border-b border-[rgba(139,105,20,0.15)] last:border-b-0 md:border-b-0 md:border-r md:border-[rgba(139,105,20,0.15)] md:last:border-r-0"
@@ -233,18 +231,15 @@ export default function AboutPageClient({
 
       {/* SECTION 5 — Ministry CTA */}
       <section className="border-t border-gold-light/20 bg-bg mt-12 md:mt-20 py-24 px-8 md:px-20 text-center">
-        <p className="eyebrow mb-4">Ministry</p>
+        <p className="eyebrow mb-4">{a('ministryEyebrow')}</p>
         <p className="font-playfair text-2xl font-normal italic text-[var(--body)] mb-4 max-w-xl mx-auto">
-          Yadah is available to minister.
+          {a('ministryLead')}
         </p>
-        <p className="body-sm text-muted max-w-lg mx-auto mb-10">
-          If you would like Yadah to minister at your church, conference, or worship event, you are welcome to reach out
-          through the booking page.
-        </p>
+        <p className="body-sm text-muted max-w-lg mx-auto mb-10">{a('ministryBody')}</p>
         <div className="flex justify-center">
-          <Link href="/booking" className="btn-ghost inline-flex">
+          <Link href={bookingHref} className="btn-ghost inline-flex">
             <span className="arrow-line" />
-            Submit a Booking Request
+            {a('ministryCta')}
           </Link>
         </div>
       </section>

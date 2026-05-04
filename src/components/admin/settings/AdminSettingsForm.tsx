@@ -8,6 +8,7 @@ import { cloudinaryCloudName } from '@/lib/cloudinary'
 import { getAdminUploadStatus, uploadAdminImage, type AdminUploadStatus } from '@/lib/admin-upload-client'
 import {
   buildSiteContentJsonFromDotMap,
+  formatSiteTextLeafLabel,
   getCopyString,
   listSiteCopyDotPaths,
   mergeSiteContent,
@@ -46,12 +47,16 @@ const SITE_TEXT_GROUP_ORDER = [
   'home',
   'media',
   'aboutPage',
+  'gospelPage',
+  'ministrationsPage',
+  'eventsPage',
   'bookingPage',
   'contactPage',
   'campusTour',
   'shop',
   'releases',
   'releaseDetail',
+  'unsubscribedPage',
   'legal',
   'contactForm',
 ] as const
@@ -62,18 +67,27 @@ const SITE_TEXT_GROUP_LABEL: Record<string, string> = {
   home: 'Homepage sections',
   media: 'Media page',
   aboutPage: 'About page',
+  gospelPage: 'Gospel page',
+  ministrationsPage: 'Ministrations page',
+  eventsPage: 'Events listing',
   bookingPage: 'Booking page',
-  contactPage: 'Contact page (sidebar)',
+  contactPage: 'Contact page',
   campusTour: 'Campus tour page',
   shop: 'Shop page',
   releases: 'Releases index',
   releaseDetail: 'Single release page',
-  legal: 'Legal pages (Privacy, Refund, Cookies)',
+  unsubscribedPage: 'Newsletter unsubscribed page',
+  legal: 'Legal snippets (short placeholders)',
   contactForm: 'Contact form (labels & messages)',
 }
 
 function siteTextUseTextarea(path: string): boolean {
   if (siteTextUseRichEditor(path)) return false
+  if (path.startsWith('gospelPage.')) {
+    if (path.endsWith('Eyebrow') || path.endsWith('Title') || path.endsWith('Cite')) return false
+    if (path === 'gospelPage.ctaContact' || path === 'gospelPage.ctaMusic') return false
+    return true
+  }
   const tail = path.split('.').pop() ?? path
   if (
     tail.includes('Lines') ||
@@ -89,7 +103,13 @@ function siteTextUseTextarea(path: string): boolean {
     tail === 'taglineQuote' ||
     tail.startsWith('preFooter') ||
     tail === 'creditLine' ||
-    tail === 'messagePh'
+    tail === 'messagePh' ||
+    tail === 'faithDeclaration' ||
+    tail === 'mantraQuote' ||
+    tail === 'ministryBody' ||
+    tail === 'prayerBody' ||
+    tail === 'bookingPrompt' ||
+    tail === 'newsletterBody'
   )
     return true
   return false
@@ -305,13 +325,13 @@ export default function AdminSettingsForm({
     }
     const out: { key: string; paths: string[] }[] = []
     for (const k of SITE_TEXT_GROUP_ORDER) {
-      const paths = g[k]?.length ? [...g[k]!].sort() : []
+      const paths = g[k]?.length ? [...g[k]!] : []
       if (paths.length) out.push({ key: k, paths })
     }
     const orderStr = SITE_TEXT_GROUP_ORDER as readonly string[]
     for (const k of Object.keys(g)) {
       if (!orderStr.includes(k) && g[k]?.length) {
-        out.push({ key: k, paths: [...g[k]!].sort() })
+        out.push({ key: k, paths: [...g[k]!] })
       }
     }
     return out
@@ -1033,19 +1053,32 @@ export default function AdminSettingsForm({
       )}
 
       {tab === 'Site text' && (
-        <div className="admin-card max-h-[min(70vh,720px)] space-y-8 overflow-y-auto p-6 sm:p-8">
-          <div>
+        <div className="admin-card flex max-h-[min(78vh,880px)] flex-col overflow-hidden p-0 sm:p-0">
+          <div className="shrink-0 space-y-3 border-b border-admin-border p-6 sm:p-8 sm:pb-5">
             <h2 className="font-playfair text-lg text-admin-text">Site text</h2>
-            <p className="mt-2 text-sm text-admin-muted">
+            <p className="text-sm text-admin-muted">
               Public copy for pages and chrome. Values merge with built-in defaults. Use <strong>Links &amp; URLs</strong>{' '}
-              below for destinations (navbar, footer, booking, Room For You). In <strong>Contact page → body</strong>,
-              include <code className="rounded bg-admin-bg px-1 py-0.5 font-mono text-[11px]">{'{{booking}}'}</code> where
-              the booking link label should appear (the actual URL is set under Links). In <strong>Campus tour → body1</strong>, include{' '}
-              <code className="rounded bg-admin-bg px-1 py-0.5 font-mono text-[11px]">{'{{rfy}}'}</code> for the Room For
-              You link text — its URL is also under Links.
+              for destinations (navbar, footer, booking, Room For You). In <strong>Contact page → booking prompt</strong> and{' '}
+              <strong>Contact page → body</strong>, include{' '}
+              <code className="rounded bg-admin-bg px-1 py-0.5 font-mono text-[11px]">{'{{booking}}'}</code> where the booking
+              link should appear. In <strong>Campus tour → body1</strong>, include{' '}
+              <code className="rounded bg-admin-bg px-1 py-0.5 font-mono text-[11px]">{'{{rfy}}'}</code> for the Room For You
+              link — its URL is under Links.
             </p>
+            <nav className="flex flex-wrap gap-2 pt-2" aria-label="Jump to site text section">
+              {copyPathsByGroup.map(({ key }) => (
+                <a
+                  key={key}
+                  href={`#st-${key}`}
+                  className="rounded-full border border-admin-border bg-admin-surface px-3 py-1.5 font-jost text-[10px] font-medium uppercase tracking-[0.12em] text-admin-muted transition-colors hover:border-admin-text/20 hover:text-admin-text"
+                >
+                  {SITE_TEXT_GROUP_LABEL[key] ?? key}
+                </a>
+              ))}
+            </nav>
           </div>
 
+          <div className="min-h-0 flex-1 space-y-8 overflow-y-auto p-6 sm:p-8">
           <div className="space-y-4 rounded-lg border border-admin-border bg-black/[0.02] p-5 sm:p-6">
             <h3 className="font-jost text-xs font-semibold uppercase tracking-[0.2em] text-admin-muted">Links &amp; URLs</h3>
             <p className="text-xs text-admin-muted">
@@ -1073,7 +1106,11 @@ export default function AdminSettingsForm({
           </div>
 
           {copyPathsByGroup.map(({ key, paths }) => (
-            <div key={key} className="space-y-4 border-t border-admin-border pt-6 first:border-t-0 first:pt-0">
+            <div
+              key={key}
+              id={`st-${key}`}
+              className="scroll-mt-4 space-y-4 border-t border-admin-border pt-6 first:border-t-0 first:pt-0"
+            >
               <h3 className="font-jost text-xs font-semibold uppercase tracking-[0.2em] text-admin-muted">
                 {SITE_TEXT_GROUP_LABEL[key] ?? key}
               </h3>
@@ -1083,8 +1120,14 @@ export default function AdminSettingsForm({
                     key={path}
                     className={siteTextUseRichEditor(path) || siteTextUseTextarea(path) ? 'sm:col-span-2' : undefined}
                   >
-                    <label className="admin-label mb-1 block font-mono text-[10px] normal-case tracking-normal text-admin-muted">
-                      {path}
+                    <label className="admin-label mb-1 block">
+                      <span className="block font-jost text-xs font-medium normal-case tracking-normal text-admin-text">
+                        {SITE_TEXT_GROUP_LABEL[path.split('.')[0] ?? ''] ?? path.split('.')[0]} ›{' '}
+                        {formatSiteTextLeafLabel(path)}
+                      </span>
+                      <span className="mt-0.5 block font-mono text-[10px] normal-case tracking-tight text-admin-muted">
+                        {path}
+                      </span>
                     </label>
                     {siteTextUseRichEditor(path) ? (
                       <RichTextEditor
@@ -1111,6 +1154,7 @@ export default function AdminSettingsForm({
               </div>
             </div>
           ))}
+          </div>
         </div>
       )}
 
