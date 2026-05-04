@@ -36,12 +36,14 @@ export default function CustomCursor() {
     const onEnter = () => {
       ring.style.width = '52px'
       ring.style.height = '52px'
-      ring.style.borderColor = 'rgba(107, 39, 55, 0.75)'
+      ring.style.borderColor = 'rgba(253, 250, 245, 0.55)'
+      dot.style.background = 'rgba(253, 250, 245, 0.85)'
     }
     const onLeave = () => {
       ring.style.width = '36px'
       ring.style.height = '36px'
-      ring.style.borderColor = 'rgba(107, 39, 55, 0.4)'
+      ring.style.borderColor = 'rgba(253, 250, 245, 0.3)'
+      dot.style.background = 'rgba(253, 250, 245, 0.6)'
     }
 
     const els = document.querySelectorAll('a, button')
