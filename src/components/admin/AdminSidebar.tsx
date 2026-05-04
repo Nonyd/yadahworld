@@ -5,7 +5,12 @@ import AdminBrandedLogo from '@/components/admin/AdminBrandedLogo'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
-const ADMIN_LINKS: { label: string; href: string; icon: React.ReactNode; badgeKey?: 'bookings' | 'messages' }[] = [
+const ADMIN_LINKS: {
+  label: string
+  href: string
+  icon: React.ReactNode
+  badgeKey?: 'bookings' | 'campusTour' | 'messages'
+}[] = [
   {
     label: 'Overview',
     href: '/admin',
@@ -24,6 +29,12 @@ const ADMIN_LINKS: { label: string; href: string; icon: React.ReactNode; badgeKe
         <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5a2.25 2.25 0 002.25-2.25m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5a2.25 2.25 0 012.25 2.25v7.5" />
       </svg>
     ),
+  },
+  {
+    label: 'Campus Tour',
+    href: '/admin/campus-tour',
+    badgeKey: 'campusTour',
+    icon: <span className="text-lg font-normal leading-none text-current">◎</span>,
   },
   {
     label: 'Messages',
@@ -115,6 +126,7 @@ export default function AdminSidebar({
   onNavigate,
   userLabel,
   pendingBookingsCount = 0,
+  newCampusTourCount = 0,
   unreadMessagesCount = 0,
   logoUrl,
   siteName = 'Yadah',
@@ -122,14 +134,16 @@ export default function AdminSidebar({
   onNavigate?: () => void
   userLabel?: string | null
   pendingBookingsCount?: number
+  newCampusTourCount?: number
   unreadMessagesCount?: number
   logoUrl: string
   siteName?: string
 }) {
   const path = usePathname()
 
-  const badgeFor = (key?: 'bookings' | 'messages') => {
+  const badgeFor = (key?: 'bookings' | 'campusTour' | 'messages') => {
     if (key === 'bookings' && pendingBookingsCount > 0) return pendingBookingsCount
+    if (key === 'campusTour' && newCampusTourCount > 0) return newCampusTourCount
     if (key === 'messages' && unreadMessagesCount > 0) return unreadMessagesCount
     return 0
   }

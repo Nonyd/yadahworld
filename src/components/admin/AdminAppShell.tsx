@@ -9,6 +9,7 @@ export default function AdminAppShell({
   children,
   userLabel,
   pendingBookingsCount = 0,
+  newCampusTourCount = 0,
   unreadMessagesCount = 0,
   logoUrl,
   siteName = 'Yadah',
@@ -16,6 +17,7 @@ export default function AdminAppShell({
   children: React.ReactNode
   userLabel?: string | null
   pendingBookingsCount?: number
+  newCampusTourCount?: number
   unreadMessagesCount?: number
   logoUrl: string
   siteName?: string
@@ -61,6 +63,7 @@ export default function AdminAppShell({
             onNavigate={() => setMobileOpen(false)}
             userLabel={userLabel}
             pendingBookingsCount={pendingBookingsCount}
+            newCampusTourCount={newCampusTourCount}
             unreadMessagesCount={unreadMessagesCount}
             logoUrl={logoUrl}
             siteName={siteName}

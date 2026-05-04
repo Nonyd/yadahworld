@@ -1,6 +1,10 @@
+'use client'
+
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import PublicHrefLink from '@/components/ui/PublicHrefLink'
+import CampusTourModal from '@/components/campus-tour/CampusTourModal'
 import type { CampusTourVisuals } from '@/lib/site-settings'
 import { bookingHrefFromCopy, getCopyString, roomForYouHrefFromCopy, type SiteCopy } from '@/lib/site-copy'
 import { proseHtmlFromStored } from '@/lib/rich-text-display'
@@ -30,6 +34,7 @@ export default function CampusTourView({
   marqueeRow2,
   copy,
 }: CampusTourVisuals & { copy: SiteCopy }) {
+  const [modalOpen, setModalOpen] = useState(false)
   const c = (k: string) => getCopyString(copy, `campusTour.${k}`)
   const roomForYouHref = roomForYouHrefFromCopy(copy)
   const bookingHref = bookingHrefFromCopy(copy)
@@ -39,17 +44,30 @@ export default function CampusTourView({
 
   return (
     <>
-      <div className="min-h-screen pt-40 pb-16 px-8 md:px-20" style={{ background: 'var(--bg)' }}>
+      <div className="min-h-screen px-8 pb-16 pt-40 md:px-20" style={{ background: 'var(--bg)' }}>
         <div className="mx-auto grid max-w-screen-xl gap-12 md:grid-cols-2 md:items-center md:gap-16 lg:gap-20">
           <div className="order-2 md:order-1">
             <p className="eyebrow mb-6">{c('eyebrow')}</p>
-            <h1 className="display-2 text-[var(--body)] mb-10">
+            <h1 className="display-2 mb-10 text-[var(--body)]">
               {c('headingLine1')}
               <br />
               <em className="font-playfair italic text-[var(--accent)]">{c('headingLine2')}</em>
             </h1>
 
-            <div className="max-w-xl space-y-6 text-[var(--muted)]">
+            <button type="button" onClick={() => setModalOpen(true)} className="btn-primary mt-2">
+              Apply for Campus Tour
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+                <path
+                  d="M1 7h12M7 1l6 6-6 6"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+
+            <div className="mt-10 max-w-xl space-y-6 text-[var(--muted)]">
               {hasRfyToken ? (
                 <>
                   {beforeRfy.trim() ? (
@@ -91,7 +109,7 @@ export default function CampusTourView({
           </div>
 
           <div className="order-1 md:order-2">
-            <div className="relative mx-auto aspect-[3/4] w-full max-w-md overflow-hidden rounded-lg border border-[rgba(42,37,32,0.1)] shadow-[0_12px_48px_rgba(13,11,8,0.1)] md:max-w-none md:ml-auto md:mr-0">
+            <div className="relative mx-auto aspect-[3/4] w-full max-w-md overflow-hidden rounded-lg border border-[rgba(42,37,32,0.1)] shadow-[0_12px_48px_rgba(13,11,8,0.1)] md:ml-auto md:mr-0 md:max-w-none">
               <Image
                 src={portraitUrl}
                 alt="Yadah — Campus Tour"
@@ -113,6 +131,18 @@ export default function CampusTourView({
         <MarqueeStrip urls={marqueeRow1} />
         <MarqueeStrip urls={marqueeRow2} reverse />
       </section>
+
+      <div className="border-t py-20 text-center" style={{ borderColor: 'rgba(139,105,20,0.15)', background: 'var(--bg)' }}>
+        <p className="eyebrow mb-4">Ready?</p>
+        <h2 className="mb-6 font-playfair text-3xl italic" style={{ color: 'var(--body)' }}>
+          Invite Yadah to your campus.
+        </h2>
+        <button type="button" onClick={() => setModalOpen(true)} className="btn-primary">
+          Apply Now →
+        </button>
+      </div>
+
+      <CampusTourModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </>
   )
 }

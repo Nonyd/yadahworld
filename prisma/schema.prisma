@@ -275,6 +275,27 @@ enum EventType {
   HYBRID
 }
 
+enum CampusTourStatus {
+  NEW
+  REVIEWING
+  CONFIRMED
+  DECLINED
+}
+
+model CampusTourApplication {
+  id            String           @id @default(cuid())
+  createdAt     DateTime         @default(now())
+  fullName      String
+  whatsapp      String
+  email         String
+  campus        String
+  customCampus  String?
+  role          String
+  customRole    String?
+  expectations  String?          @db.Text
+  status        CampusTourStatus @default(NEW)
+}
+
 model Event {
   id            String                @id @default(cuid())
   createdAt     DateTime              @default(now())
