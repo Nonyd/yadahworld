@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -63,6 +63,9 @@ interface CampusTourModalProps {
   onClose: () => void
 }
 
+/** Above site navbar `z-[10050]` and mobile menu `z-[10100]`. */
+const Z_OVERLAY = 11000
+
 export default function CampusTourModal({ isOpen, onClose }: CampusTourModalProps) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
@@ -81,6 +84,15 @@ export default function CampusTourModal({ isOpen, onClose }: CampusTourModalProp
   const selectedRole = watch('role')
   const showCustomCampus = selectedCampus === 'other'
   const showCustomRole = selectedRole === 'other'
+
+  useEffect(() => {
+    if (!isOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [isOpen])
 
   const onSubmit = async (data: FormData) => {
     setStatus('loading')
@@ -120,45 +132,54 @@ export default function CampusTourModal({ isOpen, onClose }: CampusTourModalProp
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          <motion.div
+        <motion.div
+          key="campus-tour-overlay"
+          className="fixed inset-0 flex items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-6"
+          style={{ zIndex: Z_OVERLAY }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.22 }}
+        >
+          <motion.button
+            type="button"
+            aria-label="Close dialog"
+            className="absolute inset-0 bg-[rgba(13,11,8,0.76)] backdrop-blur-[3px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
             onClick={handleClose}
-            className="fixed inset-0 z-[200]"
-            style={{ background: 'rgba(13,11,8,0.7)' }}
           />
 
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{
-              duration: 0.4,
-              ease: [0.25, 0.46, 0.45, 0.94],
-            }}
-            className="fixed inset-x-4 top-[5vh] bottom-[5vh] z-[201] overflow-y-auto md:inset-x-auto md:left-1/2 md:top-[5vh] md:w-full md:max-w-2xl md:-translate-x-1/2"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="campus-tour-modal-title"
+            initial={{ opacity: 0, y: 28, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 18, scale: 0.98 }}
+            transition={{ duration: 0.32, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="relative z-10 flex max-h-[min(90dvh,52rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-[rgba(139,105,20,0.25)] shadow-[0_28px_100px_rgba(13,11,8,0.42)]"
             style={{ background: 'var(--bg)' }}
+            onClick={(e) => e.stopPropagation()}
           >
             <div
-              className="sticky top-0 z-10 flex items-center justify-between border-b px-8 py-6"
+              className="flex shrink-0 items-start justify-between gap-4 border-b px-6 py-5 sm:px-8 sm:py-6"
               style={{
                 background: 'var(--bg)',
                 borderColor: 'rgba(139,105,20,0.15)',
               }}
             >
-              <div>
+              <div className="min-w-0 pr-2">
                 <p className="eyebrow">Campus Tour 2025</p>
-                <h2 className="mt-1 font-playfair text-xl font-normal" style={{ color: 'var(--body)' }}>
+                <h2 id="campus-tour-modal-title" className="mt-1 font-playfair text-xl font-normal sm:text-2xl" style={{ color: 'var(--body)' }}>
                   Invite Yadah to Your Campus
                 </h2>
               </div>
               <button
                 type="button"
                 onClick={handleClose}
-                className="font-jost text-xs uppercase tracking-widest transition-colors"
+                className="shrink-0 rounded-md px-2 py-1 font-jost text-xs uppercase tracking-widest transition-colors hover:bg-[rgba(139,105,20,0.08)]"
                 style={{ color: 'var(--muted)' }}
                 aria-label="Close"
               >
@@ -166,17 +187,17 @@ export default function CampusTourModal({ isOpen, onClose }: CampusTourModalProp
               </button>
             </div>
 
-            <div className="px-8 py-8">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 py-6 sm:px-8 sm:py-8 [scrollbar-gutter:stable]">
               <AnimatePresence mode="wait">
                 {status === 'success' ? (
                   <motion.div
                     key="success"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="py-16 text-center"
+                    className="py-12 text-center sm:py-16"
                   >
                     <div
-                      className="mx-auto mb-8 flex h-16 w-16 items-center justify-center border"
+                      className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-full border-2"
                       style={{ borderColor: 'var(--gold)' }}
                     >
                       <span className="font-playfair text-2xl" style={{ color: 'var(--gold)' }}>
@@ -200,7 +221,7 @@ export default function CampusTourModal({ isOpen, onClose }: CampusTourModalProp
                     onSubmit={handleSubmit(onSubmit)}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="flex flex-col gap-6"
+                    className="flex flex-col gap-6 pb-2"
                   >
                     <p className="body-sm" style={{ color: 'var(--muted)' }}>
                       Fill in your details below to express interest in having Yadah minister at your campus.
@@ -391,7 +412,7 @@ export default function CampusTourModal({ isOpen, onClose }: CampusTourModalProp
               </AnimatePresence>
             </div>
           </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   )

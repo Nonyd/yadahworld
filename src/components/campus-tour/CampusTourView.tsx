@@ -6,7 +6,7 @@ import Link from 'next/link'
 import PublicHrefLink from '@/components/ui/PublicHrefLink'
 import CampusTourModal from '@/components/campus-tour/CampusTourModal'
 import type { CampusTourVisuals } from '@/lib/site-settings'
-import { bookingHrefFromCopy, getCopyString, roomForYouHrefFromCopy, type SiteCopy } from '@/lib/site-copy'
+import { getCopyString, roomForYouHrefFromCopy, type SiteCopy } from '@/lib/site-copy'
 import { proseHtmlFromStored } from '@/lib/rich-text-display'
 
 function MarqueeStrip({ urls, reverse }: { urls: string[]; reverse?: boolean }) {
@@ -37,7 +37,6 @@ export default function CampusTourView({
   const [modalOpen, setModalOpen] = useState(false)
   const c = (k: string) => getCopyString(copy, `campusTour.${k}`)
   const roomForYouHref = roomForYouHrefFromCopy(copy)
-  const bookingHref = bookingHrefFromCopy(copy)
   const body1 = c('body1')
   const hasRfyToken = body1.includes('{{rfy}}')
   const [beforeRfy, afterRfy] = hasRfyToken ? body1.split('{{rfy}}') : [body1, '']
@@ -55,7 +54,7 @@ export default function CampusTourView({
             </h1>
 
             <button type="button" onClick={() => setModalOpen(true)} className="btn-primary mt-2">
-              Apply for Campus Tour
+              {c('bookCta')}
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
                 <path
                   d="M1 7h12M7 1l6 6-6 6"
@@ -89,7 +88,7 @@ export default function CampusTourView({
             </div>
 
             <div className="mt-14 flex flex-wrap gap-6">
-              <PublicHrefLink href={bookingHref} className="btn-primary">
+              <button type="button" onClick={() => setModalOpen(true)} className="btn-primary">
                 {c('bookCta')}
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
                   <path
@@ -100,7 +99,7 @@ export default function CampusTourView({
                     strokeLinejoin="round"
                   />
                 </svg>
-              </PublicHrefLink>
+              </button>
               <Link href="/contact" className="btn-ghost">
                 <span className="arrow-line" />
                 {c('contactCta')}
@@ -138,7 +137,16 @@ export default function CampusTourView({
           Invite Yadah to your campus.
         </h2>
         <button type="button" onClick={() => setModalOpen(true)} className="btn-primary">
-          Apply Now →
+          {c('bookCta')}
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+            <path
+              d="M1 7h12M7 1l6 6-6 6"
+              stroke="currentColor"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
       </div>
 
