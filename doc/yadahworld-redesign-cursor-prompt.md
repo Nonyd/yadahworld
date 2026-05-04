@@ -8,7 +8,7 @@
 
 **Reference site:** https://www.jubriloflagos.com — editorial, scroll-driven, large cinematic type, sectioned storytelling with marquee text, image reveals, and premium motion.
 
-**Yadah World Vision:** "The Voice of Jesus Christ to Nations" — Yadah Kukeurim Daniel is an international Nigerian gospel music minister with 100M+ streams globally. The website must feel like a *sacred cinematic experience* — dark, reverent, powerful, intimate. Think: a gospel artist who sells out arenas and moves in the supernatural.
+**Yadah World Vision:** "The Voice of Jesus Christ to Nations" — Yadah Kukeurim Daniel is an international Nigerian gospel music minister whose ministry touches millions of lives globally. The website must feel like a *sacred cinematic experience* — dark, reverent, powerful, intimate. Think: a gospel artist who sells out arenas and moves in the supernatural.
 
 **Design Language:**
 - Dark backgrounds: near-black (`#0A0A0A`) with warm charcoal tones
@@ -116,10 +116,10 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: 'Yadah — The Voice of Jesus Christ to Nations',
   description:
-    'Yadah Kukeurim Daniel — Nigerian gospel music minister with 100M+ streams. Book Yadah, explore her music, and experience the presence of God.',
+    'Yadah Kukeurim Daniel — Nigerian gospel music minister, touching millions of lives globally. Book Yadah, explore her music, and experience the presence of God.',
   openGraph: {
     title: 'Yadah — The Voice of Jesus Christ to Nations',
-    description: 'Nigerian gospel music minister with 100M+ global streams.',
+    description: 'Nigerian gospel music minister touching millions of lives globally.',
     url: 'https://yadahworld.com',
     siteName: 'Yadah World',
     images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
@@ -602,7 +602,7 @@ export default function HeroSection() {
             transition={{ duration: 1, delay: 0.45, ease: [0.77, 0, 0.175, 1] }}
             className="font-[family-name:var(--font-cormorant)] text-[clamp(1rem,3vw,2.5rem)] font-light italic text-white/60 tracking-wide"
           >
-            100M+ streams worldwide
+            Millions of lives impacted worldwide
           </motion.h2>
         </div>
 
@@ -719,9 +719,8 @@ export default function AboutSnippet() {
             className="text-white/60 font-[family-name:var(--font-dm-sans)] text-base leading-relaxed mb-8 max-w-md"
           >
             Yadah Kukeurim Daniel is a distinguished Nigerian singer, songwriter, and minister
-            whose music centers on the themes of God's love and grace. With over 100 million
-            streams globally, her sound has touched hearts in every continent and led countless
-            souls into the presence of God.
+            whose music centers on the themes of God's love and grace. Her sound has touched hearts
+            on every continent and led countless souls into the presence of God.
           </motion.p>
 
           <motion.div
@@ -880,7 +879,7 @@ const testimonials = [
   '"Beyond Me brought me to tears in worship"',
   '"She ministers, she doesn\'t just sing"',
   '"Anointed. Powerful. Sent."',
-  '"100 million streams and counting — God is using her"',
+  '"Her ministry reaches nations — God is using her"',
 ]
 
 export default function TestimonialMarquee() {
@@ -1970,8 +1969,8 @@ export default function AboutPage() {
             >
               She made her official debut in 2017 with "Goodie Goodie" under the management of
               SonsHub Media. Her discography includes hit songs such as "Beyond Me", "Never Seen",
-              "Onye Nwere Jesus", "Free of Charge", and "Na Your Hand" — collectively garnering
-              over 100 million streams globally.
+              "Onye Nwere Jesus", "Free of Charge", and "Na Your Hand" — songs that continue to
+              reach people across continents with the gospel.
             </motion.p>
 
             <motion.div
@@ -1981,8 +1980,8 @@ export default function AboutPage() {
               className="flex gap-6 mt-10"
             >
               <div>
-                <p className="font-[family-name:var(--font-cormorant)] text-5xl font-light text-[#E8006F]">100M+</p>
-                <p className="text-white/40 text-xs tracking-[0.15em] uppercase font-[family-name:var(--font-dm-sans)]">Streams Globally</p>
+                <p className="font-[family-name:var(--font-cormorant)] text-5xl font-light text-[#E8006F]">Millions</p>
+                <p className="text-white/40 text-xs tracking-[0.15em] uppercase font-[family-name:var(--font-dm-sans)]">Lives impacted globally</p>
               </div>
               <div className="w-px bg-white/10" />
               <div>

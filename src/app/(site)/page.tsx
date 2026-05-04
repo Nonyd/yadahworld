@@ -25,7 +25,7 @@ export default async function Home() {
   const loc = branding.locationDisplay?.trim()
   const heroSubline = [
     getCopyString(copy, 'home.heroRoleLine'),
-    getCopyString(copy, 'home.heroStreamsLine'),
+    getCopyString(copy, 'home.heroImpactLine'),
     loc || getCopyString(copy, 'home.heroLocationFallback'),
   ].join(' · ')
   const bookingHref = bookingHrefFromCopy(copy)

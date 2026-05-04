@@ -22,7 +22,7 @@ const CHAR_VARIANTS = {
 }
 
 const DEFAULT_EYEBROW = '01 — The Voice of Jesus Christ to Nations'
-const DEFAULT_SUBLINE = 'Gospel music minister · 100M+ streams · Abuja, Nigeria'
+const DEFAULT_SUBLINE = 'Gospel music minister · Millions of lives impacted · Abuja, Nigeria'
 
 export default function HeroSection({
   heroImage,

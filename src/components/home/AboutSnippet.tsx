@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { getCopyString, type SiteCopy } from '@/lib/site-copy'
 
 const DEFAULT_BIO =
-  "Yadah Kukeurim Daniel is a Nigerian singer, songwriter, and minister of the gospel. Her music — rooted in God's love and grace — has accumulated over 100 million streams globally, touching hearts in every continent and leading souls into the presence of God."
+  "Yadah Kukeurim Daniel is a Nigerian singer, songwriter, and minister of the gospel. Her music — rooted in God's love and grace — has touched hearts on every continent and drawn countless lives into the presence of God."
 
 export default function AboutSnippet({
   editorialImage,

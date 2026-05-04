@@ -7,7 +7,7 @@
 ## PART 0 — DESIGN BRIEF & PHILOSOPHY
 
 ### Who is Yadah?
-Yadah Kukeurim Daniel is an international gospel music minister — not a pop artist, not a celebrity. She is first a *minister of the gospel*, a worshipper, a voice sent to nations. Her music has accumulated 100M+ streams globally. She is managed by SonsHub Media, based in Abuja, Nigeria, and married to Okafor Chinonso Daniel.
+Yadah Kukeurim Daniel is an international gospel music minister — not a pop artist, not a celebrity. She is first a *minister of the gospel*, a worshipper, a voice sent to nations. Her ministry has touched millions of lives globally. She is managed by SonsHub Media, based in Abuja, Nigeria, and married to Okafor Chinonso Daniel.
 
 ### The Design Problem
 Most gospel artist websites look like either (a) a church bulletin board or (b) a generic pop-music promo site. Neither is appropriate here. Yadah's website must occupy a third category: **sacred, civilised, and world-class.**
@@ -474,7 +474,7 @@ const jost = Jost({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yadahworld.com'),
   title: { default: 'Yadah — The Voice of Jesus Christ to Nations', template: '%s | Yadah' },
-  description: 'Yadah Kukeurim Daniel — international gospel music minister, 100M+ streams. Book Yadah, explore her music, and encounter the presence of God.',
+  description: 'Yadah Kukeurim Daniel — international gospel music minister, touching millions of lives globally. Book Yadah, explore her music, and encounter the presence of God.',
   openGraph: {
     images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
     type: 'website',
@@ -819,7 +819,7 @@ export default function HeroSection() {
             transition={{ delay: 0.75, duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="font-baskerville italic text-[clamp(1rem,2.5vw,1.5rem)] text-[rgba(253,250,245,0.55)] max-w-xl mb-10"
           >
-            Gospel music minister · 100M+ streams · Abuja, Nigeria
+            Gospel music minister · Millions of lives impacted · Abuja, Nigeria
           </motion.p>
         </div>
 
@@ -1014,8 +1014,8 @@ export default function AboutSnippet() {
             className="body-lg max-w-md mb-10"
           >
             Yadah Kukeurim Daniel is a Nigerian singer, songwriter, and minister of the gospel.
-            Her music — rooted in God's love and grace — has accumulated over 100 million
-            streams globally, touching hearts in every continent and leading souls into the
+            Her music — rooted in God's love and grace — has touched hearts on every continent,
+            drawing lives into worship and leading souls into the
             presence of God.
           </motion.p>
 
@@ -1027,7 +1027,7 @@ export default function AboutSnippet() {
             className="flex gap-10 mb-12 pb-10 border-b border-[var(--gold-light)]/20"
           >
             {[
-              { n: '100M+', label: 'Streams' },
+              { n: 'Millions', label: 'Lives impacted' },
               { n: '600K+', label: 'Followers' },
               { n: '7+',    label: 'Years of Ministry' },
             ].map(({ n, label }) => (
@@ -1160,7 +1160,7 @@ A full-width marquee strip with a warm surface background. Text: song titles and
 ```tsx
 export default function StreamMarquee() {
   const items = [
-    'Beyond Me', '· 100M+ Streams ·', 'Onye Nwere Jesus', '· God in All Seasons ·',
+    'Beyond Me', '· Lives impacted ·', 'Onye Nwere Jesus', '· God in All Seasons ·',
     'Fathered By The Best', '· Never Seen ·', 'Free of Charge', '· Na Your Hand ·',
   ]
 

@@ -68,7 +68,8 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
   home: {
     heroDefaultEyebrow: '01 — The Voice of Jesus Christ to Nations',
     heroRoleLine: 'Gospel music minister',
-    heroStreamsLine: '100M+ streams',
+    /** Hero subline middle segment — separate from legacy `heroStreamsLine` in saved JSON. */
+    heroImpactLine: 'Millions of lives impacted',
     heroLocationFallback: 'Abuja, Nigeria',
     mantraEyebrow: '02 — Her Mantra',
     mantraLine1: '"I believe in the one and only true God.',
@@ -78,10 +79,10 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     aboutEyebrow: '03 — The Artist',
     aboutHeading1: 'A Voice Sent',
     aboutHeading2: 'From Heaven.',
-    aboutStat1n: '100M+',
-    aboutStat1l: 'Streams',
+    aboutStat1n: 'Millions',
+    aboutStat1l: 'Lives Impacted Globally',
     aboutStat2n: '600K+',
-    aboutStat2l: 'Followers',
+    aboutStat2l: 'Social Followers',
     aboutStat3n: '7+',
     aboutStat3l: 'Years of Ministry',
     aboutReadStory: 'Read Her Story',
@@ -96,7 +97,7 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     videosHeading2: 'Videos.',
     videosSeeMore: 'See More',
     streamMarqueeLines:
-      'Beyond Me\n· 100M+ Streams ·\nOnye Nwere Jesus\n· God in All Seasons ·\nFathered By The Best\n· Never Seen ·\nFree of Charge\n· Na Your Hand ·',
+      'Beyond Me\n· Lives impacted ·\nOnye Nwere Jesus\n· God in All Seasons ·\nFathered By The Best\n· Never Seen ·\nFree of Charge\n· Na Your Hand ·',
     eventsEyebrow: '06 — On the Road',
     eventsHeading1: 'Ministry',
     eventsHeading2: 'Expressions.',
@@ -125,9 +126,9 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     body1:
       "Yadah Kukeurim Daniel, professionally known as Yadah, is a distinguished Nigerian singer, songwriter, and fashion designer whose impactful music centers on the themes of God's love and grace. Based in Abuja, Nigeria, Yadah has carved a significant niche in contemporary gospel music, captivating audiences worldwide with her soulful melodies and profound lyrical content.",
     body2:
-      'She made her official debut in 2017 with "Goodie Goodie" under the management of SonsHub Media. Her discography includes hit songs such as "Beyond Me", "Never Seen", "Onye Nwere Jesus", "Free of Charge", and "Na Your Hand" — collectively garnering over 100 million streams globally.',
-    stat1n: '100M+',
-    stat1l: 'Streams Globally',
+      'She made her official debut in 2017 with "Goodie Goodie" under the management of SonsHub Media. Her discography includes hit songs such as "Beyond Me", "Never Seen", "Onye Nwere Jesus", "Free of Charge", and "Na Your Hand" — songs that have reached people across continents, inviting hearts into worship and the presence of God.',
+    stat1n: 'Millions',
+    stat1l: 'Lives Impacted Globally',
     stat2n: '600K+',
     stat2l: 'Social Followers',
     stat3n: '7+',

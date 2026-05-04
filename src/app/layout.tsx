@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yadahworld.com'),
   title: { default: 'Yadah — The Voice of Jesus Christ to Nations', template: '%s | Yadah' },
   description:
-    'Yadah Kukeurim Daniel — international gospel music minister, 100M+ streams. Book Yadah, explore her music, and encounter the presence of God.',
+    'Yadah Kukeurim Daniel — international gospel music minister, touching millions of lives globally. Book Yadah, explore her music, and encounter the presence of God.',
   openGraph: {
     images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
     type: 'website',
