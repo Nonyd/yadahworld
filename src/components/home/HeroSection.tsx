@@ -55,7 +55,8 @@ const WORDS_ROW_3 = [
   'SONGWRITER',
 ]
 
-const WORDS_ROW_4 = [
+/** Row 2 marquee — slower, lighter watermark styling */
+const WORDS_ROW_VOICE = [
   'THE VOICE OF JESUS TO NATIONS',
   'THE VOICE OF JESUS TO NATIONS',
   'THE VOICE OF JESUS TO NATIONS',
@@ -170,7 +171,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
     paddingRight: '3rem',
   }
 
-  const wordStyleRow4: CSSProperties = {
+  const wordStyleVoice: CSSProperties = {
     ...wordStyle,
     fontWeight: 300,
     color: 'rgba(253,250,245,0.05)',
@@ -275,7 +276,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
         >
           <div style={{ overflow: 'hidden' }}>
             <motion.div
-              animate={{ x: ['0%', '-50%'] }}
+              animate={{ x: ['-50%', '0%'] }}
               transition={{
                 duration: 45,
                 repeat: Infinity,
@@ -295,47 +296,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
           </div>
           <div style={{ overflow: 'hidden' }}>
             <motion.div
-              animate={{ x: ['-50%', '0%'] }}
-              transition={{
-                duration: 50,
-                repeat: Infinity,
-                ease: 'linear',
-              }}
-              style={{
-                display: 'flex',
-                width: 'max-content',
-              }}
-            >
-              {[...WORDS_ROW_2, ...WORDS_ROW_2].map((word, i) => (
-                <span key={`r2-${i}`} className="hero-marquee-word" style={wordStyle}>
-                  {word}
-                </span>
-              ))}
-            </motion.div>
-          </div>
-          <div style={{ overflow: 'hidden' }}>
-            <motion.div
               animate={{ x: ['0%', '-50%'] }}
-              transition={{
-                duration: 48,
-                repeat: Infinity,
-                ease: 'linear',
-              }}
-              style={{
-                display: 'flex',
-                width: 'max-content',
-              }}
-            >
-              {[...WORDS_ROW_3, ...WORDS_ROW_3].map((word, i) => (
-                <span key={`r3-${i}`} className="hero-marquee-word" style={wordStyle}>
-                  {word}
-                </span>
-              ))}
-            </motion.div>
-          </div>
-          <div style={{ overflow: 'hidden' }}>
-            <motion.div
-              animate={{ x: ['-50%', '0%'] }}
               transition={{
                 duration: 70,
                 repeat: Infinity,
@@ -346,8 +307,48 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
                 width: 'max-content',
               }}
             >
-              {[...WORDS_ROW_4, ...WORDS_ROW_4].map((word, i) => (
-                <span key={`r4-${i}`} className="hero-marquee-word" style={wordStyleRow4}>
+              {[...WORDS_ROW_VOICE, ...WORDS_ROW_VOICE].map((word, i) => (
+                <span key={`r2-${i}`} className="hero-marquee-word" style={wordStyleVoice}>
+                  {word}
+                </span>
+              ))}
+            </motion.div>
+          </div>
+          <div style={{ overflow: 'hidden' }}>
+            <motion.div
+              animate={{ x: ['-50%', '0%'] }}
+              transition={{
+                duration: 48,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
+              style={{
+                display: 'flex',
+                width: 'max-content',
+              }}
+            >
+              {[...WORDS_ROW_2, ...WORDS_ROW_2].map((word, i) => (
+                <span key={`r3-${i}`} className="hero-marquee-word" style={wordStyle}>
+                  {word}
+                </span>
+              ))}
+            </motion.div>
+          </div>
+          <div style={{ overflow: 'hidden' }}>
+            <motion.div
+              animate={{ x: ['0%', '-50%'] }}
+              transition={{
+                duration: 50,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
+              style={{
+                display: 'flex',
+                width: 'max-content',
+              }}
+            >
+              {[...WORDS_ROW_3, ...WORDS_ROW_3].map((word, i) => (
+                <span key={`r4-${i}`} className="hero-marquee-word" style={wordStyle}>
                   {word}
                 </span>
               ))}
