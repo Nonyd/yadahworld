@@ -15,7 +15,17 @@ const schema = z.object({
 })
 type FormData = z.infer<typeof schema>
 
-export default function ContactForm({ copy }: { copy: SiteCopy }) {
+export default function ContactForm({
+  copy,
+  subjectPlaceholder,
+  submitLabel,
+  simpleSubmit,
+}: {
+  copy: SiteCopy
+  subjectPlaceholder?: string
+  submitLabel?: string
+  simpleSubmit?: boolean
+}) {
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const f = (k: string) => getCopyString(copy, `contactForm.${k}`)
@@ -57,7 +67,12 @@ export default function ContactForm({ copy }: { copy: SiteCopy }) {
         [
           { id: 'name' as const, label: f('nameLabel'), type: 'text', placeholder: f('namePh') },
           { id: 'email' as const, label: f('emailLabel'), type: 'email', placeholder: f('emailPh') },
-          { id: 'subject' as const, label: f('subjectLabel'), type: 'text', placeholder: f('subjectPh') },
+          {
+            id: 'subject' as const,
+            label: f('subjectLabel'),
+            type: 'text',
+            placeholder: subjectPlaceholder ?? f('subjectPh'),
+          },
         ] as const
       ).map(({ id, label, type, placeholder }) => (
         <div key={id}>
@@ -84,10 +99,12 @@ export default function ContactForm({ copy }: { copy: SiteCopy }) {
         )}
       </div>
       <button type="submit" disabled={loading} className="btn-primary self-start">
-        {loading ? f('sending') : f('submit')}
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-          <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        {loading ? f('sending') : submitLabel ?? f('submit')}
+        {!simpleSubmit && (
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+            <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
       </button>
     </form>
   )

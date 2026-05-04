@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { getCopyString } from '@/lib/site-copy'
 import { getSiteCopy } from '@/lib/site-settings'
+import { proseHtmlFromStored } from '@/lib/rich-text-display'
 
 export const metadata: Metadata = { title: 'Cookie Policy' }
 
@@ -13,7 +14,7 @@ export default async function CookiePolicyPage() {
       <div className="max-w-2xl mx-auto">
         <p className="eyebrow mb-4">{l('cookieEyebrow')}</p>
         <h1 className="display-3 text-body mb-8">{l('cookieTitle')}</h1>
-        <p className="body-lg">{l('cookieBody')}</p>
+        <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: proseHtmlFromStored(l('cookieBody')) }} />
       </div>
     </div>
   )

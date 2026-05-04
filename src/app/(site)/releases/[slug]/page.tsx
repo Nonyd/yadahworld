@@ -9,6 +9,7 @@ import { releaseDateThenType, releaseTypeDateLine, releaseTypeUpperThenDate } fr
 import { getPublicReleases, getReleaseBySlug } from '@/lib/site-content'
 import { getPublicBranding, getSiteCopy } from '@/lib/site-settings'
 import { extractYoutubeVideoId } from '@/lib/youtube'
+import { proseHtmlFromStored } from '@/lib/rich-text-display'
 
 type Props = { params: { slug: string } }
 
@@ -38,7 +39,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
 
   const typeUpper = release.type.toUpperCase()
   const musicVideoId = release.musicVideoYoutube ? extractYoutubeVideoId(release.musicVideoYoutube) : null
-  const bodyText = release.description?.trim() || d('bodyFallback')
+  const bodyHtml = proseHtmlFromStored(release.description?.trim() || d('bodyFallback'))
 
   return (
     <article className="min-h-screen bg-bg pb-28 pt-32 md:px-20 px-8">
@@ -114,7 +115,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
             <p className="ui-label mt-4 text-muted">{releaseDateThenType(release)}</p>
             <div className="my-8 h-px max-w-md bg-gold" />
 
-            <p className="body-lg max-w-xl whitespace-pre-wrap text-muted">{bodyText}</p>
+            <div className="prose max-w-xl text-muted" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
 
             {release.spotifyEmbed?.trim() && (
               <div className="mt-10 max-w-xl">

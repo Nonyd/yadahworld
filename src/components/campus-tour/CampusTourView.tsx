@@ -3,6 +3,7 @@ import Link from 'next/link'
 import PublicHrefLink from '@/components/ui/PublicHrefLink'
 import type { CampusTourVisuals } from '@/lib/site-settings'
 import { bookingHrefFromCopy, getCopyString, roomForYouHrefFromCopy, type SiteCopy } from '@/lib/site-copy'
+import { proseHtmlFromStored } from '@/lib/rich-text-display'
 
 function MarqueeStrip({ urls, reverse }: { urls: string[]; reverse?: boolean }) {
   if (!urls.length) return null
@@ -33,9 +34,8 @@ export default function CampusTourView({
   const roomForYouHref = roomForYouHrefFromCopy(copy)
   const bookingHref = bookingHrefFromCopy(copy)
   const body1 = c('body1')
-  const [beforeRfy, afterRfy] = body1.includes('{{rfy}}')
-    ? body1.split('{{rfy}}')
-    : [body1, '']
+  const hasRfyToken = body1.includes('{{rfy}}')
+  const [beforeRfy, afterRfy] = hasRfyToken ? body1.split('{{rfy}}') : [body1, '']
 
   return (
     <>
@@ -49,15 +49,25 @@ export default function CampusTourView({
               <em className="font-playfair italic text-[var(--accent)]">{c('headingLine2')}</em>
             </h1>
 
-            <div className="max-w-xl space-y-6 body-sm text-[var(--muted)]">
-              <p>
-                {beforeRfy}
-                <PublicHrefLink href={roomForYouHref} className="link-underline text-accent">
-                  {c('rfyLinkLabel')}
-                </PublicHrefLink>
-                {afterRfy}
-              </p>
-              <p>{c('body2')}</p>
+            <div className="max-w-xl space-y-6 text-[var(--muted)]">
+              {hasRfyToken ? (
+                <>
+                  {beforeRfy.trim() ? (
+                    <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: proseHtmlFromStored(beforeRfy) }} />
+                  ) : null}
+                  <p className="body-sm">
+                    <PublicHrefLink href={roomForYouHref} className="link-underline text-accent">
+                      {c('rfyLinkLabel')}
+                    </PublicHrefLink>
+                  </p>
+                  {afterRfy.trim() ? (
+                    <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: proseHtmlFromStored(afterRfy) }} />
+                  ) : null}
+                </>
+              ) : (
+                <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: proseHtmlFromStored(body1) }} />
+              )}
+              <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: proseHtmlFromStored(c('body2')) }} />
             </div>
 
             <div className="mt-14 flex flex-wrap gap-6">

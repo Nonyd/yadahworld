@@ -14,8 +14,31 @@ import {
 } from '@/lib/site-copy'
 import { SITE_TEXT_URL_FIELDS, SITE_TEXT_URL_PATH_SET } from '@/lib/site-text-url-fields'
 import { SocialIcon } from '@/components/ui/SocialIcons'
+import RichTextEditor from '@/components/admin/RichTextEditor'
 
 const TABS = ['General', 'Contact', 'Social', 'Images', 'Gallery', 'Campus tour', 'Site text', 'Integrations'] as const
+
+const RICH_TEXT_EDITOR_PATHS = new Set([
+  'aboutPage.body1',
+  'aboutPage.body2',
+  'campusTour.body1',
+  'campusTour.body2',
+  'legal.privacyBody',
+  'legal.refundBody',
+  'legal.cookieBody',
+])
+
+function siteTextUseRichEditor(path: string): boolean {
+  return RICH_TEXT_EDITOR_PATHS.has(path)
+}
+
+function richTextEditorMinHeight(path: string): string {
+  if (path === 'aboutPage.body1') return '250px'
+  if (path === 'aboutPage.body2') return '200px'
+  if (path === 'campusTour.body1' || path === 'campusTour.body2') return '220px'
+  if (path.startsWith('legal.')) return '280px'
+  return '200px'
+}
 
 const SITE_TEXT_GROUP_ORDER = [
   'nav',
@@ -50,6 +73,7 @@ const SITE_TEXT_GROUP_LABEL: Record<string, string> = {
 }
 
 function siteTextUseTextarea(path: string): boolean {
+  if (siteTextUseRichEditor(path)) return false
   const tail = path.split('.').pop() ?? path
   if (
     tail.includes('Lines') ||
@@ -1055,11 +1079,21 @@ export default function AdminSettingsForm({
               </h3>
               <div className="grid gap-4 sm:grid-cols-2">
                 {paths.map((path) => (
-                  <div key={path} className={siteTextUseTextarea(path) ? 'sm:col-span-2' : undefined}>
+                  <div
+                    key={path}
+                    className={siteTextUseRichEditor(path) || siteTextUseTextarea(path) ? 'sm:col-span-2' : undefined}
+                  >
                     <label className="admin-label mb-1 block font-mono text-[10px] normal-case tracking-normal text-admin-muted">
                       {path}
                     </label>
-                    {siteTextUseTextarea(path) ? (
+                    {siteTextUseRichEditor(path) ? (
+                      <RichTextEditor
+                        value={copyForm[path] ?? ''}
+                        onChange={(html) => setCopyForm((c) => ({ ...c, [path]: html }))}
+                        minHeight={richTextEditorMinHeight(path)}
+                        placeholder={`Edit ${path}…`}
+                      />
+                    ) : siteTextUseTextarea(path) ? (
                       <textarea
                         className="admin-input min-h-[72px] resize-y font-mono text-xs"
                         value={copyForm[path] ?? ''}

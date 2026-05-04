@@ -7,6 +7,7 @@ import { slugify } from '@/lib/slug'
 import { toDateInputValue } from '@/lib/release-date'
 import { normalizeStreamingLinksJson } from '@/lib/streaming-links'
 import AdminImageUpload from '@/components/admin/AdminImageUpload'
+import RichTextEditor from '@/components/admin/RichTextEditor'
 
 type Mode = 'create' | 'edit'
 
@@ -121,11 +122,11 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
         </div>
         <div className="sm:col-span-2">
           <label className="admin-label">Description (optional)</label>
-          <textarea
-            className="admin-input min-h-[100px] resize-y"
+          <RichTextEditor
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Shown on the release detail page."
+            onChange={setDescription}
+            minHeight="180px"
+            placeholder="Release description..."
           />
         </div>
         <div className="sm:col-span-2">

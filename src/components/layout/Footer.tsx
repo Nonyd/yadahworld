@@ -50,24 +50,24 @@ export default function Footer({
     <footer className="w-full">
       <section className="pre-footer-strip py-20 px-8 md:px-20">
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="font-playfair italic text-[clamp(2rem,5vw,4rem)] text-[var(--body)] text-center">
-            {g('preFooterTitle')}
+          <p className="eyebrow mb-6">A Message</p>
+          <h2 className="font-playfair italic text-[clamp(2rem,5vw,4rem)] text-[var(--body)] text-center leading-tight">
+            You can live forever
+            <br />
+            by believing in Jesus.
           </h2>
-          <p className="font-baskerville italic text-lg text-[var(--muted)] text-center mt-4 mb-10">
-            {g('preFooterSubtitle')}
+          <p className="font-baskerville italic text-lg text-[var(--muted)] text-center mt-4">
+            — Yadah Kukeurim Daniel
           </p>
-          <PublicHrefLink href={bookingHref} className="btn-primary mx-auto inline-flex">
-            {g('preFooterCta')}
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-              <path
-                d="M1 7h12M7 1l6 6-6 6"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </PublicHrefLink>
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <Link href="/gospel" className="btn-primary">
+              Read the Good News
+            </Link>
+            <Link href="/releases" className="btn-ghost">
+              <span className="arrow-line" />
+              Explore Music
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -128,6 +128,9 @@ export default function Footer({
             <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
               {g('colMinistry')}
             </p>
+            <Link href="/gospel" className={linkClass} style={{ color: 'var(--gold-light)' }}>
+              The Gospel
+            </Link>
             <PublicHrefLink href={roomForYouHref} className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
               {g('ministryRoomForYou')}
             </PublicHrefLink>

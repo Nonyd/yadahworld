@@ -35,9 +35,9 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     shop: 'Shop',
   },
   footer: {
-    preFooterTitle: 'Have you heard the good news?',
+    preFooterTitle: 'A Message',
     preFooterSubtitle: 'You can live forever by believing in Jesus.',
-    preFooterCta: 'Book Yadah',
+    preFooterCta: 'Read the Good News',
     taglineQuote: 'The Voice of Jesus Christ to Nations.',
     colNavigate: 'Navigate',
     colMinistry: 'Ministry',
@@ -105,7 +105,7 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     bookingLine2: 'glad to be',
     bookingLine3: 'a blessing.',
     bookingSubline: 'Concert · Church Conference · Worship Night · Album Launch',
-    bookingCta: 'Submit Booking Request',
+    bookingCta: 'Reach Out to Us',
   },
   media: {
     eyebrow: 'Library',

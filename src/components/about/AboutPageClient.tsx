@@ -3,8 +3,9 @@
 import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import PublicHrefLink from '@/components/ui/PublicHrefLink'
-import { bookingHrefFromCopy, getCopyString, type SiteCopy } from '@/lib/site-copy'
+import Link from 'next/link'
+import { getCopyString, type SiteCopy } from '@/lib/site-copy'
+import { proseHtmlFromStored } from '@/lib/rich-text-display'
 
 export default function AboutPageClient({
   aboutHero,
@@ -17,7 +18,6 @@ export default function AboutPageClient({
 }) {
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true })
   const a = (k: string) => getCopyString(copy, `aboutPage.${k}`)
-  const bookingHref = bookingHrefFromCopy(copy)
 
   return (
     <div className="min-h-screen">
@@ -62,22 +62,20 @@ export default function AboutPageClient({
               &ldquo;{a('blockquote')}&rdquo;
             </motion.blockquote>
 
-            <motion.p
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.4, duration: 0.7 }}
-              className="body-lg mb-6"
-            >
-              {a('body1')}
-            </motion.p>
-            <motion.p
+              className="prose mb-6 max-w-none"
+              dangerouslySetInnerHTML={{ __html: proseHtmlFromStored(a('body1')) }}
+            />
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.5, duration: 0.7 }}
-              className="body-lg mb-6"
-            >
-              {a('body2')}
-            </motion.p>
+              className="prose mb-6 max-w-none"
+              dangerouslySetInnerHTML={{ __html: proseHtmlFromStored(a('body2')) }}
+            />
 
             <motion.div
               initial={{ opacity: 0 }}
@@ -114,11 +112,18 @@ export default function AboutPageClient({
       </section>
 
       <section className="py-20 px-8 md:px-20 text-center border-t border-gold-light/15 bg-surface/40">
-        <p className="font-playfair text-2xl font-normal italic text-muted mb-6">{a('ctaLine')}</p>
-        <PublicHrefLink href={bookingHref} className="btn-primary">
-          {a('ctaButton')}
-          <span aria-hidden>→</span>
-        </PublicHrefLink>
+        <p className="eyebrow mb-4">Ministry</p>
+        <p className="font-playfair text-2xl font-normal italic text-[var(--body)] mb-4 max-w-xl mx-auto">
+          Yadah is available to minister.
+        </p>
+        <p className="body-sm text-muted max-w-lg mx-auto mb-8">
+          If you would like Yadah to minister at your church, conference, or worship event, you are welcome to reach out
+          through the booking page.
+        </p>
+        <Link href="/booking" className="btn-ghost inline-flex">
+          <span className="arrow-line" />
+          Submit a Booking Request
+        </Link>
       </section>
     </div>
   )
