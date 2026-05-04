@@ -27,10 +27,40 @@ const WORDS_ROW_1 = [
 
 const WORDS_ROW_2 = [
   'VESSEL',
-  'THE VOICE OF JESUS TO NATIONS',
+  'FASHIONISTA',
+  'ANOINTED',
+  'DAUGHTER OF GOD',
   'VESSEL',
-  'THE VOICE OF JESUS TO NATIONS',
+  'FASHIONISTA',
+  'ANOINTED',
+  'DAUGHTER OF GOD',
   'VESSEL',
+  'FASHIONISTA',
+  'ANOINTED',
+  'DAUGHTER OF GOD',
+]
+
+const WORDS_ROW_3 = [
+  'MINISTER',
+  'WORSHIPPER',
+  'WIFE',
+  'SONGWRITER',
+  'MINISTER',
+  'WORSHIPPER',
+  'WIFE',
+  'SONGWRITER',
+  'MINISTER',
+  'WORSHIPPER',
+  'WIFE',
+  'SONGWRITER',
+]
+
+const WORDS_ROW_4 = [
+  'THE VOICE OF JESUS TO NATIONS',
+  'THE VOICE OF JESUS TO NATIONS',
+  'THE VOICE OF JESUS TO NATIONS',
+  'THE VOICE OF JESUS TO NATIONS',
+  'THE VOICE OF JESUS TO NATIONS',
   'THE VOICE OF JESUS TO NATIONS',
 ]
 
@@ -140,6 +170,13 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
     paddingRight: '3rem',
   }
 
+  const wordStyleRow4: CSSProperties = {
+    ...wordStyle,
+    fontWeight: 300,
+    color: 'rgba(253,250,245,0.05)',
+    letterSpacing: '0.12em',
+  }
+
   return (
     <section
       ref={sectionRef}
@@ -233,14 +270,14 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
       {/* STATE 2 */}
       <div ref={state2Ref} className="absolute inset-0 z-10" style={{ opacity: 0 }}>
         <div
-          className="pointer-events-none absolute inset-0 flex flex-col justify-center gap-6 overflow-hidden"
-          style={{ zIndex: 1 }}
+          className="pointer-events-none absolute inset-0 flex flex-col overflow-hidden"
+          style={{ zIndex: 1, height: '100%', justifyContent: 'space-evenly' }}
         >
           <div style={{ overflow: 'hidden' }}>
             <motion.div
               animate={{ x: ['0%', '-50%'] }}
               transition={{
-                duration: 40,
+                duration: 45,
                 repeat: Infinity,
                 ease: 'linear',
               }}
@@ -250,7 +287,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
               }}
             >
               {[...WORDS_ROW_1, ...WORDS_ROW_1].map((word, i) => (
-                <span key={i} className="hero-marquee-word" style={wordStyle}>
+                <span key={`r1-${i}`} className="hero-marquee-word" style={wordStyle}>
                   {word}
                 </span>
               ))}
@@ -270,7 +307,47 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
               }}
             >
               {[...WORDS_ROW_2, ...WORDS_ROW_2].map((word, i) => (
-                <span key={i} className="hero-marquee-word" style={wordStyle}>
+                <span key={`r2-${i}`} className="hero-marquee-word" style={wordStyle}>
+                  {word}
+                </span>
+              ))}
+            </motion.div>
+          </div>
+          <div style={{ overflow: 'hidden' }}>
+            <motion.div
+              animate={{ x: ['0%', '-50%'] }}
+              transition={{
+                duration: 48,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
+              style={{
+                display: 'flex',
+                width: 'max-content',
+              }}
+            >
+              {[...WORDS_ROW_3, ...WORDS_ROW_3].map((word, i) => (
+                <span key={`r3-${i}`} className="hero-marquee-word" style={wordStyle}>
+                  {word}
+                </span>
+              ))}
+            </motion.div>
+          </div>
+          <div style={{ overflow: 'hidden' }}>
+            <motion.div
+              animate={{ x: ['-50%', '0%'] }}
+              transition={{
+                duration: 70,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
+              style={{
+                display: 'flex',
+                width: 'max-content',
+              }}
+            >
+              {[...WORDS_ROW_4, ...WORDS_ROW_4].map((word, i) => (
+                <span key={`r4-${i}`} className="hero-marquee-word" style={wordStyleRow4}>
                   {word}
                 </span>
               ))}
