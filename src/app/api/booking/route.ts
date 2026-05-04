@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
         <p><strong>Date:</strong> ${data.eventDate}</p>
         <p><strong>Nature:</strong> ${data.natureOfEvent}</p>
         <p><strong>Expected:</strong> ${whatExpectedStr}</p>
-        <p><strong>Details:</strong> ${data.expectationDetails}</p>
+        ${data.expectationDetails?.trim() ? `<p><strong>Details:</strong> ${data.expectationDetails}</p>` : ''}
         <p><strong>Address:</strong> ${data.eventAddress}, ${data.eventCity}</p>
         ${data.additionalInfo ? `<p><strong>Additional:</strong> ${data.additionalInfo}</p>` : ''}
       `,

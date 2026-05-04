@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { step1Schema, step2Schema, step3Schema, bookingFormSchema, type BookingFormValues } from '@/types/booking'
@@ -41,6 +41,7 @@ const defaultValues: Partial<BookingFormValues> & { whatExpected?: string[] } = 
   whatExpected: [],
   website: '',
   additionalInfo: '',
+  expectationDetails: '',
 }
 
 export default function BookingForm() {
@@ -50,6 +51,8 @@ export default function BookingForm() {
 
   const {
     register,
+    watch,
+    setValue,
     formState: { errors },
     getValues,
     setError,
@@ -58,6 +61,16 @@ export default function BookingForm() {
     defaultValues,
     mode: 'onTouched',
   })
+
+  const whatExpected = watch('whatExpected') ?? []
+  const othersSelected = whatExpected.includes('Others')
+
+  useEffect(() => {
+    if (!othersSelected) {
+      setValue('expectationDetails', '')
+      clearErrors('expectationDetails')
+    }
+  }, [othersSelected, setValue, clearErrors])
 
   const applyZodErrors = (err: { issues: { path: (string | number)[]; message: string }[] }) => {
     for (const issue of err.issues) {
@@ -215,9 +228,11 @@ export default function BookingForm() {
                   ))}
                 </div>
               </Field>
-              <Field label="Describe What is Expected" required error={errors.expectationDetails?.message}>
-                <textarea {...register('expectationDetails')} rows={4} placeholder="Please describe in detail…" className="field-textarea" />
-              </Field>
+              {othersSelected && (
+                <Field label="Describe What is Expected" required error={errors.expectationDetails?.message}>
+                  <textarea {...register('expectationDetails')} rows={4} placeholder="Please describe in detail…" className="field-textarea" />
+                </Field>
+              )}
               <div className="grid grid-cols-2 gap-6">
                 <Field label="Date of Event" required error={errors.eventDate?.message}>
                   <input type="date" {...register('eventDate')} className="field-input" />

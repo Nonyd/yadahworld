@@ -17,11 +17,11 @@ export const step2Schema = z.object({
   orgEmail: z.string().email(),
 })
 
-export const step3Schema = z.object({
+const step3Fields = z.object({
   eventName: z.string().min(2, 'Event name required'),
   natureOfEvent: z.string().min(2, 'Nature of event required'),
   whatExpected: z.array(z.string()).min(1, 'Select at least one'),
-  expectationDetails: z.string().min(10, 'Please describe what is expected'),
+  expectationDetails: z.string().default(''),
   eventDate: z.string().min(1, 'Event date required'),
   eventTime: z.string().min(1, 'Event time required'),
   eventAddress: z.string().min(5),
@@ -31,6 +31,24 @@ export const step3Schema = z.object({
   additionalInfo: z.string().optional(),
 })
 
-export const bookingFormSchema = step1Schema.merge(step2Schema).merge(step3Schema)
+function refineExpectationWhenOthers<T extends { whatExpected: string[]; expectationDetails: string }>(
+  data: T,
+  ctx: z.RefinementCtx
+) {
+  if (data.whatExpected.includes('Others')) {
+    const detail = (data.expectationDetails ?? '').trim()
+    if (detail.length < 10) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Please describe what is expected when selecting Others',
+        path: ['expectationDetails'],
+      })
+    }
+  }
+}
+
+export const step3Schema = step3Fields.superRefine(refineExpectationWhenOthers)
+
+export const bookingFormSchema = step1Schema.merge(step2Schema).merge(step3Fields).superRefine(refineExpectationWhenOthers)
 
 export type BookingFormValues = z.infer<typeof bookingFormSchema>
