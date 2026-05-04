@@ -252,3 +252,101 @@ model NewsletterSubscriber {
   /// Where they signed up (e.g. footer)
   source      String?          @default("footer")
 }
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FREE
+  FAILED
+  REFUNDED
+}
+
+enum EventType {
+  PHYSICAL
+  ONLINE
+  HYBRID
+}
+
+model Event {
+  id            String                @id @default(cuid())
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  title         String
+  slug          String                @unique
+  description   String?               @db.Text
+  date          DateTime
+  endDate       DateTime?
+  doorsOpen     String?
+  timezone      String                @default("Africa/Lagos")
+  type          EventType             @default(PHYSICAL)
+  venueName     String?
+  venueAddress  String?
+  venueCity     String?
+  venueCountry  String                @default("Nigeria")
+  isOnline      Boolean               @default(false)
+  streamUrl     String?
+  bannerImage   String?
+  dressCode     String?
+  requirements  String?               @db.Text
+  status        EventStatus           @default(DRAFT)
+  isFeatured    Boolean               @default(false)
+  totalCapacity Int?
+  registrations EventRegistration[]
+  tiers         TicketTier[]
+  speakers      EventSpeaker[]
+}
+
+model EventSpeaker {
+  id      String  @id @default(cuid())
+  eventId String
+  event   Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name    String
+  role    String?
+  bio     String?
+  photo   String?
+  order   Int     @default(0)
+}
+
+model TicketTier {
+  id              String                @id @default(cuid())
+  createdAt       DateTime              @default(now())
+  eventId         String
+  event           Event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name            String
+  description     String?
+  price           Int                   @default(0)
+  currency        String                @default("NGN")
+  capacity        Int?
+  sold            Int                   @default(0)
+  isActive        Boolean               @default(true)
+  registrations   EventRegistration[]
+}
+
+model EventRegistration {
+  id              String        @id @default(cuid())
+  createdAt       DateTime      @default(now())
+  eventId         String
+  event           Event         @relation(fields: [eventId], references: [id])
+  tierId          String
+  tier            TicketTier    @relation(fields: [tierId], references: [id])
+  fullName        String
+  email           String
+  phone           String
+  amount          Int           @default(0)
+  currency        String        @default("NGN")
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentRef      String?       @unique
+  paymentProvider String?
+  ticketCode      String        @unique @default(cuid())
+  qrCodeUrl       String?
+  checkedIn       Boolean       @default(false)
+  checkedInAt     DateTime?
+  checkedInBy     String?
+  source          String        @default("web")
+}
