@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import PublicHrefLink from '@/components/ui/PublicHrefLink'
 import CampusTourModal from '@/components/campus-tour/CampusTourModal'
 import type { CampusTourVisuals } from '@/lib/site-settings'
@@ -74,7 +73,7 @@ export default function CampusTourView({
               <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: proseHtmlFromStored(c('body2')) }} />
             </div>
 
-            <div className="mt-14 flex flex-wrap gap-6">
+            <div className="mt-14">
               <button type="button" onClick={() => setModalOpen(true)} className="btn-primary">
                 {c('applyCta')}
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
@@ -87,10 +86,6 @@ export default function CampusTourView({
                   />
                 </svg>
               </button>
-              <Link href="/contact" className="btn-ghost">
-                <span className="arrow-line" />
-                {c('contactCta')}
-              </Link>
             </div>
           </div>
 
