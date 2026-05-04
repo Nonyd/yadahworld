@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { DEFAULT_SITE_LOGO_URL } from '@/lib/default-branding'
 import PublicHrefLink from '@/components/ui/PublicHrefLink'
 import NewsletterForm from '@/components/newsletter/NewsletterForm'
+import ConditionalPreFooter from '@/components/layout/ConditionalPreFooter'
 import { bookingHrefFromCopy, getCopyString, roomForYouHrefFromCopy, type SiteCopy } from '@/lib/site-copy'
 
 const linkClass =
@@ -49,28 +50,30 @@ export default function Footer({
 
   return (
     <footer className="w-full">
-      <section className="pre-footer-strip py-20 px-8 md:px-20">
-        <div className="mx-auto max-w-4xl text-center">
-          <p className="eyebrow mb-6">A Message</p>
-          <h2 className="font-playfair italic text-[clamp(2rem,5vw,4rem)] text-[var(--body)] text-center leading-tight">
-            You can live forever
-            <br />
-            by believing in Jesus.
-          </h2>
-          <p className="font-baskerville italic text-lg text-[var(--muted)] text-center mt-4">
-            — Yadah Kukeurim Daniel
-          </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <Link href="/gospel" className="btn-primary">
-              Read the Good News
-            </Link>
-            <Link href="/releases" className="btn-ghost">
-              <span className="arrow-line" />
-              Explore Music
-            </Link>
+      <ConditionalPreFooter>
+        <section className="pre-footer-strip py-20 px-8 md:px-20">
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="eyebrow mb-6">A Message</p>
+            <h2 className="font-playfair italic text-[clamp(2rem,5vw,4rem)] text-[var(--body)] text-center leading-tight">
+              You can live forever
+              <br />
+              by believing in Jesus.
+            </h2>
+            <p className="font-baskerville italic text-lg text-[var(--muted)] text-center mt-4">
+              — Yadah
+            </p>
+            <div className="mt-10 flex flex-wrap justify-center gap-4">
+              <Link href="/gospel" className="btn-primary">
+                Read the Good News
+              </Link>
+              <Link href="/releases" className="btn-ghost">
+                <span className="arrow-line" />
+                Explore Music
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ConditionalPreFooter>
 
       <div className="px-8 md:px-20" style={{ background: '#0D0B08' }}>
         <div className="flex justify-between items-center py-16 gap-8 flex-col sm:flex-row sm:items-center">
