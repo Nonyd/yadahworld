@@ -32,11 +32,7 @@ export default function VideosSection({ videos, copy }: { videos: PublicVideo[];
         <div className="flex items-end justify-between mb-16 flex-wrap gap-8">
           <div>
             <p className="eyebrow mb-6">{h('videosEyebrow')}</p>
-            <h2 className="display-2 text-[var(--body)]">
-              Music Videos.
-              <br />
-              <em className="font-playfair italic">{h('videosHeading2')}</em>
-            </h2>
+            <h2 className="display-2 text-[var(--body)]">Music Videos.</h2>
           </div>
           <Link href="/media#videos" className="btn-ghost hidden md:flex">
             <span className="arrow-line" />
