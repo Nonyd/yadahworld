@@ -12,6 +12,7 @@ export default async function AdminOverview() {
   let playlists = 0
   let cachedVideos = 0
   let lastSync: Date | null = null
+  let activeSubscribers = 0
 
   const safeCount = async (fn: () => Promise<number>) => {
     try {
@@ -40,10 +41,19 @@ export default async function AdminOverview() {
   playlists = await safeCount(() => prisma.youTubePlaylist.count())
   cachedVideos = await safeCount(() => prisma.cachedVideo.count())
   lastSync = await safeMaxSync()
+  activeSubscribers = await safeCount(() =>
+    prisma.newsletterSubscriber.count({ where: { status: 'ACTIVE' } }),
+  )
 
   const stats = [
     { label: 'Bookings', value: bookings, hint: `${pendingBookings} pending`, href: '/admin/bookings' },
     { label: 'Messages', value: messages, hint: 'Inbox', href: '/admin/messages' },
+    {
+      label: 'Subscribers',
+      value: activeSubscribers,
+      hint: 'Newsletter (active)',
+      href: '/admin/subscribers',
+    },
     { label: 'Releases', value: releases, hint: 'Discography pages', href: '/admin/releases' },
     { label: 'Events', value: events, hint: 'On the road', href: '/admin/events' },
     { label: 'Playlists', value: playlists, hint: 'YouTube sources', href: '/admin/playlists' },
@@ -125,6 +135,9 @@ export default async function AdminOverview() {
             </Link>
             <Link href="/admin/settings" className="admin-btn admin-btn-secondary text-[10px]">
               Settings
+            </Link>
+            <Link href="/admin/subscribers" className="admin-btn admin-btn-secondary text-[10px]">
+              Subscribers
             </Link>
           </div>
         </div>

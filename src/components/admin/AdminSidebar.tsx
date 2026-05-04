@@ -36,6 +36,11 @@ const ADMIN_LINKS: { label: string; href: string; icon: React.ReactNode; badgeKe
     ),
   },
   {
+    label: 'Subscribers',
+    href: '/admin/subscribers',
+    icon: <span className="text-lg font-normal leading-none text-current">◉</span>,
+  },
+  {
     label: 'Site settings',
     href: '/admin/settings',
     icon: (

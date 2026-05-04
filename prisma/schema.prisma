@@ -236,3 +236,19 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
 }
+
+enum SubscriberStatus {
+  ACTIVE
+  UNSUBSCRIBED
+}
+
+model NewsletterSubscriber {
+  id          String           @id @default(cuid())
+  createdAt   DateTime         @default(now())
+  email       String           @unique
+  name        String?
+  status      SubscriberStatus @default(ACTIVE)
+  brevoSynced Boolean          @default(false)
+  /// Where they signed up (e.g. footer)
+  source      String?          @default("footer")
+}

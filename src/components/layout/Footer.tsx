@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { DEFAULT_SITE_LOGO_URL } from '@/lib/default-branding'
 import PublicHrefLink from '@/components/ui/PublicHrefLink'
+import NewsletterForm from '@/components/newsletter/NewsletterForm'
 import { bookingHrefFromCopy, getCopyString, roomForYouHrefFromCopy, type SiteCopy } from '@/lib/site-copy'
 
 const linkClass =
@@ -92,6 +93,40 @@ export default function Footer({
         </div>
 
         <div style={{ height: '1px', background: 'rgba(201,168,76,0.12)' }} />
+
+        <div className="grid grid-cols-1 gap-10 border-b border-[rgba(201,168,76,0.12)] py-12 md:grid-cols-2 md:items-center md:gap-12">
+          <div>
+            <p className="eyebrow mb-3" style={{ color: 'rgba(253,250,245,0.25)' }}>
+              Stay Connected
+            </p>
+            <p
+              className="font-playfair italic"
+              style={{
+                fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)',
+                color: '#FDFAF5',
+                lineHeight: 1.3,
+                marginBottom: '8px',
+              }}
+            >
+              Ministry updates, new releases,
+              <br />
+              and moments from the field.
+            </p>
+            <p
+              style={{
+                fontFamily: 'var(--font-baskerville)',
+                fontSize: '13px',
+                color: 'rgba(253,250,245,0.35)',
+                fontStyle: 'italic',
+              }}
+            >
+              No spam. Unsubscribe at any time.
+            </p>
+          </div>
+          <div>
+            <NewsletterForm theme="dark" />
+          </div>
+        </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-12 py-16">
           <div>
