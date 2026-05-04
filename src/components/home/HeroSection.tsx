@@ -155,6 +155,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
               className="block italic"
               style={{
                 fontFamily: 'var(--font-cormorant)',
+                fontStyle: 'italic',
                 fontSize: 'clamp(6rem, 18vw, 18rem)',
                 fontWeight: 300,
                 lineHeight: 0.88,
@@ -277,9 +278,9 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             zIndex: 2,
             background: `linear-gradient(
               to right,
-              rgba(10,8,6,0.95) 0%,
-              rgba(10,8,6,0.6) 28%,
-              rgba(10,8,6,0.1) 52%,
+              rgba(10,8,6,0.90) 0%,
+              rgba(10,8,6,0.50) 28%,
+              rgba(10,8,6,0.05) 52%,
               rgba(10,8,6,0) 100%
             )`,
           }}
@@ -312,6 +313,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
               alt="Yadah Kukeurim Daniel"
               className="h-full w-full"
               style={{
+                filter: 'none',
                 objectFit: 'cover',
                 objectPosition: 'top center',
               }}
