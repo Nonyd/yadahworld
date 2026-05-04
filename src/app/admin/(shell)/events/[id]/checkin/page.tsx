@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma'
 import CheckInScanner from '@/components/admin/events/CheckInScanner'
 import EventAdminNav from '@/components/admin/events/EventAdminNav'
 
+export const dynamic = 'force-dynamic'
+
 export default async function EventCheckInPage({ params }: { params: { id: string } }) {
   const event = await prisma.event.findUnique({ where: { id: params.id } })
   if (!event) notFound()

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidateMediaAndMinistrations } from '@/lib/revalidate-public'
 import { getServerSession } from 'next-auth/next'
 import { PlaylistSlot } from '@prisma/client'
 import { authOptions } from '@/lib/auth'
@@ -96,6 +97,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     console.error(e)
     return NextResponse.json({ error: 'Update failed' }, { status: 500 })
   }
+
+  revalidateMediaAndMinistrations()
 
   return NextResponse.json({ ok: true })
 }

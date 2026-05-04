@@ -7,8 +7,6 @@ export const metadata: Metadata = {
   title: 'Events — Yadah',
 }
 
-export const dynamic = 'force-dynamic'
-
 type EventListRow = Event & {
   tiers: TicketTier[]
   _count: {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidateMediaAndMinistrations } from '@/lib/revalidate-public'
 import { getServerSession } from 'next-auth/next'
 import { PlaylistSlot } from '@prisma/client'
 import { authOptions } from '@/lib/auth'
@@ -63,6 +64,7 @@ export async function POST(req: NextRequest) {
         isActive: d.isActive ?? true,
       },
     })
+    revalidateMediaAndMinistrations()
     return NextResponse.json(row)
   } catch (e) {
     console.error(e)

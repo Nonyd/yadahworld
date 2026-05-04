@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
@@ -65,6 +66,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
   }
 
+  const before = await prisma.product.findUnique({
+    where: { id: params.id },
+    select: { slug: true },
+  })
+  if (!before) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
   try {
     await prisma.product.update({
       where: { id: params.id },
@@ -75,6 +84,21 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     return NextResponse.json({ error: 'Update failed' }, { status: 500 })
   }
 
+  const after = await prisma.product.findUnique({
+    where: { id: params.id },
+    select: { slug: true },
+  })
+  try {
+    revalidatePath('/shop')
+    revalidatePath(`/shop/${before.slug}`)
+    if (after?.slug && after.slug !== before.slug) {
+      revalidatePath(`/shop/${after.slug}`)
+    }
+    revalidatePath('/', 'layout')
+  } catch (revErr) {
+    console.warn('revalidatePath after product update:', revErr)
+  }
+
   return NextResponse.json({ ok: true })
 }
 
@@ -82,11 +106,27 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const row = await prisma.product.findUnique({
+    where: { id: params.id },
+    select: { slug: true },
+  })
+  if (!row) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
   try {
     await prisma.product.delete({ where: { id: params.id } })
   } catch (e) {
     console.error(e)
     return NextResponse.json({ error: 'Delete failed' }, { status: 500 })
+  }
+
+  try {
+    revalidatePath('/shop')
+    revalidatePath(`/shop/${row.slug}`)
+    revalidatePath('/', 'layout')
+  } catch (revErr) {
+    console.warn('revalidatePath after product delete:', revErr)
   }
 
   return NextResponse.json({ ok: true })

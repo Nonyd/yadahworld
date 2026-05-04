@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
@@ -208,6 +209,21 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     return NextResponse.json({ error: msg }, { status: 400 })
   }
 
+  const updated = await prisma.event.findUnique({
+    where: { id: params.id },
+    select: { slug: true },
+  })
+  try {
+    revalidatePath('/events')
+    revalidatePath(`/events/${existing.slug}`)
+    if (updated?.slug && updated.slug !== existing.slug) {
+      revalidatePath(`/events/${updated.slug}`)
+    }
+    revalidatePath('/', 'layout')
+  } catch (revErr) {
+    console.warn('revalidatePath after event update:', revErr)
+  }
+
   return NextResponse.json({ ok: true })
 }
 
@@ -215,11 +231,27 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const row = await prisma.event.findUnique({
+    where: { id: params.id },
+    select: { slug: true },
+  })
+  if (!row) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
   try {
     await prisma.event.delete({ where: { id: params.id } })
   } catch (e) {
     console.error(e)
     return NextResponse.json({ error: 'Delete failed' }, { status: 500 })
+  }
+
+  try {
+    revalidatePath('/events')
+    revalidatePath(`/events/${row.slug}`)
+    revalidatePath('/', 'layout')
+  } catch (revErr) {
+    console.warn('revalidatePath after event delete:', revErr)
   }
 
   return NextResponse.json({ ok: true })

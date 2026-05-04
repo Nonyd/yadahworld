@@ -4,8 +4,6 @@ import EventRegistrationForm from '@/components/events/EventRegistrationForm'
 import EventInterestForm from '@/components/events/EventInterestForm'
 import type { EventSpeaker } from '@prisma/client'
 
-export const dynamic = 'force-dynamic'
-
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const event = await prisma.event.findFirst({
     where: { slug: params.slug },

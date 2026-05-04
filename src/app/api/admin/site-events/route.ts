@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
@@ -63,6 +64,12 @@ export async function POST(req: NextRequest) {
         isActive: d.isActive ?? true,
       },
     })
+    try {
+      revalidatePath('/')
+      revalidatePath('/', 'layout')
+    } catch (revErr) {
+      console.warn('revalidatePath after site-event create:', revErr)
+    }
     return NextResponse.json(row)
   } catch (e) {
     console.error(e)

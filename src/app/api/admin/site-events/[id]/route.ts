@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
@@ -56,6 +57,13 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     return NextResponse.json({ error: 'Update failed' }, { status: 500 })
   }
 
+  try {
+    revalidatePath('/')
+    revalidatePath('/', 'layout')
+  } catch (revErr) {
+    console.warn('revalidatePath after site-event update:', revErr)
+  }
+
   return NextResponse.json({ ok: true })
 }
 
@@ -68,6 +76,13 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   } catch (e) {
     console.error(e)
     return NextResponse.json({ error: 'Delete failed' }, { status: 500 })
+  }
+
+  try {
+    revalidatePath('/')
+    revalidatePath('/', 'layout')
+  } catch (revErr) {
+    console.warn('revalidatePath after site-event delete:', revErr)
   }
 
   return NextResponse.json({ ok: true })

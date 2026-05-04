@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
@@ -104,6 +105,12 @@ export async function POST(req: NextRequest) {
         streamingLinks,
       },
     })
+    try {
+      revalidatePath('/releases')
+      revalidatePath('/', 'layout')
+    } catch (revErr) {
+      console.warn('revalidatePath after release create:', revErr)
+    }
     return NextResponse.json(row)
   } catch (e) {
     console.error(e)
