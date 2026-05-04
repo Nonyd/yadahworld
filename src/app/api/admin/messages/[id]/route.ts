@@ -36,3 +36,17 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   return NextResponse.json({ ok: true })
 }
+
+export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+  const session = await getServerSession(authOptions)
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  try {
+    await prisma.contactMessage.delete({ where: { id: params.id } })
+  } catch (e) {
+    console.error(e)
+    return NextResponse.json({ error: 'Delete failed' }, { status: 500 })
+  }
+
+  return NextResponse.json({ ok: true })
+}

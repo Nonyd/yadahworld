@@ -4,6 +4,8 @@ import { DEFAULT_SITE_LOGO_URL } from '@/lib/default-branding'
 import PublicHrefLink from '@/components/ui/PublicHrefLink'
 import NewsletterForm from '@/components/newsletter/NewsletterForm'
 import ConditionalPreFooter from '@/components/layout/ConditionalPreFooter'
+import FooterMinistryLinks from '@/components/layout/FooterMinistryLinks'
+import CookiePreferencesButton from '@/components/consent/CookiePreferencesButton'
 import { bookingHrefFromCopy, getCopyString, roomForYouHrefFromCopy, type SiteCopy } from '@/lib/site-copy'
 
 const linkClass =
@@ -162,26 +164,12 @@ export default function Footer({
             </Link>
           </div>
 
-          <div>
-            <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
-              {g('colMinistry')}
-            </p>
-            <Link href="/gospel" className={linkClass} style={{ color: 'var(--gold-light)' }}>
-              The Gospel
-            </Link>
-            <Link href="/events" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              Events
-            </Link>
-            <PublicHrefLink href={roomForYouHref} className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              {g('ministryRoomForYou')}
-            </PublicHrefLink>
-            <Link href="/campus-tour" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              {g('ministryCampusTour')}
-            </Link>
-            <Link href="/#events" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
-              {g('ministryEvents')}
-            </Link>
-          </div>
+          <FooterMinistryLinks
+            columnTitle={g('colMinistry')}
+            roomForYouHref={roomForYouHref}
+            roomForYouLabel={g('ministryRoomForYou')}
+            campusTourLabel={g('ministryCampusTour')}
+          />
 
           <div className="col-span-2 md:col-span-1">
             <p className="eyebrow mb-5" style={{ color: 'rgba(253,250,245,0.25)' }}>
@@ -275,6 +263,15 @@ export default function Footer({
             >
               {g('bottomCookie')}
             </Link>
+            <span style={{ color: 'rgba(253,250,245,0.25)' }} aria-hidden>
+              ·
+            </span>
+            <CookiePreferencesButton
+              className="cursor-pointer border-0 bg-transparent font-jost text-[10px] tracking-[0.2em] uppercase transition-colors hover:text-[#C9A84C]"
+              style={{ color: 'rgba(253,250,245,0.45)' }}
+            >
+              {g('bottomCookieSettings')}
+            </CookiePreferencesButton>
           </div>
           <a
             href={g('creditHref')}

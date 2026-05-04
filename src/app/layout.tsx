@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { Libre_Baskerville, Playfair_Display, Jost } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/react'
 import SessionProvider from '@/components/providers/SessionProvider'
 import ThemeProvider from '@/components/providers/ThemeProvider'
+import SiteCookieConsent from '@/components/consent/SiteCookieConsent'
 import './globals.css'
 
 const playfair = Playfair_Display({
@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <SessionProvider>{children}</SessionProvider>
         </ThemeProvider>
-        <Analytics />
+        <SiteCookieConsent />
       </body>
     </html>
   )

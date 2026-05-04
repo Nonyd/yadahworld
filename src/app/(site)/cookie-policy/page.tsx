@@ -32,13 +32,19 @@ export default function CookiePolicyPage() {
         </p>
 
         <h2 className={section}>2. How We Use Cookies</h2>
-        <p className={body}>We keep our cookie usage minimal and privacy-focused. We only use cookies that are strictly necessary for the Site to function.</p>
+        <p className={body}>
+          We keep our cookie usage minimal and privacy-focused. Essential cookies are placed as needed for the Site to work. We do
+          not use advertising cookies, social media tracking pixels, or third-party marketing cookies.
+        </p>
+        <p className={body}>
+          With your consent (via our cookie banner), we may load privacy-friendly analytics (Vercel Analytics) to measure aggregate
+          traffic and page views. If you choose &quot;Essential only,&quot; these analytics are not loaded.
+        </p>
         <p className={body}>We do NOT use:</p>
         <ul className={list}>
-          <li>Analytics cookies (e.g. Google Analytics)</li>
-          <li>Advertising or targeting cookies</li>
-          <li>Social media tracking cookies</li>
-          <li>Third-party marketing cookies</li>
+          <li>Third-party advertising or behavioural targeting networks</li>
+          <li>Social media tracking cookies for ads</li>
+          <li>Cross-site marketing or profiling cookies</li>
         </ul>
 
         <h2 className={section}>3. Cookies We Use</h2>
@@ -56,6 +62,14 @@ export default function CookiePolicyPage() {
         <p className={body}>
           These cookies do not track you across other websites and do not store any personally identifiable information beyond what is
           necessary for site functionality.
+        </p>
+
+        <h3 className={sub}>Optional analytics (with consent)</h3>
+        <p className={body}>
+          If you click &quot;Accept all&quot; on our cookie banner, we enable Vercel Analytics, which helps us see aggregate usage (for
+          example which pages are viewed). It is designed not to use personally identifiable information for profiling. You can
+          withdraw consent at any time using &quot;Cookie settings&quot; in the site footer, which clears your choice and shows the banner
+          again.
         </p>
 
         <h2 className={section}>4. Payment Processor Cookies</h2>
@@ -90,8 +104,7 @@ export default function CookiePolicyPage() {
 
         <h2 className={section}>5. Future Use of Cookies</h2>
         <p className={body}>
-          We may in the future introduce analytics or other non-essential cookies to help us understand how visitors use our Site. If we
-          do, we will:
+          We may in the future introduce additional non-essential cookies or similar technologies. If we do, we will:
         </p>
         <ul className={list}>
           <li>Update this Cookie Policy</li>
@@ -122,11 +135,12 @@ export default function CookiePolicyPage() {
 
         <h2 className={section}>7. Your Consent</h2>
         <p className={body}>
-          By continuing to use yadahworld.com, you consent to our use of essential cookies as described in this policy.
+          When you first visit yadahworld.com, we show a cookie banner so you can choose &quot;Essential only&quot; or &quot;Accept all&quot;
+          (essential cookies plus optional Vercel Analytics as described above). Essential cookies are used as needed for the Site to
+          function regardless of that choice, where permitted by law.
         </p>
         <p className={body}>
-          As we do not use non-essential cookies at this time, no cookie consent banner is required. Should this change, we will implement
-          appropriate consent mechanisms.
+          You may open &quot;Cookie settings&quot; in the footer at any time to clear your choice and set your preferences again.
         </p>
 
         <h2 className={section}>8. Changes to This Policy</h2>

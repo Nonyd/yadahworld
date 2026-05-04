@@ -49,12 +49,13 @@ export default function PrivacyPolicyPage() {
           data, or biometric data.
         </p>
         <p className={body}>
-          We do not use cookies for tracking, advertising, or analytics purposes. We only use essential cookies required for the Site
-          to function correctly (see our{' '}
+          We use essential cookies so the Site can operate (for example session and security). If you opt in through our cookie
+          banner, we may load privacy-friendly, aggregate analytics (Vercel Analytics) to understand how the Site is used — not for
+          advertising or cross-site tracking. For full details see our{' '}
           <Link href="/cookie-policy" className="link-underline text-accent">
             Cookie Policy
           </Link>
-          ).
+          .
         </p>
 
         <h2 className={section}>2. How We Use Your Information</h2>
@@ -76,7 +77,10 @@ export default function PrivacyPolicyPage() {
         <ul className={list}>
           <li>Contractual necessity — to process shop orders and booking requests</li>
           <li>Legitimate interests — to respond to enquiries and improve our services</li>
-          <li>Consent — to send newsletters and ministry updates (you may withdraw consent at any time)</li>
+          <li>
+            Consent — for newsletters and ministry updates, and for optional analytics if you accept via our cookie banner (you may
+            withdraw at any time, including via Cookie settings in the footer for analytics)
+          </li>
           <li>Legal obligation — where required by applicable law</li>
         </ul>
 
