@@ -55,7 +55,7 @@ const WORDS_ROW_3 = [
   'SONGWRITER',
 ]
 
-/** Row 2 marquee — slower, lighter watermark styling */
+/** Row 2 marquee — same typography as other rows; slower scroll (70s) */
 const WORDS_ROW_VOICE = [
   'THE VOICE OF JESUS TO NATIONS',
   'THE VOICE OF JESUS TO NATIONS',
@@ -169,13 +169,6 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
     whiteSpace: 'nowrap',
     userSelect: 'none',
     paddingRight: '3rem',
-  }
-
-  const wordStyleVoice: CSSProperties = {
-    ...wordStyle,
-    fontWeight: 300,
-    color: 'rgba(253,250,245,0.05)',
-    letterSpacing: '0.12em',
   }
 
   return (
@@ -308,7 +301,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
               }}
             >
               {[...WORDS_ROW_VOICE, ...WORDS_ROW_VOICE].map((word, i) => (
-                <span key={`r2-${i}`} className="hero-marquee-word" style={wordStyleVoice}>
+                <span key={`r2-${i}`} className="hero-marquee-word" style={wordStyle}>
                   {word}
                 </span>
               ))}
