@@ -58,13 +58,7 @@ export default function MediaPageClient({
           <div id="videos" className="space-y-12">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {videos.map((v, vi) => (
-                <PublicVideoCard
-                  key={v.id}
-                  video={v}
-                  videoIndex={vi}
-                  onPlayClick={openAtVideoIndex}
-                  watchYoutubeLabel={m('watchYoutube')}
-                />
+                <PublicVideoCard key={v.id} video={v} videoIndex={vi} onPlayClick={openAtVideoIndex} />
               ))}
             </div>
           </div>

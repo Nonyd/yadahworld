@@ -63,6 +63,11 @@ const ADMIN_LINKS: { label: string; href: string; icon: React.ReactNode; badgeKe
     ),
   },
   {
+    label: 'Playlists',
+    href: '/admin/playlists',
+    icon: <span className="text-lg font-normal leading-none text-current">▶</span>,
+  },
+  {
     label: 'Releases',
     href: '/admin/releases',
     icon: (

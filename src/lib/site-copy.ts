@@ -44,6 +44,7 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     colConnect: 'Connect',
     linkHome: 'Home',
     linkMedia: 'Media',
+    linkMinistrations: 'Ministrations',
     linkAbout: 'About',
     linkReleases: 'Releases',
     linkContact: 'Contact',

@@ -120,29 +120,31 @@ async function main() {
     })
   }
 
-  if (!(await prisma.siteVideo.findFirst({ where: { title: 'Never Seen (Live)' } }))) {
-    await prisma.siteVideo.create({
-      data: {
-        title: 'Never Seen (Live)',
-        youtubeUrl: 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
-        thumbnailUrl: images.videoNeverSeen,
-        order: 0,
-        isActive: true,
-      },
-    })
-  }
+  const musicPlaylist = await prisma.youTubePlaylist.upsert({
+    where: { youtubePlaylistId: 'PLezwiS29b1XjZxCrSvu5KqZGUhNnZW4VD' },
+    create: {
+      name: 'Official Music Videos',
+      youtubePlaylistId: 'PLezwiS29b1XjZxCrSvu5KqZGUhNnZW4VD',
+      slot: 'MUSIC_VIDEOS',
+      maxVideos: 50,
+      isActive: true,
+    },
+    update: { name: 'Official Music Videos', slot: 'MUSIC_VIDEOS' },
+  })
 
-  if (!(await prisma.siteVideo.findFirst({ where: { title: 'Na Your Hand' } }))) {
-    await prisma.siteVideo.create({
-      data: {
-        title: 'Na Your Hand',
-        youtubeUrl: 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
-        thumbnailUrl: images.videoNaYourHand,
-        order: 1,
-        isActive: true,
-      },
-    })
-  }
+  const ministrationsPlaylist = await prisma.youTubePlaylist.upsert({
+    where: { youtubePlaylistId: 'PLezwiS29b1XhSMwEY_owWSvoW8ux4I-9N' },
+    create: {
+      name: 'Live Ministrations',
+      youtubePlaylistId: 'PLezwiS29b1XhSMwEY_owWSvoW8ux4I-9N',
+      slot: 'MINISTRATIONS',
+      maxVideos: 100,
+      isActive: true,
+    },
+    update: { name: 'Live Ministrations', slot: 'MINISTRATIONS' },
+  })
+
+  console.log('Playlists seeded:', musicPlaylist.name, ministrationsPlaylist.name)
 }
 
 main()

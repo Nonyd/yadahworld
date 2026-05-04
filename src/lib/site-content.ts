@@ -1,8 +1,10 @@
+import { PlaylistSlot } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { images } from '@/lib/imagePlaceholders'
 import { slugify } from '@/lib/slug'
 import { normalizeStreamingLinksJson, type StreamingLink } from '@/lib/streaming-links'
-import { youtubeThumbnailFromUrl } from '@/lib/youtube'
+import { getVideosBySlot } from '@/lib/youtube-sync'
+import { youtubeWatchUrl } from '@/lib/youtube'
 
 export type PublicRelease = {
   slug: string
@@ -36,6 +38,29 @@ export type PublicVideo = {
   title: string
   youtubeUrl: string
   thumbnail: string
+  durationIso?: string | null
+  publishedAtIso?: string | null
+  viewCount?: string | null
+}
+
+export function mapCachedVideoToPublicVideo(row: {
+  id: string
+  title: string
+  youtubeVideoId: string
+  thumbnailUrl: string
+  duration: string | null
+  publishedAt: Date
+  viewCount: string | null
+}): PublicVideo {
+  return {
+    id: row.id,
+    title: row.title,
+    youtubeUrl: youtubeWatchUrl(row.youtubeVideoId),
+    thumbnail: row.thumbnailUrl,
+    durationIso: row.duration,
+    publishedAtIso: row.publishedAt.toISOString(),
+    viewCount: row.viewCount,
+  }
 }
 
 const FALLBACK_RELEASES: PublicRelease[] = [
@@ -246,17 +271,20 @@ export async function getPublicEvents(): Promise<PublicEvent[]> {
 
 export async function getPublicVideos(): Promise<PublicVideo[]> {
   try {
-    const rows = await prisma.siteVideo.findMany({
-      where: { isActive: true },
-      orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
-      take: 6,
-    })
-    return rows.map((v) => ({
-      id: v.id,
-      title: v.title,
-      youtubeUrl: v.youtubeUrl,
-      thumbnail: youtubeThumbnailFromUrl(v.youtubeUrl, v.thumbnailUrl) || images.videoNeverSeen,
-    }))
+    const rows = await getVideosBySlot(PlaylistSlot.MUSIC_VIDEOS, 6)
+    if (rows.length === 0) return FALLBACK_VIDEOS
+    return rows.map(mapCachedVideoToPublicVideo)
+  } catch {
+    return FALLBACK_VIDEOS
+  }
+}
+
+/** Full music-video grid for /media (MUSIC_VIDEOS slot). */
+export async function getPublicMusicVideosForMedia(): Promise<PublicVideo[]> {
+  try {
+    const rows = await getVideosBySlot(PlaylistSlot.MUSIC_VIDEOS)
+    if (rows.length === 0) return FALLBACK_VIDEOS
+    return rows.map(mapCachedVideoToPublicVideo)
   } catch {
     return FALLBACK_VIDEOS
   }

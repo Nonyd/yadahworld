@@ -46,3 +46,17 @@ export function youtubeThumbnailFromUrl(youtubeUrl: string, override?: string | 
   if (!id) return ''
   return youtubeThumbnailUrl(id)
 }
+
+/** Accept full playlist URL or raw playlist id (e.g. PL…). */
+export function extractYoutubePlaylistId(input: string): string {
+  const t = input.trim()
+  if (!t) return ''
+  try {
+    const parsed = new URL(t.startsWith('http') ? t : `https://${t}`)
+    const list = parsed.searchParams.get('list')
+    if (list) return list
+  } catch {
+    // fall through
+  }
+  return t
+}

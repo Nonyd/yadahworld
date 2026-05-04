@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
+import SyncAllYoutubeButton from '@/components/admin/cms/SyncAllYoutubeButton'
+import { formatRelativeTimeAgo } from '@/lib/relative-time'
 
 export default async function AdminOverview() {
   let bookings = 0
@@ -7,7 +9,9 @@ export default async function AdminOverview() {
   let pendingBookings = 0
   let releases = 0
   let events = 0
-  let videos = 0
+  let playlists = 0
+  let cachedVideos = 0
+  let lastSync: Date | null = null
 
   const safeCount = async (fn: () => Promise<number>) => {
     try {
@@ -17,19 +21,33 @@ export default async function AdminOverview() {
     }
   }
 
+  const safeMaxSync = async () => {
+    try {
+      const agg = await prisma.youTubePlaylist.aggregate({
+        _max: { lastSyncedAt: true },
+      })
+      return agg._max.lastSyncedAt
+    } catch {
+      return null
+    }
+  }
+
   bookings = await safeCount(() => prisma.bookingRequest.count())
   messages = await safeCount(() => prisma.contactMessage.count())
   pendingBookings = await safeCount(() => prisma.bookingRequest.count({ where: { status: 'PENDING' } }))
   releases = await safeCount(() => prisma.siteRelease.count())
   events = await safeCount(() => prisma.siteEvent.count())
-  videos = await safeCount(() => prisma.siteVideo.count())
+  playlists = await safeCount(() => prisma.youTubePlaylist.count())
+  cachedVideos = await safeCount(() => prisma.cachedVideo.count())
+  lastSync = await safeMaxSync()
 
   const stats = [
     { label: 'Bookings', value: bookings, hint: `${pendingBookings} pending`, href: '/admin/bookings' },
     { label: 'Messages', value: messages, hint: 'Inbox', href: '/admin/messages' },
     { label: 'Releases', value: releases, hint: 'Discography pages', href: '/admin/releases' },
     { label: 'Events', value: events, hint: 'On the road', href: '/admin/events' },
-    { label: 'Videos', value: videos, hint: 'YouTube grid', href: '/admin/videos' },
+    { label: 'Playlists', value: playlists, hint: 'YouTube sources', href: '/admin/playlists' },
+    { label: 'Cached videos', value: cachedVideos, hint: 'Synced from YouTube', href: '/admin/videos' },
   ]
 
   return (
@@ -37,9 +55,16 @@ export default async function AdminOverview() {
       <header className="mb-10">
         <h1 className="font-playfair text-3xl font-normal tracking-tight text-admin-text md:text-[2rem]">Overview</h1>
         <p className="mt-2 text-sm text-admin-muted">Welcome back. Here is a snapshot of your studio.</p>
+        <p className="mt-3 text-sm text-admin-muted">
+          Last YouTube sync:{' '}
+          <span className="font-medium text-admin-text">{formatRelativeTimeAgo(lastSync)}</span>
+        </p>
+        <div className="mt-4">
+          <SyncAllYoutubeButton className="admin-btn admin-btn-secondary text-[10px]" />
+        </div>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
         {stats.map(({ label, value, hint, href }) => (
           <Link
             key={label}
@@ -63,7 +88,11 @@ export default async function AdminOverview() {
             <li className="flex gap-2">
               <span className="text-admin-accent">·</span>
               If the database is new, run <code className="rounded bg-admin-bg px-1 font-mono text-[11px] text-admin-text">npm run db:seed</code> after{' '}
-              <code className="rounded bg-admin-bg px-1 font-mono text-[11px] text-admin-text">npx prisma db push</code> to load default releases, events, and videos into the admin and the live site.
+              <code className="rounded bg-admin-bg px-1 font-mono text-[11px] text-admin-text">npx prisma db push</code> to load default releases, events, and YouTube playlists.
+            </li>
+            <li className="flex gap-2">
+              <span className="text-admin-accent">·</span>
+              Configure <code className="rounded bg-admin-bg px-1 font-mono text-[11px] text-admin-text">YOUTUBE_API_KEY</code> and use Playlists → Sync all to pull videos into the site.
             </li>
             <li className="flex gap-2">
               <span className="text-admin-accent">·</span>
@@ -82,14 +111,14 @@ export default async function AdminOverview() {
         <div className="admin-card p-6">
           <h2 className="font-playfair text-lg text-admin-text">Shortcuts</h2>
           <div className="mt-4 flex flex-wrap gap-2">
+            <Link href="/admin/playlists" className="admin-btn admin-btn-secondary text-[10px]">
+              Manage playlists
+            </Link>
             <Link href="/admin/releases/new" className="admin-btn admin-btn-secondary text-[10px]">
               New release
             </Link>
             <Link href="/admin/events/new" className="admin-btn admin-btn-secondary text-[10px]">
               New event
-            </Link>
-            <Link href="/admin/videos/new" className="admin-btn admin-btn-secondary text-[10px]">
-              New video
             </Link>
             <Link href="/admin/media" className="admin-btn admin-btn-secondary text-[10px]">
               Media preview

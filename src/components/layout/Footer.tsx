@@ -104,6 +104,9 @@ export default function Footer({
             <Link href="/media" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
               {g('linkMedia')}
             </Link>
+            <Link href="/ministrations" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              {g('linkMinistrations')}
+            </Link>
             <Link href="/about" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
               {g('linkAbout')}
             </Link>

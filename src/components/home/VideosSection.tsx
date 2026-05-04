@@ -12,7 +12,6 @@ export default function VideosSection({ videos, copy }: { videos: PublicVideo[];
   const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true })
   const { openAtVideoIndex, videoLightbox } = usePublicVideoLightbox(videos)
   const h = (k: string) => getCopyString(copy, `home.${k}`)
-  const watchYoutubeLabel = getCopyString(copy, 'media.watchYoutube')
 
   return (
     <section ref={ref} className="px-8 md:px-20 py-[clamp(6rem,12vw,14rem)]">
@@ -32,7 +31,7 @@ export default function VideosSection({ videos, copy }: { videos: PublicVideo[];
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {videos.slice(0, 6).map((video, i) => (
             <motion.div
               key={video.id}
@@ -41,12 +40,7 @@ export default function VideosSection({ videos, copy }: { videos: PublicVideo[];
               transition={{ delay: i * 0.1, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
               whileHover={{ y: -4 }}
             >
-              <PublicVideoCard
-                video={video}
-                videoIndex={i}
-                onPlayClick={openAtVideoIndex}
-                watchYoutubeLabel={watchYoutubeLabel}
-              />
+              <PublicVideoCard video={video} videoIndex={i} onPlayClick={openAtVideoIndex} />
             </motion.div>
           ))}
         </div>
