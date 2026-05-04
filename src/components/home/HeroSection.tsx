@@ -1,6 +1,8 @@
 'use client'
 
+import type { CSSProperties } from 'react'
 import { useEffect, useRef } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
@@ -8,189 +10,414 @@ import PublicHrefLink from '@/components/ui/PublicHrefLink'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const CHAR_VARIANTS = {
-  hidden: { y: '110%', opacity: 0 },
-  visible: (i: number) => ({
-    y: 0,
-    opacity: 1,
-    transition: {
-      delay: 0.1 + i * 0.055,
-      duration: 0.9,
-      ease: [0.25, 0.46, 0.45, 0.94],
-    },
-  }),
+const WORDS_ROW_1 = [
+  'MINISTER',
+  'WORSHIPPER',
+  'WIFE',
+  'SONGWRITER',
+  'MINISTER',
+  'WORSHIPPER',
+  'WIFE',
+  'SONGWRITER',
+  'MINISTER',
+  'WORSHIPPER',
+  'WIFE',
+  'SONGWRITER',
+]
+
+const WORDS_ROW_2 = [
+  'VESSEL',
+  'THE VOICE OF JESUS TO NATIONS',
+  'VESSEL',
+  'THE VOICE OF JESUS TO NATIONS',
+  'VESSEL',
+  'THE VOICE OF JESUS TO NATIONS',
+]
+
+const bookBtnStyle: CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '8px',
+  background: 'var(--accent)',
+  color: '#FDFAF5',
+  padding: '11px 24px',
+  fontFamily: 'var(--font-jost)',
+  fontSize: '9px',
+  letterSpacing: '0.22em',
+  textTransform: 'uppercase',
+  textDecoration: 'none',
+  transition: 'background 0.3s',
 }
 
-const DEFAULT_EYEBROW = '01 — The Voice of Jesus Christ to Nations'
-const DEFAULT_SUBLINE = 'Gospel music minister · Millions of lives impacted · Abuja, Nigeria'
+const exploreStyle: CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '10px',
+  color: 'rgba(253,250,245,0.4)',
+  fontFamily: 'var(--font-jost)',
+  fontSize: '9px',
+  letterSpacing: '0.22em',
+  textTransform: 'uppercase',
+  textDecoration: 'none',
+  padding: '11px 0',
+  transition: 'color 0.3s',
+}
 
-export default function HeroSection({
-  heroImage,
-  heroEyebrow,
-  heroSubline,
-  bookingHref = '/booking',
-}: {
-  heroImage: string
-  /** Line above the Yadah title (e.g. 01 — The Voice of Jesus Christ to Nations). */
-  heroEyebrow?: string | null
-  /** Italic line under the title. */
-  heroSubline?: string | null
-  /** From Site text → Links (booking). */
+interface HeroSectionProps {
+  heroImageUrl?: string
   bookingHref?: string
-}) {
-  const sectionRef = useRef<HTMLElement>(null)
-  const imgRef = useRef<HTMLDivElement>(null)
-  const textRef = useRef<HTMLDivElement>(null)
+}
 
-  const eyebrow = heroEyebrow?.trim() || DEFAULT_EYEBROW
-  const subline = heroSubline?.trim() || DEFAULT_SUBLINE
+export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: HeroSectionProps) {
+  const sectionRef = useRef<HTMLElement>(null)
+  const state1Ref = useRef<HTMLDivElement>(null)
+  const state2Ref = useRef<HTMLDivElement>(null)
+  const imageRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.to(imgRef.current, {
-        yPercent: 25,
-        ease: 'none',
+      const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
-          end: 'bottom top',
-          scrub: true,
+          end: '+=600',
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1,
         },
       })
-      gsap.to(textRef.current, {
-        opacity: 0,
-        y: -50,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: '30% top',
-          end: '70% top',
-          scrub: true,
-        },
-      })
-    }, sectionRef)
-    return () => ctx.revert()
-  }, [])
 
-  const chars = 'Yadah'.split('')
+      tl.to(
+        state1Ref.current,
+        {
+          opacity: 0,
+          y: -40,
+          duration: 0.3,
+        },
+        0,
+      )
+
+      tl.to(
+        state2Ref.current,
+        {
+          opacity: 1,
+          duration: 0.4,
+        },
+        0.25,
+      )
+
+      tl.fromTo(
+        imageRef.current,
+        { x: 80, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.5 },
+        0.25,
+      )
+    }, sectionRef)
+
+    const refresh = () => ScrollTrigger.refresh()
+    requestAnimationFrame(refresh)
+    return () => {
+      ctx.revert()
+      refresh()
+    }
+  }, [heroImageUrl])
+
+  const wordStyle: CSSProperties = {
+    fontFamily: 'var(--font-jost)',
+    fontSize: 'clamp(3rem, 7vw, 6.5rem)',
+    fontWeight: 300,
+    letterSpacing: '0.06em',
+    color: 'rgba(253,250,245,0.06)',
+    whiteSpace: 'nowrap',
+    userSelect: 'none',
+    paddingRight: '3rem',
+  }
 
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen min-h-[700px] overflow-hidden flex flex-col justify-end pb-20 md:pb-28"
+      className="relative h-screen min-h-[100dvh] overflow-hidden"
+      style={{ background: '#0A0806' }}
     >
-      <div
-        key={heroImage}
-        ref={imgRef}
-        className="absolute inset-0 scale-[1.15]"
-        style={{
-          backgroundImage: `url('${heroImage}')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center 20%',
-        }}
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `
-            linear-gradient(to top, rgba(13,11,8,0.92) 0%, rgba(13,11,8,0.45) 45%, rgba(13,11,8,0.15) 100%),
-            linear-gradient(to right, rgba(13,11,8,0.3) 0%, transparent 60%)
-          `,
-        }}
-      />
-      <div
-        className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat',
-        }}
-      />
-
-      <div ref={textRef} className="relative z-10 px-8 md:px-20">
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-          className="ui-label mb-8 text-[rgba(253,250,245,0.35)]"
-        >
-          {eyebrow}
-        </motion.p>
-
-        <h1
-          className="font-playfair font-normal leading-[0.92] tracking-[-0.02em] text-[#FDFAF5] mb-6 overflow-hidden"
-          style={{ fontSize: 'clamp(6rem, 14vw, 11rem)' }}
-          aria-label="Yadah"
-        >
-          {chars.map((char, i) => (
-            <span key={i} style={{ display: 'inline-block', overflow: 'hidden' }}>
-              <motion.span
-                custom={i}
-                variants={CHAR_VARIANTS}
-                initial="hidden"
-                animate="visible"
-                style={{ display: 'inline-block' }}
-              >
-                {char}
-              </motion.span>
-            </span>
-          ))}
-        </h1>
-
-        <div style={{ overflow: 'hidden' }}>
-          <motion.p
-            initial={{ y: '100%', opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.75, duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="font-jost font-light italic text-[clamp(1rem,2.5vw,1.5rem)] text-[rgba(253,250,245,0.55)] max-w-xl"
-          >
-            {subline}
-          </motion.p>
+      {/* STATE 1 */}
+      <div ref={state1Ref} className="absolute inset-0 z-20 flex flex-col items-center justify-center">
+        <div className="px-8 text-center">
+          <div style={{ overflow: 'hidden' }}>
+            <motion.span
+              initial={{ y: '105%' }}
+              animate={{ y: 0 }}
+              transition={{
+                duration: 1.2,
+                delay: 0.2,
+                ease: [0.25, 0.46, 0.45, 0.94],
+              }}
+              className="block font-playfair italic"
+              style={{
+                fontSize: 'clamp(5rem, 16vw, 15rem)',
+                fontWeight: 400,
+                lineHeight: 0.88,
+                color: '#FDFAF5',
+              }}
+            >
+              Yadah
+            </motion.span>
+          </div>
+          <div style={{ overflow: 'hidden' }}>
+            <motion.span
+              initial={{ y: '105%' }}
+              animate={{ y: 0 }}
+              transition={{
+                duration: 1.2,
+                delay: 0.38,
+                ease: [0.25, 0.46, 0.45, 0.94],
+              }}
+              className="block font-playfair"
+              style={{
+                fontSize: 'clamp(2.5rem, 9vw, 8rem)',
+                fontWeight: 400,
+                lineHeight: 0.9,
+                color: 'rgba(253,250,245,0.2)',
+              }}
+            >
+              Kukeurim Daniel.
+            </motion.span>
+          </div>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.0, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="mt-10 flex flex-wrap items-center gap-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.6, duration: 0.8 }}
+          className="absolute bottom-10 flex flex-col items-center gap-4"
         >
-          <PublicHrefLink href={bookingHref} className="btn-primary">
-            Book Yadah
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-              <path
-                d="M1 7h12M7 1l6 6-6 6"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </PublicHrefLink>
-          <a href="#music" className="btn-ghost" style={{ color: 'rgba(253,250,245,0.5)' }}>
-            <span className="arrow-line" />
-            Explore Music
-          </a>
+          <p
+            className="font-jost"
+            style={{
+              fontSize: '9px',
+              letterSpacing: '0.35em',
+              textTransform: 'uppercase',
+              color: 'rgba(253,250,245,0.25)',
+            }}
+          >
+            SCROLL TO EXPLORE
+          </p>
+          <motion.div
+            animate={{ scaleY: [0, 1, 0] }}
+            transition={{
+              repeat: Infinity,
+              duration: 2,
+              ease: 'easeInOut',
+              repeatDelay: 0.3,
+            }}
+            style={{
+              width: '1px',
+              height: '56px',
+              background: 'rgba(253,250,245,0.18)',
+              transformOrigin: 'top',
+            }}
+          />
         </motion.div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.8 }}
-        className="absolute bottom-8 right-8 md:bottom-10 md:right-12 flex flex-col items-center gap-2"
-      >
-        <span
-          className="ui-label text-[rgba(253,250,245,0.35)] lowercase"
-          style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+      {/* STATE 2 */}
+      <div ref={state2Ref} className="absolute inset-0 z-10" style={{ opacity: 0 }}>
+        <div
+          className="absolute inset-0 flex flex-col justify-center gap-6 overflow-hidden"
+          style={{ zIndex: 1 }}
         >
-          scroll
-        </span>
-        <motion.span
-          animate={{ scaleY: [1, 0.3, 1] }}
-          transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-          className="block h-12 w-px origin-top"
-          style={{ background: 'rgba(253,250,245,0.2)' }}
+          <div style={{ overflow: 'hidden' }}>
+            <motion.div
+              animate={{ x: ['0%', '-50%'] }}
+              transition={{
+                duration: 22,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
+              style={{
+                display: 'flex',
+                width: 'max-content',
+              }}
+            >
+              {[...WORDS_ROW_1, ...WORDS_ROW_1].map((word, i) => (
+                <span key={i} className="hero-marquee-word" style={wordStyle}>
+                  {word}
+                </span>
+              ))}
+            </motion.div>
+          </div>
+          <div style={{ overflow: 'hidden' }}>
+            <motion.div
+              animate={{ x: ['-50%', '0%'] }}
+              transition={{
+                duration: 28,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
+              style={{
+                display: 'flex',
+                width: 'max-content',
+              }}
+            >
+              {[...WORDS_ROW_2, ...WORDS_ROW_2].map((word, i) => (
+                <span key={i} className="hero-marquee-word" style={wordStyle}>
+                  {word}
+                </span>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            zIndex: 2,
+            background: `linear-gradient(
+              to right,
+              rgba(10,8,6,0.97) 0%,
+              rgba(10,8,6,0.75) 30%,
+              rgba(10,8,6,0.2) 55%,
+              rgba(10,8,6,0.05) 100%
+            )`,
+          }}
         />
-      </motion.div>
+
+        <div
+          className="pointer-events-none absolute bottom-0 left-0 right-0"
+          style={{
+            zIndex: 3,
+            height: '25%',
+            background: 'linear-gradient(to top, #0A0806, transparent)',
+          }}
+        />
+
+        <div
+          ref={imageRef}
+          className="hero-image-container absolute bottom-0 right-0 top-0"
+          style={{
+            zIndex: 2,
+            width: '55%',
+            height: '100%',
+          }}
+        >
+          {heroImageUrl ? (
+            <img
+              src={heroImageUrl}
+              alt="Yadah Kukeurim Daniel"
+              className="h-full w-full object-cover object-top"
+              loading="eager"
+              fetchPriority="high"
+            />
+          ) : (
+            <div
+              className="flex h-full w-full items-center justify-center"
+              style={{ background: 'rgba(255,255,255,0.03)' }}
+            >
+              <p className="font-playfair italic" style={{ color: 'rgba(253,250,245,0.15)', fontSize: '1.5rem' }}>
+                Set hero image in admin settings
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div
+          className="hero-state2-content absolute z-40"
+          style={{
+            left: 'clamp(2rem, 5vw, 5rem)',
+            bottom: 'clamp(3rem, 6vw, 5rem)',
+            maxWidth: '420px',
+          }}
+        >
+          <h1
+            className="font-playfair italic"
+            style={{
+              fontSize: 'clamp(3rem, 7vw, 6.5rem)',
+              fontWeight: 400,
+              lineHeight: 0.92,
+              color: '#FDFAF5',
+              marginBottom: '0.5rem',
+            }}
+          >
+            Yadah
+          </h1>
+          <p
+            className="font-playfair"
+            style={{
+              fontSize: 'clamp(1.2rem, 2.5vw, 2.2rem)',
+              fontWeight: 400,
+              color: 'rgba(253,250,245,0.25)',
+              marginBottom: '1.75rem',
+              lineHeight: 1,
+            }}
+          >
+            Kukeurim Daniel.
+          </p>
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '14px',
+              marginBottom: '2rem',
+            }}
+          >
+            <div
+              style={{
+                width: '28px',
+                height: '1px',
+                background: 'rgba(201,168,76,0.7)',
+                flexShrink: 0,
+              }}
+            />
+            <p
+              className="font-jost"
+              style={{
+                fontSize: '9px',
+                letterSpacing: '0.28em',
+                textTransform: 'uppercase',
+                color: 'rgba(201,168,76,0.7)',
+              }}
+            >
+              The Voice of Jesus Christ to Nations
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+            <PublicHrefLink href={bookingHref} style={bookBtnStyle}>
+              Book Yadah
+            </PublicHrefLink>
+            <Link href="#music" style={exploreStyle}>
+              <span
+                style={{
+                  display: 'block',
+                  width: '24px',
+                  height: '1px',
+                  background: 'currentColor',
+                }}
+              />
+              Explore Music
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .hero-image-container {
+            width: 100% !important;
+            left: 0 !important;
+            right: auto !important;
+          }
+          .hero-image-container img {
+            opacity: 0.35;
+          }
+          .hero-state2-content {
+            left: 2rem !important;
+          }
+          .hero-marquee-word {
+            font-size: clamp(1.75rem, 8vw, 3rem) !important;
+          }
+        }
+      `}</style>
     </section>
   )
 }

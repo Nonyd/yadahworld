@@ -7,7 +7,7 @@ import StreamMarquee from '@/components/home/StreamMarquee'
 import UpcomingEvents from '@/components/home/UpcomingEvents'
 import BookingCTA from '@/components/home/BookingCTA'
 import { getHomepageReleases, getPublicEvents, getPublicVideos } from '@/lib/site-content'
-import { bookingHrefFromCopy, getCopyString } from '@/lib/site-copy'
+import { bookingHrefFromCopy } from '@/lib/site-copy'
 import { getPublicBranding, getSiteCopy, getSiteVisuals } from '@/lib/site-settings'
 
 export default async function Home() {
@@ -20,24 +20,11 @@ export default async function Home() {
     getSiteCopy(),
   ])
 
-  const heroTag = branding.heroTagline?.trim()
-  const heroEyebrow = heroTag ? `01 — ${heroTag}` : getCopyString(copy, 'home.heroDefaultEyebrow')
-  const loc = branding.locationDisplay?.trim()
-  const heroSubline = [
-    getCopyString(copy, 'home.heroRoleLine'),
-    getCopyString(copy, 'home.heroImpactLine'),
-    loc || getCopyString(copy, 'home.heroLocationFallback'),
-  ].join(' · ')
   const bookingHref = bookingHrefFromCopy(copy)
 
   return (
     <>
-      <HeroSection
-        heroImage={visuals.hero}
-        heroEyebrow={heroEyebrow}
-        heroSubline={heroSubline}
-        bookingHref={bookingHref}
-      />
+      <HeroSection heroImageUrl={visuals.hero} bookingHref={bookingHref} />
       <StreamMarquee copy={copy} />
       <MantraSection copy={copy} />
       <AboutSnippet editorialImage={visuals.editorial} aboutBioShort={branding.aboutBioShort} copy={copy} />
