@@ -1,4 +1,4 @@
-import { PlaylistSlot } from '@prisma/client'
+import { type CachedVideo, PlaylistSlot } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { images } from '@/lib/imagePlaceholders'
 import { slugify } from '@/lib/slug'
@@ -292,7 +292,33 @@ export async function getPublicEvents(): Promise<PublicEvent[]> {
 
 export async function getPublicVideos(): Promise<PublicVideo[]> {
   try {
-    const rows = await getVideosBySlot(PlaylistSlot.MUSIC_VIDEOS, 3)
+    const baseWhere = {
+      isActive: true,
+      playlist: { slot: PlaylistSlot.MUSIC_VIDEOS, isActive: true },
+    }
+
+    const featured = await prisma.cachedVideo.findMany({
+      where: { ...baseWhere, isFeatured: true },
+      orderBy: { publishedAt: 'desc' },
+      take: 3,
+    })
+
+    const need = 3 - featured.length
+    let rest: CachedVideo[] = []
+    if (need > 0) {
+      const excludeIds = featured.map((v) => v.id)
+      rest = await prisma.cachedVideo.findMany({
+        where: {
+          ...baseWhere,
+          isFeatured: false,
+          id: excludeIds.length ? { notIn: excludeIds } : undefined,
+        },
+        orderBy: { publishedAt: 'desc' },
+        take: need,
+      })
+    }
+
+    const rows = [...featured, ...rest]
     if (rows.length === 0) return FALLBACK_VIDEOS
     return rows.map(mapCachedVideoToPublicVideo)
   } catch {
