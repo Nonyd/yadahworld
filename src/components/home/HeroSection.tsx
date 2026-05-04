@@ -124,10 +124,11 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
 
   const wordStyle: CSSProperties = {
     fontFamily: 'var(--font-jost)',
-    fontSize: 'clamp(3rem, 7vw, 6.5rem)',
-    fontWeight: 300,
-    letterSpacing: '0.06em',
-    color: 'rgba(253,250,245,0.06)',
+    fontSize: 'clamp(4rem, 9vw, 9rem)',
+    fontWeight: 700,
+    letterSpacing: '0.08em',
+    color: 'rgba(253,250,245,0.07)',
+    textTransform: 'uppercase',
     whiteSpace: 'nowrap',
     userSelect: 'none',
     paddingRight: '3rem',
@@ -229,7 +230,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             <motion.div
               animate={{ x: ['0%', '-50%'] }}
               transition={{
-                duration: 22,
+                duration: 40,
                 repeat: Infinity,
                 ease: 'linear',
               }}
@@ -249,7 +250,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             <motion.div
               animate={{ x: ['-50%', '0%'] }}
               transition={{
-                duration: 28,
+                duration: 50,
                 repeat: Infinity,
                 ease: 'linear',
               }}
@@ -292,18 +293,25 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
 
         <div
           ref={imageRef}
-          className="hero-image-container absolute bottom-0 right-0 top-0"
+          className="hero-image-container"
           style={{
-            zIndex: 2,
-            width: '55%',
+            position: 'absolute',
+            right: 0,
+            top: 0,
             height: '100%',
+            width: '55%',
+            zIndex: 2,
           }}
         >
           {heroImageUrl ? (
             <img
               src={heroImageUrl}
               alt="Yadah Kukeurim Daniel"
-              className="h-full w-full object-cover object-center"
+              className="h-full w-full"
+              style={{
+                objectFit: 'cover',
+                objectPosition: 'top center',
+              }}
               loading="eager"
               fetchPriority="high"
             />
@@ -408,7 +416,9 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             right: auto !important;
           }
           .hero-image-container img {
-            opacity: 0.35;
+            opacity: 0.3;
+            object-fit: cover;
+            object-position: top center;
           }
           .hero-state2-content {
             left: 2rem !important;
