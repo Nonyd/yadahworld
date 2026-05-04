@@ -7,6 +7,14 @@ import Link from 'next/link'
 import { getCopyString, type SiteCopy } from '@/lib/site-copy'
 import { proseHtmlFromStored } from '@/lib/rich-text-display'
 
+const STATS = [
+  { number: 'Millions', label: 'Lives Touched Globally' },
+  { number: '7+', label: 'Years of Ministry' },
+  { number: 'Nations', label: 'Reached Through Music' },
+] as const
+
+const FAITH_DECLARATION = `I believe in the one and only true God. I believe that He gave His Son who came as a man to die for our sins — and that through His death on the cross, we have the remission and forgiveness of sins. I believe that whosoever believes in the Son has eternal life and a hope for the coming glory and manifestation of sons. I believe in Christ's cross and all that it is to a believer.`
+
 export default function AboutPageClient({
   aboutHero,
   aboutPortrait,
@@ -16,11 +24,15 @@ export default function AboutPageClient({
   aboutPortrait: string
   copy: SiteCopy
 }) {
-  const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true })
+  const { ref: bioRef, inView: bioInView } = useInView({ threshold: 0.08, triggerOnce: true })
   const a = (k: string) => getCopyString(copy, `aboutPage.${k}`)
+
+  const bio1Html = proseHtmlFromStored(a('body1'))
+  const bio2Html = proseHtmlFromStored(a('body2'))
 
   return (
     <div className="min-h-screen">
+      {/* SECTION 1 — Hero (unchanged) */}
       <section className="relative h-[70vh] overflow-hidden flex items-end pb-20">
         <div className="absolute inset-0 scale-110">
           <Image src={aboutHero} alt="Yadah" fill className="object-cover object-top" priority sizes="100vw" />
@@ -50,80 +62,191 @@ export default function AboutPageClient({
         </div>
       </section>
 
-      <section ref={ref} className="py-24 md:py-40 px-8 md:px-20 bg-bg">
-        <div className="max-w-screen-xl mx-auto grid md:grid-cols-2 gap-20">
-          <div>
-            <motion.blockquote
-              initial={{ opacity: 0 }}
-              animate={inView ? { opacity: 1 } : {}}
-              transition={{ delay: 0.2, duration: 0.8 }}
-              className="font-playfair text-2xl md:text-3xl font-normal italic text-gold-light leading-relaxed mb-10 border-l border-accent pl-6"
-            >
-              &ldquo;{a('blockquote')}&rdquo;
-            </motion.blockquote>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.4, duration: 0.7 }}
-              className="prose mb-6 max-w-none"
-              dangerouslySetInnerHTML={{ __html: proseHtmlFromStored(a('body1')) }}
-            />
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.5, duration: 0.7 }}
-              className="prose mb-6 max-w-none"
-              dangerouslySetInnerHTML={{ __html: proseHtmlFromStored(a('body2')) }}
-            />
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={inView ? { opacity: 1 } : {}}
-              transition={{ delay: 0.8 }}
-              className="flex flex-wrap gap-6 mt-10"
-            >
-              <div>
-                <p className="font-playfair text-5xl font-normal text-accent">{a('stat1n')}</p>
-                <p className="ui-label text-muted mt-1">{a('stat1l')}</p>
-              </div>
-              <div className="w-px bg-gold-light/20 hidden sm:block self-stretch min-h-[3rem]" />
-              <div>
-                <p className="font-playfair text-5xl font-normal text-accent">{a('stat2n')}</p>
-                <p className="ui-label text-muted mt-1">{a('stat2l')}</p>
-              </div>
-              <div className="w-px bg-gold-light/20 hidden sm:block self-stretch min-h-[3rem]" />
-              <div>
-                <p className="font-playfair text-5xl font-normal text-accent">{a('stat3n')}</p>
-                <p className="ui-label text-muted mt-1">{a('stat3l')}</p>
-              </div>
-            </motion.div>
-          </div>
-
-          <motion.div
-            initial={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 100%, 0 100%)' }}
-            animate={inView ? { clipPath: 'polygon(0 0%, 100% 0%, 100% 100%, 0 100%)' } : {}}
-            transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
-            className="relative aspect-[3/4] manuscript-frame overflow-hidden"
+      {/* SECTION 2 — Opening Mantra */}
+      <section
+        style={{
+          background: 'var(--bg)',
+          padding: 'clamp(6rem, 12vw, 10rem) clamp(2rem, 8vw, 12rem)',
+          textAlign: 'center',
+        }}
+      >
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <p className="eyebrow mb-8">Her Mantra</p>
+          <blockquote
+            className="font-playfair italic"
+            style={{
+              fontSize: 'clamp(1.4rem, 3vw, 2.2rem)',
+              lineHeight: 1.5,
+              color: 'var(--body)',
+              borderLeft: 'none',
+              padding: 0,
+            }}
           >
-            <Image src={aboutPortrait} alt="Yadah" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
-          </motion.div>
+            &ldquo;I believe in the one and only true God. I believe in Christ&apos;s cross and all that it is to a
+            believer.&rdquo;
+          </blockquote>
+          <div
+            className="h-px mx-auto mt-10"
+            style={{
+              width: '60px',
+              background: 'var(--gold)',
+              opacity: 0.4,
+            }}
+          />
+          <p className="font-jost text-xs tracking-[0.2em] uppercase mt-4" style={{ color: 'var(--muted)' }}>
+            — Yadah Kukeurim Daniel
+          </p>
         </div>
       </section>
 
-      <section className="py-20 px-8 md:px-20 text-center border-t border-gold-light/15 bg-surface/40">
+      <div className="section-rule mx-8 md:mx-20 my-4 md:my-8" />
+
+      {/* SECTION 3 — Bio Story */}
+      <section
+        ref={bioRef}
+        style={{
+          padding: 'clamp(6rem, 12vw, 10rem) clamp(2rem, 5vw, 5rem)',
+        }}
+      >
+        <div className="max-w-screen-xl mx-auto grid grid-cols-1 gap-16 md:gap-24">
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-[5fr_7fr] md:gap-16 items-start">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={bioInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="manuscript-frame relative aspect-[3/4] w-full max-w-lg mx-auto md:max-w-none overflow-hidden md:sticky md:top-[120px]"
+            >
+              <Image
+                src={aboutPortrait}
+                alt="Yadah Kukeurim Daniel"
+                fill
+                className="object-cover object-top"
+                sizes="(max-width: 768px) 100vw, 42vw"
+              />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={bioInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.75, delay: 0.12, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              <p className="eyebrow mb-8" style={{ color: 'var(--gold)' }}>
+                03 — The Minister
+              </p>
+
+              <div style={{ marginBottom: '2.5rem' }}>
+                <h2
+                  className="font-playfair"
+                  style={{
+                    fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+                    fontWeight: 400,
+                    lineHeight: 1.0,
+                    color: 'var(--body)',
+                    marginBottom: '0.5rem',
+                  }}
+                >
+                  Yadah
+                </h2>
+                <p
+                  className="font-playfair italic"
+                  style={{
+                    fontSize: 'clamp(1rem, 2vw, 1.4rem)',
+                    color: 'var(--muted)',
+                  }}
+                >
+                  Kukeurim Daniel
+                </p>
+              </div>
+
+              <div
+                className="prose max-w-none text-[var(--body)] [&_p+p]:mt-6"
+                style={{
+                  fontSize: '1rem',
+                  lineHeight: 1.9,
+                }}
+                dangerouslySetInnerHTML={{ __html: bio1Html }}
+              />
+
+              <blockquote
+                style={{
+                  borderLeft: '2px solid var(--gold)',
+                  paddingLeft: '1.5rem',
+                  margin: '2.5rem 0',
+                  fontFamily: 'var(--font-baskerville)',
+                  fontStyle: 'italic',
+                  fontSize: '1.05rem',
+                  lineHeight: 1.8,
+                  color: 'var(--body)',
+                }}
+              >
+                &ldquo;{FAITH_DECLARATION}&rdquo;
+              </blockquote>
+
+              <div
+                className="prose max-w-none text-[var(--body)] [&_p+p]:mt-6"
+                style={{
+                  fontSize: '1rem',
+                  lineHeight: 1.9,
+                }}
+                dangerouslySetInnerHTML={{ __html: bio2Html }}
+              />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 4 — Stats Row */}
+      <section style={{ background: 'var(--surface)' }} className="py-20 px-8 md:px-20 mt-8 md:mt-16">
+        <div className="max-w-screen-xl mx-auto">
+          <div
+            className="grid grid-cols-1 md:grid-cols-3 gap-0"
+            style={{
+              borderTop: '1px solid rgba(139, 105, 20, 0.15)',
+              borderBottom: '1px solid rgba(139, 105, 20, 0.15)',
+            }}
+          >
+            {STATS.map(({ number, label }) => (
+              <div
+                key={label}
+                className="py-12 text-center border-b border-[rgba(139,105,20,0.15)] last:border-b-0 md:border-b-0 md:border-r md:border-[rgba(139,105,20,0.15)] md:last:border-r-0"
+              >
+                <p
+                  className="font-playfair"
+                  style={{
+                    fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+                    fontWeight: 400,
+                    color: 'var(--accent)',
+                    lineHeight: 1,
+                    marginBottom: '0.5rem',
+                  }}
+                >
+                  {number}
+                </p>
+                <p className="eyebrow" style={{ color: 'var(--muted)' }}>
+                  {label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 5 — Ministry CTA */}
+      <section className="border-t border-gold-light/20 bg-bg mt-12 md:mt-20 py-24 px-8 md:px-20 text-center">
         <p className="eyebrow mb-4">Ministry</p>
         <p className="font-playfair text-2xl font-normal italic text-[var(--body)] mb-4 max-w-xl mx-auto">
           Yadah is available to minister.
         </p>
-        <p className="body-sm text-muted max-w-lg mx-auto mb-8">
+        <p className="body-sm text-muted max-w-lg mx-auto mb-10">
           If you would like Yadah to minister at your church, conference, or worship event, you are welcome to reach out
           through the booking page.
         </p>
-        <Link href="/booking" className="btn-ghost inline-flex">
-          <span className="arrow-line" />
-          Submit a Booking Request
-        </Link>
+        <div className="flex justify-center">
+          <Link href="/booking" className="btn-ghost inline-flex">
+            <span className="arrow-line" />
+            Submit a Booking Request
+          </Link>
+        </div>
       </section>
     </div>
   )
