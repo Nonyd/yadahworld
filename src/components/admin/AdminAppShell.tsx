@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
+import AdminBrandedLogo from '@/components/admin/AdminBrandedLogo'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 
 export default function AdminAppShell({
@@ -35,7 +35,7 @@ export default function AdminAppShell({
           Menu
         </button>
         <Link href="/admin" className="flex shrink-0 justify-center" aria-label="Admin home">
-          <Image src={logoUrl} alt={siteName} width={200} height={48} className="h-8 w-auto" priority />
+          <AdminBrandedLogo logoUrl={logoUrl} siteName={siteName} width={200} height={48} className="h-8 w-auto" priority />
         </Link>
         <span className="w-10 shrink-0" aria-hidden />
       </div>

@@ -1,7 +1,7 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
+import AdminBrandedLogo from '@/components/admin/AdminBrandedLogo'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
@@ -124,7 +124,7 @@ export default function AdminSidebar({
     <aside className="flex h-full min-h-screen flex-col border-admin-border bg-admin-surface shadow-admin-sidebar lg:min-h-0 lg:border-r">
       <div className="border-b border-admin-border px-5 py-6">
         <Link href="/admin" className="inline-block" aria-label="Admin home">
-          <Image src={logoUrl} alt={siteName} width={220} height={52} className="h-10 w-auto" priority />
+          <AdminBrandedLogo logoUrl={logoUrl} siteName={siteName} width={220} height={52} className="h-10 w-auto" priority />
         </Link>
         <p className="mt-3 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-admin-muted">Studio</p>
       </div>

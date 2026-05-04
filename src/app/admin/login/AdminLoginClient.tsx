@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 import { signIn } from 'next-auth/react'
+import AdminBrandedLogo from '@/components/admin/AdminBrandedLogo'
 import { useRouter } from 'next/navigation'
 
 export default function AdminLoginClient({ logoUrl, siteName }: { logoUrl: string; siteName: string }) {
@@ -34,7 +34,7 @@ export default function AdminLoginClient({ logoUrl, siteName }: { logoUrl: strin
     <div className="admin-app relative min-h-screen flex items-center justify-center px-4 py-16">
       <div className="admin-card w-full max-w-md p-8 sm:p-10">
         <div className="flex justify-center">
-          <Image src={logoUrl} alt={siteName} width={280} height={72} className="h-14 w-auto" priority />
+          <AdminBrandedLogo logoUrl={logoUrl} siteName={siteName} width={280} height={72} className="h-14 w-auto" priority />
         </div>
         <p className="mt-6 text-center text-[0.65rem] font-medium uppercase tracking-[0.22em] text-admin-muted">
           Studio sign in
