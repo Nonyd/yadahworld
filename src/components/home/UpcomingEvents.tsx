@@ -56,6 +56,15 @@ export default function UpcomingEvents({ events, copy }: { events: PublicEvent[]
             </motion.li>
           ))}
         </ul>
+        <div className="mt-10 text-center">
+          <Link
+            href="/events"
+            className="inline-flex items-center gap-2 ui-label text-accent hover:text-accent-light transition-colors"
+          >
+            View all events
+            <span aria-hidden>→</span>
+          </Link>
+        </div>
       </div>
     </section>
   )

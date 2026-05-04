@@ -169,6 +169,9 @@ export default function Footer({
             <Link href="/gospel" className={linkClass} style={{ color: 'var(--gold-light)' }}>
               The Gospel
             </Link>
+            <Link href="/events" className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
+              Events
+            </Link>
             <PublicHrefLink href={roomForYouHref} className={linkClass} style={{ color: 'rgba(253,250,245,0.4)' }}>
               {g('ministryRoomForYou')}
             </PublicHrefLink>

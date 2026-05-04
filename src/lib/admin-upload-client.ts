@@ -1,4 +1,4 @@
-export type AdminUploadFolder = 'releases' | 'site' | 'videos' | 'gallery' | 'products'
+export type AdminUploadFolder = 'releases' | 'site' | 'videos' | 'gallery' | 'products' | 'events'
 
 export type AdminUploadStatus = {
   serverUploadReady: boolean

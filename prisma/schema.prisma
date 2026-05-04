@@ -255,8 +255,10 @@ model NewsletterSubscriber {
 
 enum EventStatus {
   DRAFT
+  COMING_SOON
   PUBLISHED
   CANCELLED
+  PAST
 }
 
 enum PaymentStatus {
@@ -300,6 +302,19 @@ model Event {
   registrations EventRegistration[]
   tiers         TicketTier[]
   speakers      EventSpeaker[]
+  interests     EventInterest[]
+}
+
+model EventInterest {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  email     String
+  name      String?
+  notified  Boolean  @default(false)
+
+  @@unique([eventId, email])
 }
 
 model EventSpeaker {
@@ -332,7 +347,7 @@ model EventRegistration {
   id              String        @id @default(cuid())
   createdAt       DateTime      @default(now())
   eventId         String
-  event           Event         @relation(fields: [eventId], references: [id])
+  event           Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
   tierId          String
   tier            TicketTier    @relation(fields: [tierId], references: [id])
   fullName        String

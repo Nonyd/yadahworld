@@ -37,7 +37,7 @@ export default async function AdminOverview() {
   messages = await safeCount(() => prisma.contactMessage.count())
   pendingBookings = await safeCount(() => prisma.bookingRequest.count({ where: { status: 'PENDING' } }))
   releases = await safeCount(() => prisma.siteRelease.count())
-  events = await safeCount(() => prisma.siteEvent.count())
+  events = await safeCount(() => prisma.event.count())
   playlists = await safeCount(() => prisma.youTubePlaylist.count())
   cachedVideos = await safeCount(() => prisma.cachedVideo.count())
   lastSync = await safeMaxSync()
@@ -55,7 +55,7 @@ export default async function AdminOverview() {
       href: '/admin/subscribers',
     },
     { label: 'Releases', value: releases, hint: 'Discography pages', href: '/admin/releases' },
-    { label: 'Events', value: events, hint: 'On the road', href: '/admin/events' },
+    { label: 'Events', value: events, hint: 'Ticketing & /events', href: '/admin/events' },
     { label: 'Playlists', value: playlists, hint: 'YouTube sources', href: '/admin/playlists' },
     { label: 'Cached videos', value: cachedVideos, hint: 'Synced from YouTube', href: '/admin/videos' },
   ]

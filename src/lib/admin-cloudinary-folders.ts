@@ -5,6 +5,7 @@ export const ADMIN_CLOUDINARY_FOLDERS: Record<string, string> = {
   videos: 'yadahworld/videos',
   gallery: 'yadahworld/gallery',
   products: 'yadahworld/products',
+  events: 'yadahworld/events',
 }
 
 export function resolveAdminUploadFolder(folderKey: string): string | undefined {

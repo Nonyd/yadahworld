@@ -3,7 +3,14 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export default function DeleteEventButton({ id }: { id: string }) {
+export default function DeleteEventButton({
+  id,
+  apiBase = '/api/admin/events',
+}: {
+  id: string
+  /** Default: ticketed events. Use `/api/admin/site-events` for homepage ministry rows. */
+  apiBase?: string
+}) {
   const router = useRouter()
   const [busy, setBusy] = useState(false)
 
@@ -11,7 +18,7 @@ export default function DeleteEventButton({ id }: { id: string }) {
     if (!confirm('Delete this event?')) return
     setBusy(true)
     try {
-      const res = await fetch(`/api/admin/events/${id}`, { method: 'DELETE' })
+      const res = await fetch(`${apiBase}/${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error()
       router.refresh()
     } finally {

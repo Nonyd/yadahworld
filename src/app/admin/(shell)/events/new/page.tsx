@@ -1,10 +1,10 @@
 import EventForm from '@/components/admin/cms/EventForm'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 
-export default function NewEventPage() {
+export default function NewTicketingEventPage() {
   return (
     <div>
-      <AdminPageHeader title="New event" description="Use a full URL for external links, or a path like /booking for on-site actions." />
+      <AdminPageHeader title="New ticketed event" description="Publish to /events when status is Published or Coming soon." />
       <EventForm mode="create" />
     </div>
   )
