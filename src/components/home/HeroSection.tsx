@@ -315,7 +315,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
               style={{
                 filter: 'none',
                 objectFit: 'cover',
-                objectPosition: 'center center',
+                objectPosition: 'top center',
               }}
               loading="eager"
               fetchPriority="high"
@@ -413,7 +413,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
           .hero-image-container img {
             opacity: 0.3;
             object-fit: cover;
-            object-position: center center;
+            object-position: top center;
           }
           .hero-state2-content {
             left: 2rem !important;

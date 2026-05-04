@@ -11,6 +11,22 @@ export default function CustomCursor() {
     const ring = ringRef.current
     if (!dot || !ring) return
 
+    const onScroll = () => {
+      const inHero = window.scrollY < 650
+      const o = inHero ? '0' : '1'
+      dot.style.opacity = o
+      ring.style.opacity = o
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    const dot = dotRef.current
+    const ring = ringRef.current
+    if (!dot || !ring) return
+
     let mouseX = 0
     let mouseY = 0
     let ringX = 0
