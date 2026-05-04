@@ -84,6 +84,12 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
           scrub: 1,
           pin: true,
           anticipatePin: 1,
+          // State 1 stays z-20 above State 2 (z-10); when faded out it still captures clicks unless disabled.
+          onUpdate: (self) => {
+            const el = state1Ref.current
+            if (!el) return
+            el.style.pointerEvents = self.progress > 0.12 ? 'none' : 'auto'
+          },
         },
       })
 
@@ -227,7 +233,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
       {/* STATE 2 */}
       <div ref={state2Ref} className="absolute inset-0 z-10" style={{ opacity: 0 }}>
         <div
-          className="absolute inset-0 flex flex-col justify-center gap-6 overflow-hidden"
+          className="pointer-events-none absolute inset-0 flex flex-col justify-center gap-6 overflow-hidden"
           style={{ zIndex: 1 }}
         >
           <div style={{ overflow: 'hidden' }}>
@@ -333,7 +339,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
         </div>
 
         <div
-          className="hero-state2-content absolute z-40"
+          className="hero-state2-content pointer-events-auto absolute z-40"
           style={{
             left: 'clamp(2rem, 5vw, 5rem)',
             bottom: 'clamp(3rem, 6vw, 5rem)',
