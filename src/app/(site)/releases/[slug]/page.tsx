@@ -115,10 +115,8 @@ export default async function ReleaseDetailPage({ params }: Props) {
             <p className="ui-label mt-4 text-muted">{releaseDateThenType(release)}</p>
             <div className="my-8 h-px max-w-md bg-gold" />
 
-            <div className="prose max-w-xl text-muted" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
-
             {release.spotifyEmbed?.trim() && (
-              <div className="mt-10 max-w-xl">
+              <div className="mb-10 max-w-xl">
                 <h2 className="eyebrow mb-4">{d('spotifyEmbedHeading')}</h2>
                 <div className="overflow-hidden rounded-lg border border-gold-light/20 bg-surface shadow-[0_4px_24px_rgba(13,11,8,0.06)]">
                   <iframe
@@ -133,6 +131,8 @@ export default async function ReleaseDetailPage({ params }: Props) {
                 </div>
               </div>
             )}
+
+            <div className="prose max-w-xl text-muted" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
 
             {musicVideoId && (
               <div className="mt-10 max-w-3xl">

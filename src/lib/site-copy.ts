@@ -161,7 +161,7 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     body2:
       'Details for upcoming Campus Tour stops, cities, and how to host or partner are shared through official channels. For ministry bookings and appearances, use the booking form — we will respond with next steps.',
     rfyLinkLabel: 'Room For You',
-    bookCta: 'Apply for campus tour',
+    bookCta: 'APPLY FOR YOUR CAMPUS',
     contactCta: 'Contact',
   },
   shop: {

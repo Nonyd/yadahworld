@@ -39,6 +39,10 @@ const schema = z
     customCampus: z.string().optional(),
     role: z.string().min(1, 'Please select your role'),
     customRole: z.string().optional(),
+    whyMinisterYadah: z
+      .string()
+      .transform((s) => s.trim())
+      .pipe(z.string().min(1, 'Please tell us why you want Minister Yadah in your school')),
     expectations: z.string().optional(),
   })
   .refine(
@@ -187,7 +191,10 @@ export default function CampusTourModal({ isOpen, onClose }: CampusTourModalProp
               </button>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 py-6 sm:px-8 sm:py-8 [scrollbar-gutter:stable]">
+            <div
+              data-lenis-prevent
+              className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-y-contain px-6 py-6 sm:px-8 sm:py-8 [scrollbar-gutter:stable]"
+            >
               <AnimatePresence mode="wait">
                 {status === 'success' ? (
                   <motion.div
@@ -368,6 +375,23 @@ export default function CampusTourModal({ isOpen, onClose }: CampusTourModalProp
                           </motion.div>
                         )}
                       </AnimatePresence>
+                    </div>
+
+                    <div>
+                      <label className="ui-label mb-2 block" style={{ color: 'var(--muted)' }}>
+                        Why do you Want Minister Yadah in Your School? <span style={{ color: 'var(--accent)' }}>*</span>
+                      </label>
+                      <textarea
+                        {...register('whyMinisterYadah')}
+                        placeholder="Share your heart for this outreach and what you believe God will do through it…"
+                        className="field-textarea"
+                        rows={4}
+                      />
+                      {errors.whyMinisterYadah && (
+                        <p className="mt-1 font-jost text-xs" style={{ color: 'var(--accent)' }}>
+                          {errors.whyMinisterYadah.message}
+                        </p>
+                      )}
                     </div>
 
                     <div>

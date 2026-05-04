@@ -20,6 +20,10 @@ const schema = z
     customCampus: z.string().optional(),
     role: z.string().min(1, 'Please select your role'),
     customRole: z.string().optional(),
+    whyMinisterYadah: z
+      .string()
+      .transform((s) => s.trim())
+      .pipe(z.string().min(1, 'Please tell us why you want Minister Yadah in your school')),
     expectations: z.string().optional(),
   })
   .refine(
@@ -59,6 +63,7 @@ export async function POST(req: NextRequest) {
         customCampus: data.campus === 'other' ? data.customCampus : null,
         role: displayRole,
         customRole: data.role === 'other' ? data.customRole : null,
+        whyMinisterYadah: data.whyMinisterYadah.trim(),
         expectations: data.expectations ?? null,
       },
     })
@@ -98,6 +103,7 @@ export async function POST(req: NextRequest) {
               ['WhatsApp', data.whatsapp],
               ['Campus', displayCampus],
               ['Role', displayRole],
+              ['Why Minister Yadah', data.whyMinisterYadah.trim()],
               ['Expectations', data.expectations ?? '—'],
             ]
               .map(

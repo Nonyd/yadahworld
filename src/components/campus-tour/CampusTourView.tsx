@@ -53,19 +53,6 @@ export default function CampusTourView({
               <em className="font-playfair italic text-[var(--accent)]">{c('headingLine2')}</em>
             </h1>
 
-            <button type="button" onClick={() => setModalOpen(true)} className="btn-primary mt-2">
-              {c('bookCta')}
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-                <path
-                  d="M1 7h12M7 1l6 6-6 6"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-
             <div className="mt-10 max-w-xl space-y-6 text-[var(--muted)]">
               {hasRfyToken ? (
                 <>

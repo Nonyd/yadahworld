@@ -13,7 +13,17 @@ export async function GET() {
     orderBy: { createdAt: 'desc' },
   })
 
-  const headers = ['Date', 'Full Name', 'WhatsApp', 'Email', 'Campus', 'Role', 'Expectations', 'Status']
+  const headers = [
+    'Date',
+    'Full Name',
+    'WhatsApp',
+    'Email',
+    'Campus',
+    'Role',
+    'Why Minister Yadah',
+    'Expectations',
+    'Status',
+  ]
 
   const rows = apps.map((a) => [
     new Date(a.createdAt).toLocaleDateString('en-GB'),
@@ -22,6 +32,7 @@ export async function GET() {
     a.email,
     a.campus,
     a.role,
+    a.whyMinisterYadah ?? '',
     a.expectations ?? '',
     a.status,
   ])
