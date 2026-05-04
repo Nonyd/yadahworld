@@ -273,10 +273,10 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             zIndex: 2,
             background: `linear-gradient(
               to right,
-              rgba(10,8,6,0.97) 0%,
-              rgba(10,8,6,0.75) 30%,
-              rgba(10,8,6,0.2) 55%,
-              rgba(10,8,6,0.05) 100%
+              rgba(10,8,6,0.95) 0%,
+              rgba(10,8,6,0.6) 28%,
+              rgba(10,8,6,0.1) 52%,
+              rgba(10,8,6,0) 100%
             )`,
           }}
         />
@@ -303,7 +303,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             <img
               src={heroImageUrl}
               alt="Yadah Kukeurim Daniel"
-              className="h-full w-full object-cover object-top"
+              className="h-full w-full object-cover object-center"
               loading="eager"
               fetchPriority="high"
             />

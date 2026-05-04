@@ -30,7 +30,8 @@ export default function Navbar({
   const { theme } = useTheme()
 
   useMotionValueEvent(scrollY, 'change', (y) => {
-    setHeroMode(y < 40)
+    // Home: pinned hero scroll (~600px) — keep transparent bar until past that range.
+    setHeroMode(pathname === '/' ? y < 650 : y < 40)
   })
 
   useEffect(() => {
@@ -106,9 +107,6 @@ export default function Navbar({
               </Link>
             ),
           )}
-          <ThemeToggle
-            className={onDarkHero ? '!border-white/25 !text-[rgba(253,250,245,0.75)]' : ''}
-          />
         </nav>
 
         <div className="flex items-center gap-3 lg:hidden">
