@@ -28,6 +28,7 @@ const config: Config = {
         'admin-sidebar': '1px 0 0 rgba(13, 11, 8, 0.06)',
       },
       fontFamily: {
+        cormorant: ['var(--font-cormorant)', 'serif'],
         playfair: ['var(--font-playfair)', 'Georgia', 'serif'],
         baskerville: ['var(--font-baskerville)', 'Georgia', 'serif'],
         jost: ['var(--font-jost)', 'system-ui', 'sans-serif'],

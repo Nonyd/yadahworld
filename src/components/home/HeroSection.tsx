@@ -152,19 +152,21 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
                 delay: 0.2,
                 ease: [0.25, 0.46, 0.45, 0.94],
               }}
-              className="block font-playfair italic"
+              className="block italic"
               style={{
-                fontSize: 'clamp(5rem, 16vw, 15rem)',
-                fontWeight: 400,
+                fontFamily: 'var(--font-cormorant)',
+                fontSize: 'clamp(6rem, 18vw, 18rem)',
+                fontWeight: 300,
                 lineHeight: 0.88,
+                letterSpacing: '-0.02em',
                 color: '#FDFAF5',
               }}
             >
               Yadah
             </motion.span>
           </div>
-          <div style={{ overflow: 'hidden' }}>
-            <motion.span
+          <div style={{ overflow: 'hidden', marginTop: '1.5rem' }}>
+            <motion.p
               initial={{ y: '105%' }}
               animate={{ y: 0 }}
               transition={{
@@ -172,16 +174,17 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
                 delay: 0.38,
                 ease: [0.25, 0.46, 0.45, 0.94],
               }}
-              className="block font-playfair"
+              className="font-jost font-light uppercase"
               style={{
-                fontSize: 'clamp(2.5rem, 9vw, 8rem)',
-                fontWeight: 400,
-                lineHeight: 0.9,
-                color: 'rgba(253,250,245,0.2)',
+                fontSize: 'clamp(0.6rem, 1.2vw, 0.85rem)',
+                fontWeight: 300,
+                lineHeight: 1,
+                letterSpacing: '0.35em',
+                color: 'rgba(253,250,245,0.35)',
               }}
             >
-              Kukeurim Daniel.
-            </motion.span>
+              The Voice of Jesus to Nations
+            </motion.p>
           </div>
         </div>
 
@@ -336,29 +339,19 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
           }}
         >
           <h1
-            className="font-playfair italic"
+            className="italic"
             style={{
+              fontFamily: 'var(--font-cormorant)',
               fontSize: 'clamp(3rem, 7vw, 6.5rem)',
-              fontWeight: 400,
+              fontWeight: 300,
+              fontStyle: 'italic',
               lineHeight: 0.92,
               color: '#FDFAF5',
-              marginBottom: '0.5rem',
+              marginBottom: '1.25rem',
             }}
           >
             Yadah
           </h1>
-          <p
-            className="font-playfair"
-            style={{
-              fontSize: 'clamp(1.2rem, 2.5vw, 2.2rem)',
-              fontWeight: 400,
-              color: 'rgba(253,250,245,0.25)',
-              marginBottom: '1.75rem',
-              lineHeight: 1,
-            }}
-          >
-            Kukeurim Daniel.
-          </p>
 
           <div
             style={{
@@ -385,7 +378,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
                 color: 'rgba(201,168,76,0.7)',
               }}
             >
-              The Voice of Jesus Christ to Nations
+              THE VOICE OF JESUS CHRIST TO NATIONS
             </p>
           </div>
 

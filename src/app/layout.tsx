@@ -1,10 +1,17 @@
 import type { Metadata } from 'next'
-import { Libre_Baskerville, Playfair_Display, Jost } from 'next/font/google'
+import { Cormorant_Garamond, Libre_Baskerville, Playfair_Display, Jost } from 'next/font/google'
 import SessionProvider from '@/components/providers/SessionProvider'
 import ThemeProvider from '@/components/providers/ThemeProvider'
 import SiteCookieConsent from '@/components/consent/SiteCookieConsent'
 import './globals.css'
 
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-cormorant',
+  display: 'swap',
+})
 const playfair = Playfair_Display({
   subsets: ['latin'],
   weight: ['400', '500', '700', '900'],
@@ -39,7 +46,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${jost.variable} ${baskerville.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${cormorant.variable} ${playfair.variable} ${jost.variable} ${baskerville.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <ThemeProvider>
           <SessionProvider>{children}</SessionProvider>
