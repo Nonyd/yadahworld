@@ -48,7 +48,7 @@ export default function Footer({
 
   return (
     <footer className="w-full">
-      <section className="py-20 px-8 md:px-20" style={{ background: '#EDE8DF' }}>
+      <section className="pre-footer-strip py-20 px-8 md:px-20">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="font-playfair italic text-[clamp(2rem,5vw,4rem)] text-[var(--body)] text-center">
             {g('preFooterTitle')}

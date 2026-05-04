@@ -121,7 +121,7 @@ export default function AdminSidebar({
   }
 
   return (
-    <aside className="flex h-full min-h-screen flex-col border-admin-border bg-admin-surface shadow-admin-sidebar lg:min-h-0 lg:border-r">
+    <aside className="flex h-full min-h-screen flex-col border-admin-border bg-surface shadow-admin-sidebar lg:min-h-0 lg:border-r">
       <div className="border-b border-admin-border px-5 py-6">
         <Link href="/admin" className="inline-block" aria-label="Admin home">
           <AdminBrandedLogo logoUrl={logoUrl} siteName={siteName} width={220} height={52} className="h-10 w-auto" priority />
@@ -162,7 +162,7 @@ export default function AdminSidebar({
       <div className="mt-auto border-t border-admin-border p-4">
         <div className="mb-3 flex items-center justify-between gap-2 px-1">
           <span className="text-[0.65rem] font-medium uppercase tracking-[0.18em] text-admin-muted">Theme</span>
-          <ThemeToggle variant="admin" className="!min-w-0 shrink-0" />
+          <ThemeToggle className="!min-w-0 shrink-0" />
         </div>
         {userLabel && <p className="mb-3 truncate px-1 text-xs text-admin-muted">{userLabel}</p>}
         <button

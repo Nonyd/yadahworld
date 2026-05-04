@@ -27,7 +27,7 @@ export default function Navbar({
   const [menuOpen, setMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { scrollY } = useScroll()
-  const { resolvedTheme } = useTheme()
+  const { theme } = useTheme()
 
   useMotionValueEvent(scrollY, 'change', (y) => {
     setHeroMode(y < 40)
@@ -38,13 +38,25 @@ export default function Navbar({
   }, [])
 
   const onDarkHero = pathname === '/' && heroMode
+  const scrolled = !heroMode
   const navMuted = 'rgba(253,250,245,0.6)'
-  const isDark = mounted && resolvedTheme === 'dark'
-  /** White mark on hero / dark pages; dark mark on light pages (light theme only). */
-  const logoStyle: CSSProperties | undefined =
-    onDarkHero || isDark ? undefined : { filter: 'brightness(0)' }
+  const isDark = mounted && theme === 'dark'
+  const darkScrolledBar = scrolled && isDark
+
+  /** Hero is dark; scrolled light needs black mark; scrolled dark keeps white mark. */
+  const logoStyle: CSSProperties | undefined = onDarkHero ? undefined : !isDark ? { filter: 'brightness(0)' } : undefined
 
   const labelFor = (href: string, fallback: string) => navLabels[href]?.trim() || fallback
+
+  const headerSurface =
+    onDarkHero
+      ? 'border-transparent bg-transparent'
+      : [
+          'border-b backdrop-blur-md',
+          darkScrolledBar
+            ? 'scrolled border-[rgba(201,168,76,0.1)]'
+            : 'border-gold-light/15 bg-[color-mix(in_srgb,var(--bg)_92%,transparent)]',
+        ].join(' ')
 
   return (
     <>
@@ -54,11 +66,7 @@ export default function Navbar({
           flex items-center justify-between gap-4
           px-8 md:px-16 py-6
           transition-all duration-700
-          ${
-            onDarkHero
-              ? 'bg-transparent'
-              : 'border-b border-gold-light/15 bg-[color-mix(in_srgb,var(--bg)_92%,transparent)] backdrop-blur-md'
-          }
+          ${headerSurface}
         `}
       >
         <Link href="/" className="relative z-10 flex shrink-0 items-center" aria-label={`${siteName} home`}>
@@ -100,15 +108,10 @@ export default function Navbar({
           )}
           <ThemeToggle
             className={onDarkHero ? '!border-white/25 !text-[rgba(253,250,245,0.75)]' : ''}
-            variant="public"
           />
         </nav>
 
         <div className="flex items-center gap-3 lg:hidden">
-          <ThemeToggle
-            className={onDarkHero ? '!border-white/25 !text-[rgba(253,250,245,0.75)]' : ''}
-            variant="public"
-          />
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
@@ -130,8 +133,7 @@ export default function Navbar({
         initial={false}
         animate={{ opacity: menuOpen ? 1 : 0, pointerEvents: menuOpen ? 'auto' : 'none' }}
         transition={{ duration: 0.5 }}
-        className="fixed inset-0 z-[10100] flex flex-col items-center justify-center gap-10"
-        style={{ background: 'var(--bg)' }}
+        className="fixed inset-0 z-[10100] flex flex-col bg-[var(--bg)]"
       >
         <button
           type="button"
@@ -140,34 +142,39 @@ export default function Navbar({
         >
           Close
         </button>
-        {navLinks.map((link, i) => (
-          <motion.div
-            key={link.href}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: menuOpen ? 1 : 0, y: menuOpen ? 0 : 30 }}
-            transition={{ delay: i * 0.06, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
-            {link.external ? (
-              <a
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setMenuOpen(false)}
-                className="font-playfair text-4xl font-normal italic text-accent"
-              >
-                {labelFor(link.href, link.label)}
-              </a>
-            ) : (
-              <Link
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className="font-playfair text-4xl font-normal text-body hover:text-accent transition-colors"
-              >
-                {labelFor(link.href, link.label)}
-              </Link>
-            )}
-          </motion.div>
-        ))}
+        <div className="flex flex-1 flex-col items-center justify-center gap-10 px-8">
+          {navLinks.map((link, i) => (
+            <motion.div
+              key={link.href}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: menuOpen ? 1 : 0, y: menuOpen ? 0 : 30 }}
+              transition={{ delay: i * 0.06, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              {link.external ? (
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                  className="font-playfair text-4xl font-normal italic text-accent"
+                >
+                  {labelFor(link.href, link.label)}
+                </a>
+              ) : (
+                <Link
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="font-playfair text-4xl font-normal text-body hover:text-accent transition-colors"
+                >
+                  {labelFor(link.href, link.label)}
+                </Link>
+              )}
+            </motion.div>
+          ))}
+        </div>
+        <div className="flex justify-center border-t border-[rgba(42,37,32,0.08)] py-6 dark:border-[rgba(201,168,76,0.1)]">
+          <ThemeToggle />
+        </div>
       </motion.div>
     </>
   )

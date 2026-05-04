@@ -1,13 +1,10 @@
-import { PlaylistSlot } from '@prisma/client'
 import MinistrationsClient from '@/components/ministrations/MinistrationsClient'
-import { mapCachedVideoToPublicVideo } from '@/lib/site-content'
-import { getVideosBySlot } from '@/lib/youtube-sync'
+import { getPublicMinistrationsVideos } from '@/lib/site-content'
 
 export const metadata = { title: 'Ministrations' }
 
 export default async function MinistrationsPage() {
-  const rows = await getVideosBySlot(PlaylistSlot.MINISTRATIONS).catch(() => [])
-  const videos = rows.map(mapCachedVideoToPublicVideo)
+  const { videos, total } = await getPublicMinistrationsVideos()
 
   return (
     <div className="min-h-screen pt-40 pb-32 px-8 md:px-20" style={{ background: 'var(--bg)' }}>
@@ -22,7 +19,7 @@ export default async function MinistrationsPage() {
           Watch Yadah minister live — worship sessions, church services, and moments of encounter with God.
         </p>
 
-        <MinistrationsClient videos={videos} />
+        <MinistrationsClient videos={videos} videoTotal={total} />
       </div>
     </div>
   )

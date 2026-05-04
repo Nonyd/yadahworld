@@ -9,13 +9,22 @@ interface YouTubePlaylistItem {
     description: string
     publishedAt: string
     resourceId: { videoId: string }
-    thumbnails: {
+    thumbnails?: {
       maxres?: { url: string }
       high?: { url: string }
       medium?: { url: string }
       default?: { url: string }
-    }
+    } | null
   }
+}
+
+function thumbnailsMissing(thumbnails: YouTubePlaylistItem['snippet']['thumbnails']): boolean {
+  if (thumbnails == null || typeof thumbnails !== 'object') return true
+  return Object.keys(thumbnails).length === 0
+}
+
+function isPrivateOrHiddenVideo(title: string, thumbnails: YouTubePlaylistItem['snippet']['thumbnails']): boolean {
+  return title === 'Private video' || thumbnailsMissing(thumbnails)
 }
 
 interface YouTubeVideoDetails {
@@ -86,13 +95,14 @@ export async function syncPlaylist(playlistDbId: string): Promise<{ synced: numb
       const videoId = item.snippet.resourceId.videoId
       const thumbnails = item.snippet.thumbnails
       const thumbnailUrl =
-        thumbnails.maxres?.url ??
-        thumbnails.high?.url ??
-        thumbnails.medium?.url ??
-        thumbnails.default?.url ??
+        thumbnails?.maxres?.url ??
+        thumbnails?.high?.url ??
+        thumbnails?.medium?.url ??
+        thumbnails?.default?.url ??
         ''
 
       const details = detailsMap.get(videoId)
+      const hideFromPublic = isPrivateOrHiddenVideo(item.snippet.title, thumbnails)
 
       await prisma.cachedVideo.upsert({
         where: { youtubeVideoId: videoId },
@@ -104,7 +114,7 @@ export async function syncPlaylist(playlistDbId: string): Promise<{ synced: numb
           publishedAt: new Date(item.snippet.publishedAt),
           duration: details?.contentDetails?.duration ?? null,
           viewCount: details?.statistics?.viewCount ?? null,
-          isActive: true,
+          isActive: !hideFromPublic,
           playlistId: playlist.id,
         },
         update: {
@@ -114,6 +124,7 @@ export async function syncPlaylist(playlistDbId: string): Promise<{ synced: numb
           duration: details?.contentDetails?.duration ?? null,
           viewCount: details?.statistics?.viewCount ?? null,
           playlistId: playlist.id,
+          isActive: !hideFromPublic,
         },
       })
       synced++
@@ -121,6 +132,11 @@ export async function syncPlaylist(playlistDbId: string): Promise<{ synced: numb
       errors.push(`Video ${item.snippet.resourceId.videoId}: ${String(err)}`)
     }
   }
+
+  await prisma.cachedVideo.updateMany({
+    where: { title: 'Private video' },
+    data: { isActive: false },
+  })
 
   await prisma.youTubePlaylist.update({
     where: { id: playlistDbId },

@@ -5,6 +5,7 @@ import { slugify } from '@/lib/slug'
 import { normalizeStreamingLinksJson, type StreamingLink } from '@/lib/streaming-links'
 import { getVideosBySlot } from '@/lib/youtube-sync'
 import { youtubeWatchUrl } from '@/lib/youtube'
+import { listVideosForSlot } from '@/lib/videos-query'
 
 export type PublicRelease = {
   slug: string
@@ -37,6 +38,7 @@ export type PublicVideo = {
   id: string
   title: string
   youtubeUrl: string
+  youtubeVideoId: string
   thumbnail: string
   durationIso?: string | null
   publishedAtIso?: string | null
@@ -56,11 +58,28 @@ export function mapCachedVideoToPublicVideo(row: {
     id: row.id,
     title: row.title,
     youtubeUrl: youtubeWatchUrl(row.youtubeVideoId),
+    youtubeVideoId: row.youtubeVideoId,
     thumbnail: row.thumbnailUrl,
     durationIso: row.duration,
     publishedAtIso: row.publishedAt.toISOString(),
     viewCount: row.viewCount,
   }
+}
+
+/** Map JSON from GET /api/videos (ISO `publishedAt`) to `PublicVideo`. */
+export function deserializeCachedVideoToPublic(v: {
+  id: string
+  title: string
+  youtubeVideoId: string
+  thumbnailUrl: string
+  duration: string | null
+  publishedAt: string
+  viewCount: string | null
+}): PublicVideo {
+  return mapCachedVideoToPublicVideo({
+    ...v,
+    publishedAt: new Date(v.publishedAt),
+  })
 }
 
 const FALLBACK_RELEASES: PublicRelease[] = [
@@ -156,12 +175,14 @@ const FALLBACK_VIDEOS: PublicVideo[] = [
     id: 'fb-never-seen',
     title: 'Never Seen (Live)',
     youtubeUrl: 'https://www.youtube.com/results?search_query=yadah+never+seen+live',
+    youtubeVideoId: '',
     thumbnail: images.videoNeverSeen,
   },
   {
     id: 'fb-na-your-hand',
     title: 'Na Your Hand',
     youtubeUrl: 'https://www.youtube.com/results?search_query=yadah+na+your+hand',
+    youtubeVideoId: '',
     thumbnail: images.videoNaYourHand,
   },
 ]
@@ -271,7 +292,7 @@ export async function getPublicEvents(): Promise<PublicEvent[]> {
 
 export async function getPublicVideos(): Promise<PublicVideo[]> {
   try {
-    const rows = await getVideosBySlot(PlaylistSlot.MUSIC_VIDEOS, 6)
+    const rows = await getVideosBySlot(PlaylistSlot.MUSIC_VIDEOS, 3)
     if (rows.length === 0) return FALLBACK_VIDEOS
     return rows.map(mapCachedVideoToPublicVideo)
   } catch {
@@ -279,14 +300,34 @@ export async function getPublicVideos(): Promise<PublicVideo[]> {
   }
 }
 
-/** Full music-video grid for /media (MUSIC_VIDEOS slot). */
-export async function getPublicMusicVideosForMedia(): Promise<PublicVideo[]> {
+/** First page of music videos for /media — most viewed, 15 items. */
+export async function getPublicMusicVideosForMedia(): Promise<{ videos: PublicVideo[]; total: number }> {
   try {
-    const rows = await getVideosBySlot(PlaylistSlot.MUSIC_VIDEOS)
-    if (rows.length === 0) return FALLBACK_VIDEOS
-    return rows.map(mapCachedVideoToPublicVideo)
+    const { videos, total } = await listVideosForSlot({
+      slot: PlaylistSlot.MUSIC_VIDEOS,
+      sort: 'views',
+      skip: 0,
+      take: 15,
+    })
+    if (videos.length === 0) return { videos: FALLBACK_VIDEOS, total: FALLBACK_VIDEOS.length }
+    return { videos: videos.map(mapCachedVideoToPublicVideo), total }
   } catch {
-    return FALLBACK_VIDEOS
+    return { videos: FALLBACK_VIDEOS, total: FALLBACK_VIDEOS.length }
+  }
+}
+
+/** First page of ministrations — most viewed, 15 items. */
+export async function getPublicMinistrationsVideos(): Promise<{ videos: PublicVideo[]; total: number }> {
+  try {
+    const { videos, total } = await listVideosForSlot({
+      slot: PlaylistSlot.MINISTRATIONS,
+      sort: 'views',
+      skip: 0,
+      take: 15,
+    })
+    return { videos: videos.map(mapCachedVideoToPublicVideo), total }
+  } catch {
+    return { videos: [], total: 0 }
   }
 }
 

@@ -16,14 +16,16 @@ export default async function AdminShellLayout({ children }: { children: React.R
   ])
 
   return (
-    <AdminAppShell
-      userLabel={session.user?.email}
-      pendingBookingsCount={pendingBookings}
-      unreadMessagesCount={unreadMessages}
-      logoUrl={branding.logoUrl}
-      siteName={branding.siteName}
-    >
-      {children}
-    </AdminAppShell>
+    <div className="admin-shell">
+      <AdminAppShell
+        userLabel={session.user?.email}
+        pendingBookingsCount={pendingBookings}
+        unreadMessagesCount={unreadMessages}
+        logoUrl={branding.logoUrl}
+        siteName={branding.siteName}
+      >
+        {children}
+      </AdminAppShell>
+    </div>
   )
 }

@@ -67,7 +67,7 @@ export default function AdminAppShell({
           />
         </div>
 
-        <main className="min-w-0 flex-1 px-4 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+        <main className="min-w-0 flex-1 bg-bg px-4 py-8 text-body sm:px-8 sm:py-10 lg:px-12 lg:py-12">
           <div className="mx-auto max-w-6xl">{children}</div>
         </main>
       </div>
