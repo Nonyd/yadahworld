@@ -162,7 +162,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
               style={{
                 fontFamily: 'var(--font-cormorant)',
                 fontStyle: 'italic',
-                fontSize: 'clamp(6rem, 18vw, 18rem)',
+                fontSize: 'clamp(8rem, 22vw, 22rem)',
                 fontWeight: 300,
                 lineHeight: 0.88,
                 letterSpacing: '-0.02em',

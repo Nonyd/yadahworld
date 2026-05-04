@@ -29,28 +29,25 @@ export default function UpcomingEvents({ events, copy }: { events: PublicEvent[]
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.1 + i * 0.1, duration: 0.6, ease: [0.77, 0, 0.175, 1] }}
-              className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-8 px-6 md:px-8 hover:bg-surface/60 transition-colors"
+              style={{ borderLeft: '2px solid var(--gold)', paddingLeft: '1rem' }}
+              className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 py-8 pr-6 md:pr-8 hover:bg-surface/60 transition-colors"
             >
-              <div>
-                <p className="font-playfair text-2xl md:text-3xl text-[var(--body)]">{ev.title}</p>
-                <p className="font-jost text-sm tracking-wide text-[var(--muted)] mt-2">
-                  {ev.dateLabel} · {ev.location}
+              <div className="min-w-0 flex-1">
+                <p className="font-playfair text-[clamp(1.35rem,3.5vw,2.35rem)] font-normal leading-tight text-[var(--body)] tracking-tight">
+                  {ev.dateLabel}
                 </p>
+                <p className="font-playfair text-xl md:text-2xl text-[var(--body)] mt-3">{ev.title}</p>
+                <p className="font-jost text-sm tracking-wide text-[var(--muted)] mt-2">{ev.location}</p>
               </div>
               {ev.external ? (
-                <a
-                  href={ev.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 ui-label text-accent hover:text-accent-light transition-colors"
-                >
+                <a href={ev.href} target="_blank" rel="noopener noreferrer" className="btn-ghost shrink-0 self-start md:self-auto">
+                  <span className="arrow-line" />
                   {h('eventsDetails')}
-                  <span aria-hidden>→</span>
                 </a>
               ) : (
-                <Link href={ev.href} className="inline-flex items-center gap-2 ui-label text-accent hover:text-accent-light transition-colors">
+                <Link href={ev.href} className="btn-ghost shrink-0 self-start md:self-auto">
+                  <span className="arrow-line" />
                   {h('eventsBookInquire')}
-                  <span aria-hidden>→</span>
                 </Link>
               )}
             </motion.li>

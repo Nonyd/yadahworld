@@ -23,7 +23,7 @@ export default function AboutSnippet({
 
   return (
     <section ref={ref} className="px-8 md:px-20 py-[clamp(6rem,12vw,14rem)]">
-      <div className="max-w-screen-xl mx-auto grid md:grid-cols-[4fr_6fr] gap-16 md:gap-24 items-center">
+      <div className="max-w-screen-xl mx-auto grid md:grid-cols-[5fr_7fr] gap-16 md:gap-24 items-center">
         <motion.div
           initial={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 100%, 0 100%)' }}
           animate={inView ? { clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' } : {}}
@@ -87,9 +87,9 @@ export default function AboutSnippet({
             className="flex gap-10 mb-12 pb-10 border-b border-[rgba(42,37,32,0.1)] flex-wrap"
           >
             {[
-              { n: h('aboutStat1n'), label: h('aboutStat1l') },
-              { n: h('aboutStat2n'), label: h('aboutStat2l') },
-              { n: h('aboutStat3n'), label: h('aboutStat3l') },
+              { n: 'Millions', label: 'Lives Touched' },
+              { n: 'Nations', label: 'Reached' },
+              { n: '7+', label: 'Years of Ministry' },
             ].map(({ n, label }) => (
               <div key={label}>
                 <p className="font-playfair text-5xl font-normal text-[var(--accent)] leading-none mb-1">{n}</p>
