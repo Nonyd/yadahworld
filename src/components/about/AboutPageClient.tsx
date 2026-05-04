@@ -83,21 +83,11 @@ export default function AboutPageClient({
           >
             &ldquo;{a('mantraQuote')}&rdquo;
           </blockquote>
-          <div
-            className="h-px mx-auto mt-10"
-            style={{
-              width: '60px',
-              background: 'var(--gold)',
-              opacity: 0.4,
-            }}
-          />
-          <p className="font-jost text-xs tracking-[0.2em] uppercase mt-4" style={{ color: 'var(--muted)' }}>
+          <p className="font-jost text-xs tracking-[0.2em] uppercase mt-10" style={{ color: 'var(--muted)' }}>
             {a('mantraAttribution')}
           </p>
         </div>
       </section>
-
-      <div className="section-rule mx-8 md:mx-20 my-4 md:my-8" />
 
       {/* SECTION 3 — Bio Story */}
       <section
@@ -230,7 +220,7 @@ export default function AboutPageClient({
       </section>
 
       {/* SECTION 5 — Ministry CTA */}
-      <section className="border-t border-gold-light/20 bg-bg mt-12 md:mt-20 py-24 px-8 md:px-20 text-center">
+      <section className="border-t border-[rgba(42,37,32,0.1)] bg-bg mt-12 md:mt-20 py-24 px-8 md:px-20 text-center">
         <p className="eyebrow mb-4">{a('ministryEyebrow')}</p>
         <p className="font-playfair text-2xl font-normal italic text-[var(--body)] mb-4 max-w-xl mx-auto">
           {a('ministryLead')}

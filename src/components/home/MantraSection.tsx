@@ -46,14 +46,6 @@ export default function MantraSection({ copy }: { copy: SiteCopy }) {
         >
           {h('mantraAttribution')}
         </motion.p>
-
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={inView ? { scaleX: 1 } : {}}
-          transition={{ delay: 0.9, duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
-          className="h-px max-w-[120px] mx-auto mt-10 origin-center"
-          style={{ background: 'var(--gold-light)', opacity: 0.4 }}
-        />
       </div>
     </section>
   )

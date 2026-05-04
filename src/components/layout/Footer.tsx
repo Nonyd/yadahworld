@@ -93,9 +93,7 @@ export default function Footer({
           </p>
         </div>
 
-        <div style={{ height: '1px', background: 'rgba(201,168,76,0.12)' }} />
-
-        <div className="grid grid-cols-1 gap-10 border-b border-[rgba(201,168,76,0.12)] py-12 md:grid-cols-2 md:items-center md:gap-12">
+        <div className="grid grid-cols-1 gap-10 border-b border-[rgba(253,250,245,0.08)] py-12 md:grid-cols-2 md:items-center md:gap-12">
           <div>
             <p className="eyebrow mb-3" style={{ color: 'rgba(253,250,245,0.25)' }}>
               {g('newsletterEyebrow')}
@@ -226,8 +224,6 @@ export default function Footer({
           </div>
         </div>
 
-        <div style={{ height: '1px', background: 'rgba(201,168,76,0.12)' }} />
-
         <div className="flex flex-col items-center gap-4 py-8 text-center">
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-jost text-[10px] tracking-[0.2em] uppercase">
             <Link
@@ -277,8 +273,6 @@ export default function Footer({
             {g('creditLine')}
           </a>
         </div>
-
-        <div style={{ height: '1px', background: 'rgba(201,168,76,0.12)' }} />
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-2 py-6">
           {copyrightLine?.trim() ? (

@@ -17,9 +17,8 @@ export default function RefundPolicyPage() {
           Refund &amp; Returns.
         </h1>
         <p className="body-sm mt-4 text-[var(--muted)]">Last updated: May 2026</p>
-        <div className="h-px w-full mt-8 mb-10" style={{ background: 'var(--gold-light)', opacity: 0.35 }} aria-hidden />
 
-        <h2 className={section}>Introduction</h2>
+        <h2 className={`${section} mt-10`}>Introduction</h2>
         <p className={body}>
           At Yadah, we want you to be completely satisfied with your purchase. This Refund and Returns Policy outlines your rights and
           our obligations when you shop at yadahworld.com.

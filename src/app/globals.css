@@ -70,10 +70,6 @@
   color: var(--body);
 }
 
-[data-theme='dark'] .section-rule {
-  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.2), transparent);
-}
-
 [data-theme='dark'] header.scrolled {
   background: rgba(15, 13, 10, 0.92) !important;
   border-bottom-color: rgba(201, 168, 76, 0.1);
@@ -174,12 +170,6 @@ html.lenis {
 }
 ::-webkit-scrollbar-thumb {
   background: var(--gold);
-}
-
-.section-rule {
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #c9a84c40, transparent);
 }
 
 .manuscript-frame {

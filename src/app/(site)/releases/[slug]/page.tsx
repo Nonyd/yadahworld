@@ -113,7 +113,6 @@ export default async function ReleaseDetailPage({ params }: Props) {
               </p>
             )}
             <p className="ui-label mt-4 text-muted">{releaseDateThenType(release)}</p>
-            <div className="my-8 h-px max-w-md bg-gold" />
 
             {release.spotifyEmbed?.trim() && (
               <div className="mb-10 max-w-xl">
@@ -161,7 +160,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
         </div>
 
         {more.length > 0 && (
-          <section className="mt-24 border-t border-gold-light/20 pt-16">
+          <section className="mt-24 border-t border-[rgba(42,37,32,0.1)] pt-16">
             <p className="eyebrow mb-6">{d('moreEyebrow')}</p>
             <h2 className="display-2 mb-12 text-body">{d('moreTitle')}</h2>
             <ul className="grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-8 lg:grid-cols-3">

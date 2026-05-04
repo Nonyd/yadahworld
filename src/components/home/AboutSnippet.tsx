@@ -84,7 +84,7 @@ export default function AboutSnippet({
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
             transition={{ delay: 0.6 }}
-            className="flex gap-10 mb-12 pb-10 border-b border-[var(--gold-light)]/20 flex-wrap"
+            className="flex gap-10 mb-12 pb-10 border-b border-[rgba(42,37,32,0.1)] flex-wrap"
           >
             {[
               { n: h('aboutStat1n'), label: h('aboutStat1l') },

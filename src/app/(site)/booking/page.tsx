@@ -25,8 +25,6 @@ export default async function BookingPage() {
           </p>
         </div>
 
-        <div className="h-px mb-16" style={{ background: 'var(--gold-light)', opacity: 0.25 }} />
-
         <BookingForm />
       </div>
     </div>

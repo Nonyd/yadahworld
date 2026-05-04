@@ -28,14 +28,6 @@ export default function BookingCTA({ worshipBg, copy }: { worshipBg: string; cop
         }}
       />
 
-      <motion.div
-        initial={{ scaleX: 0 }}
-        animate={inView ? { scaleX: 1 } : {}}
-        transition={{ duration: 1.6, ease: [0.77, 0, 0.175, 1] }}
-        className="absolute top-16 left-20 right-20 h-px origin-left max-md:left-8 max-md:right-8"
-        style={{ background: 'rgba(201,168,76,0.25)' }}
-      />
-
       <div className="relative z-10 max-w-3xl mx-auto text-center">
         <motion.p
           initial={{ opacity: 0 }}

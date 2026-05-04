@@ -361,34 +361,18 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             Yadah
           </h1>
 
-          <div
+          <p
+            className="font-jost"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '14px',
+              fontSize: '9px',
+              letterSpacing: '0.28em',
+              textTransform: 'uppercase',
+              color: 'rgba(201,168,76,0.7)',
               marginBottom: '2rem',
             }}
           >
-            <div
-              style={{
-                width: '28px',
-                height: '1px',
-                background: 'rgba(201,168,76,0.7)',
-                flexShrink: 0,
-              }}
-            />
-            <p
-              className="font-jost"
-              style={{
-                fontSize: '9px',
-                letterSpacing: '0.28em',
-                textTransform: 'uppercase',
-                color: 'rgba(201,168,76,0.7)',
-              }}
-            >
-              THE VOICE OF JESUS CHRIST TO NATIONS
-            </p>
-          </div>
+            THE VOICE OF JESUS CHRIST TO NATIONS
+          </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
             <PublicHrefLink href={bookingHref} style={bookBtnStyle}>

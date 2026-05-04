@@ -85,8 +85,7 @@ export default async function EventsPage() {
 
         {past.length > 0 && (
           <>
-            <div className="section-rule mb-16" />
-            <p className="eyebrow mb-8">{ev('pastEyebrow')}</p>
+            <p className="eyebrow mb-8 mt-16">{ev('pastEyebrow')}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {past.map((event) => (
                 <EventCard key={event.id} event={event} copy={copy} past />

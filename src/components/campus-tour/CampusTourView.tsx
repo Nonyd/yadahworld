@@ -105,7 +105,7 @@ export default function CampusTourView({
       </div>
 
       <section
-        className="relative left-1/2 w-screen -translate-x-1/2 border-y border-[var(--gold-light)]/20 py-6 md:py-8"
+        className="relative left-1/2 w-screen -translate-x-1/2 border-y border-[rgba(42,37,32,0.1)] py-6 md:py-8"
         style={{ background: 'var(--surface)' }}
         aria-label="Campus tour gallery"
       >
@@ -113,7 +113,7 @@ export default function CampusTourView({
         <MarqueeStrip urls={marqueeRow2} reverse />
       </section>
 
-      <div className="border-t py-20 text-center" style={{ borderColor: 'rgba(139,105,20,0.15)', background: 'var(--bg)' }}>
+      <div className="border-t border-[rgba(42,37,32,0.1)] py-20 text-center" style={{ background: 'var(--bg)' }}>
         <p className="eyebrow mb-4">Ready?</p>
         <h2 className="mb-6 font-playfair text-3xl italic" style={{ color: 'var(--body)' }}>
           Invite Yadah to your campus.

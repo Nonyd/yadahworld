@@ -107,7 +107,7 @@ export default async function ProductDetailPage({ params }: Props) {
         </div>
 
         {related.length > 0 && (
-          <section className="mt-24 border-t border-gold-light/20 pt-16">
+          <section className="mt-24 border-t border-[rgba(42,37,32,0.1)] pt-16">
             <p className="eyebrow mb-6">More</p>
             <h2 className="display-3 text-body mb-10">Related products</h2>
             <ul className="grid gap-8 sm:grid-cols-3">

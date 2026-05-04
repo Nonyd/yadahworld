@@ -16,9 +16,8 @@ export default function PrivacyPolicyPage() {
           Privacy Policy.
         </h1>
         <p className="body-sm mt-4 text-[var(--muted)]">Last updated: May 2026</p>
-        <div className="h-px w-full mt-8 mb-10" style={{ background: 'var(--gold-light)', opacity: 0.35 }} aria-hidden />
 
-        <h2 className={section}>Introduction</h2>
+        <h2 className={`${section} mt-10`}>Introduction</h2>
         <p className={body}>
           Yadah (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;), managed by SonsHub Media, is committed to protecting your personal
           information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your

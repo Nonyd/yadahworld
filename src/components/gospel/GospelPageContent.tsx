@@ -24,7 +24,6 @@ export default function GospelPageContent({ copy }: { copy: SiteCopy }) {
         </header>
 
         <section>
-          <div className="mx-auto mb-10 h-px w-12 bg-[var(--gold)]" aria-hidden />
           <p className="font-baskerville text-lg leading-relaxed text-[var(--body)]">{g('section1Body')}</p>
           <ScriptureQuote text={g('scripture1Text')} cite={g('scripture1Cite')} />
         </section>
@@ -39,7 +38,7 @@ export default function GospelPageContent({ copy }: { copy: SiteCopy }) {
           <ScriptureQuote text={g('scripture3Text')} cite={g('scripture3Cite')} />
         </section>
 
-        <section className="mt-20 border-t border-[var(--gold)] pt-16 text-center">
+        <section className="mt-20 border-t border-[rgba(42,37,32,0.12)] pt-16 text-center">
           <p className="eyebrow mb-8">{g('prayerEyebrow')}</p>
           <p
             className="font-playfair text-xl md:text-2xl font-normal italic leading-relaxed text-[var(--body)] max-w-xl mx-auto whitespace-pre-line"
