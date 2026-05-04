@@ -177,6 +177,7 @@ model CachedVideo {
   viewCount      String?
   isActive       Boolean         @default(true)
   isFeatured     Boolean         @default(false)
+  featuredOrder  Int?
   playlistId     String
   playlist       YouTubePlaylist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
 }

@@ -9,10 +9,12 @@ const patchSchema = z
   .object({
     isActive: z.boolean().optional(),
     isFeatured: z.boolean().optional(),
+    featuredOrder: z.number().int().min(1).max(3).optional(),
   })
-  .refine((d) => d.isActive !== undefined || d.isFeatured !== undefined, {
-    message: 'Provide isActive and/or isFeatured',
-  })
+  .refine(
+    (d) => d.isActive !== undefined || d.isFeatured !== undefined || d.featuredOrder !== undefined,
+    { message: 'Provide at least one of isActive, isFeatured, featuredOrder' },
+  )
 
 const FEATURED_LIMIT = 3
 const FEATURED_ERROR = 'Only 3 videos can be featured at once. Unfeature another first.'
@@ -33,7 +35,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     return NextResponse.json({ error: 'Invalid data' }, { status: 400 })
   }
 
-  const { isActive, isFeatured } = parsed.data
+  const { isActive, isFeatured, featuredOrder } = parsed.data
+  const willUnfeature = isFeatured === false
 
   try {
     if (isFeatured === true) {
@@ -61,9 +64,29 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       }
     }
 
-    const data: { isActive?: boolean; isFeatured?: boolean } = {}
+    if (typeof featuredOrder === 'number' && !willUnfeature) {
+      const video = await prisma.cachedVideo.findUnique({
+        where: { id: params.id },
+        include: { playlist: { select: { slot: true } } },
+      })
+      if (!video) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      if (video.playlist.slot !== PlaylistSlot.MUSIC_VIDEOS) {
+        return NextResponse.json({ error: 'Only music videos can use featured order.' }, { status: 400 })
+      }
+      if (!video.isFeatured) {
+        return NextResponse.json({ error: 'Feature this video before setting display order.' }, { status: 400 })
+      }
+    }
+
+    const data: { isActive?: boolean; isFeatured?: boolean; featuredOrder?: number | null } = {}
     if (typeof isActive === 'boolean') data.isActive = isActive
-    if (typeof isFeatured === 'boolean') data.isFeatured = isFeatured
+    if (typeof isFeatured === 'boolean') {
+      data.isFeatured = isFeatured
+      if (isFeatured === false) data.featuredOrder = null
+    }
+    if (typeof featuredOrder === 'number' && !willUnfeature) {
+      data.featuredOrder = featuredOrder
+    }
 
     await prisma.cachedVideo.update({
       where: { id: params.id },

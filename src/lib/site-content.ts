@@ -299,7 +299,7 @@ export async function getPublicVideos(): Promise<PublicVideo[]> {
 
     const featured = await prisma.cachedVideo.findMany({
       where: { ...baseWhere, isFeatured: true },
-      orderBy: { publishedAt: 'desc' },
+      orderBy: [{ featuredOrder: { sort: 'asc', nulls: 'last' } }, { publishedAt: 'desc' }],
       take: 3,
     })
 

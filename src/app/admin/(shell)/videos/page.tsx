@@ -42,7 +42,7 @@ export default async function AdminVideosPage() {
 
       <div className="admin-card overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[960px] text-left text-sm">
+          <table className="w-full min-w-[1020px] text-left text-sm">
             <thead>
               <tr className="border-b border-admin-border bg-black/[0.02] text-[10px] font-medium uppercase tracking-[0.14em] text-admin-muted">
                 <th className="px-4 py-3 font-medium sm:px-6 w-14">Thumb</th>
@@ -50,7 +50,7 @@ export default async function AdminVideosPage() {
                 <th className="px-4 py-3 font-medium sm:px-6">Playlist</th>
                 <th className="px-4 py-3 font-medium sm:px-6">Published</th>
                 <th className="px-4 py-3 font-medium sm:px-6">Views</th>
-                <th className="px-4 py-3 font-medium sm:px-6 text-center w-16">★</th>
+                <th className="px-4 py-3 font-medium sm:px-6 text-center min-w-[7rem]">★ / order</th>
                 <th className="px-4 py-3 font-medium sm:px-6">Active</th>
               </tr>
             </thead>
@@ -85,7 +85,12 @@ export default async function AdminVideosPage() {
                   </td>
                   <td className="px-4 py-3 text-admin-muted sm:px-6">{formatViews(v.viewCount)}</td>
                   <td className="px-4 py-3 sm:px-6 text-center">
-                    <CachedVideoFeaturedToggle id={v.id} slot={v.playlist.slot} initial={v.isFeatured} />
+                    <CachedVideoFeaturedToggle
+                      id={v.id}
+                      slot={v.playlist.slot}
+                      initialFeatured={v.isFeatured}
+                      initialOrder={v.featuredOrder}
+                    />
                   </td>
                   <td className="px-4 py-3 sm:px-6">
                     <CachedVideoActiveToggle id={v.id} initial={v.isActive} />
