@@ -1,11 +1,18 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import type { Product, ProductVariant, ProductType } from '@prisma/client'
 import { slugify } from '@/lib/slug'
 import AdminImageUpload from '@/components/admin/AdminImageUpload'
-import RichTextEditor from '@/components/admin/RichTextEditor'
+
+const RichTextEditor = dynamic(() => import('@/components/admin/RichTextEditor'), {
+  ssr: false,
+  loading: () => (
+    <div className="admin-input flex min-h-[220px] items-center justify-center text-sm text-admin-muted">Loading editor…</div>
+  ),
+})
 
 type Mode = 'create' | 'edit'
 
