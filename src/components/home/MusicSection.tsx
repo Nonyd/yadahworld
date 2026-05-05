@@ -16,7 +16,7 @@ export default function MusicSection({ releases, copy }: { releases: PublicRelea
   const badgeNew = getCopyString(copy, 'releases.badgeNew')
 
   return (
-    <section id="music" ref={ref} className="px-8 md:px-20 py-[clamp(6rem,12vw,14rem)]">
+    <section id="music" ref={ref} className="px-8 md:px-20 py-[clamp(3.5rem,7vw,7rem)]">
       <div className="max-w-screen-xl mx-auto flex items-end justify-between mb-16 flex-wrap gap-8">
         <div>
           <p className="eyebrow mb-6">{h('musicEyebrow')}</p>

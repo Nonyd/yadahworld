@@ -22,7 +22,7 @@ export default function AboutSnippet({
   const h = (k: string) => getCopyString(copy, `home.${k}`)
 
   return (
-    <section ref={ref} className="px-8 md:px-20 pt-[clamp(3.5rem,7vw,7rem)] pb-[clamp(6rem,12vw,14rem)]">
+    <section ref={ref} className="px-8 md:px-20 pt-[clamp(3.5rem,7vw,7rem)] pb-[clamp(3.5rem,7vw,7rem)]">
       <div className="max-w-screen-xl mx-auto grid md:grid-cols-[5fr_7fr] gap-16 md:gap-24 items-center">
         <motion.div
           initial={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 100%, 0 100%)' }}

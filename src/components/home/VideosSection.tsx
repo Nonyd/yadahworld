@@ -27,7 +27,7 @@ export default function VideosSection({ videos, copy }: { videos: PublicVideo[];
   const display = videos.slice(0, 3)
 
   return (
-    <section ref={ref} className="px-8 md:px-20 pt-[clamp(3.5rem,7vw,7rem)] pb-[clamp(6rem,12vw,14rem)]">
+    <section ref={ref} className="px-8 md:px-20 py-[clamp(3.5rem,7vw,7rem)]">
       <div className="max-w-screen-xl mx-auto">
         <div className="flex items-end justify-between mb-16 flex-wrap gap-8">
           <div>
