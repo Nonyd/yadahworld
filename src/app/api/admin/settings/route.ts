@@ -1,6 +1,7 @@
 import { revalidatePath } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
+import { SiteSettings } from '@prisma/client'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
@@ -59,14 +60,14 @@ function emptyToNull(s: string | null | undefined) {
   return t === '' || t === undefined ? null : t
 }
 
-function sanitizeSettingsResponse<T extends Record<string, unknown>>(row: T): T {
-  const clone = { ...row }
-  clone.brevoSmtpPass = maskSecret(typeof row.brevoSmtpPass === 'string' ? row.brevoSmtpPass : null)
-  clone.paystackSecretKey = maskSecret(typeof row.paystackSecretKey === 'string' ? row.paystackSecretKey : null)
-  clone.flutterwaveSecretKey = maskSecret(typeof row.flutterwaveSecretKey === 'string' ? row.flutterwaveSecretKey : null)
-  clone.stripeSecretKey = maskSecret(typeof row.stripeSecretKey === 'string' ? row.stripeSecretKey : null)
-  clone.stripeWebhookSecret = maskSecret(typeof row.stripeWebhookSecret === 'string' ? row.stripeWebhookSecret : null)
-  return clone as T
+function sanitizeSettingsResponse(row: SiteSettings): Partial<SiteSettings> {
+  const clone: Partial<SiteSettings> = { ...row }
+  clone.brevoSmtpPass = maskSecret(row.brevoSmtpPass ?? null)
+  clone.paystackSecretKey = maskSecret(row.paystackSecretKey ?? null)
+  clone.flutterwaveSecretKey = maskSecret(row.flutterwaveSecretKey ?? null)
+  clone.stripeSecretKey = maskSecret(row.stripeSecretKey ?? null)
+  clone.stripeWebhookSecret = maskSecret(row.stripeWebhookSecret ?? null)
+  return clone
 }
 
 export async function GET() {
@@ -77,7 +78,7 @@ export async function GET() {
     if (!row) {
       row = await prisma.siteSettings.create({ data: { id: 1 } })
     }
-    return NextResponse.json(sanitizeSettingsResponse(row as Record<string, unknown>))
+    return NextResponse.json(sanitizeSettingsResponse(row))
   } catch (e) {
     console.error(e)
     return NextResponse.json({ error: 'Failed to load settings' }, { status: 500 })
@@ -184,7 +185,7 @@ export async function PATCH(req: NextRequest) {
     } catch (revErr) {
       console.warn('revalidatePath after settings save:', revErr)
     }
-    return NextResponse.json(sanitizeSettingsResponse(row as Record<string, unknown>))
+    return NextResponse.json(sanitizeSettingsResponse(row))
   } catch (e) {
     console.error(e)
     return NextResponse.json({ error: 'Save failed' }, { status: 500 })
