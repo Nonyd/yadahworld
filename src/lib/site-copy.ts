@@ -80,7 +80,7 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     mantraLine1: '"I believe in the one and only true God.',
     mantraLine2: "I believe in Christ's cross and all",
     mantraLine3: 'that it is to a believer."',
-    mantraAttribution: '— Yadah Kukeurim Daniel',
+    mantraAttribution: '— Yadah',
     aboutEyebrow: '03 — The Artist',
     aboutHeading1: 'A Voice Sent',
     aboutHeading2: 'From Heaven.',
@@ -129,7 +129,7 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     mantraEyebrow: 'Her Mantra',
     mantraQuote:
       "I believe in the one and only true God. I believe in Christ's cross and all that it is to a believer.",
-    mantraAttribution: '— Yadah Kukeurim Daniel',
+    mantraAttribution: '— Yadah',
     ministerEyebrow: '03 — The Minister',
     stageName: 'Yadah',
     fullName: 'Kukeurim Daniel',
@@ -141,10 +141,6 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
       'She made her official debut in 2017 with "Goodie Goodie" under the management of SonsHub Media. Her discography includes hit songs such as "Beyond Me", "Never Seen", "Onye Nwere Jesus", "Free of Charge", and "Na Your Hand" — songs that have reached people across continents, inviting hearts into worship and the presence of God.',
     stat1n: 'Millions',
     stat1l: 'Lives Touched Globally',
-    stat2n: '7+',
-    stat2l: 'Years of Ministry',
-    stat3n: 'Nations',
-    stat3l: 'Reached Through Music',
     ministryEyebrow: 'Ministry',
     ministryLead: 'Yadah is available to minister.',
     ministryBody:

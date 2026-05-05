@@ -23,11 +23,7 @@ export default function AboutPageClient({
   const bio1Html = proseHtmlFromStored(a('body1'))
   const bio2Html = proseHtmlFromStored(a('body2'))
 
-  const statRows = [
-    { number: a('stat1n'), label: a('stat1l') },
-    { number: a('stat2n'), label: a('stat2l') },
-    { number: a('stat3n'), label: a('stat3l') },
-  ]
+  const statRows = [{ number: a('stat1n'), label: a('stat1l') }]
 
   return (
     <div className="min-h-screen">
@@ -187,17 +183,14 @@ export default function AboutPageClient({
       <section style={{ background: 'var(--surface)' }} className="py-20 px-8 md:px-20 mt-8 md:mt-16">
         <div className="max-w-screen-xl mx-auto">
           <div
-            className="grid grid-cols-1 md:grid-cols-3 gap-0"
+            className="grid grid-cols-1 gap-0"
             style={{
               borderTop: '1px solid rgba(139, 105, 20, 0.15)',
               borderBottom: '1px solid rgba(139, 105, 20, 0.15)',
             }}
           >
             {statRows.map(({ number, label }) => (
-              <div
-                key={label}
-                className="py-12 text-center border-b border-[rgba(139,105,20,0.15)] last:border-b-0 md:border-b-0 md:border-r md:border-[rgba(139,105,20,0.15)] md:last:border-r-0"
-              >
+              <div key={label} className="py-12 text-center">
                 <p
                   className="font-playfair"
                   style={{
