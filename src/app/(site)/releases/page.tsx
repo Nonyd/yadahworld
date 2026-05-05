@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { getCopyString } from '@/lib/site-copy'
@@ -5,8 +6,11 @@ import { releaseTypeDateLine } from '@/lib/release-display'
 import { getPublicReleases } from '@/lib/site-content'
 import { getSiteCopy } from '@/lib/site-settings'
 
-export const metadata = {
-  title: 'Releases',
+export const metadata: Metadata = {
+  title: 'Releases — Yadah Gospel Music Discography',
+  description:
+    "Explore Yadah's full gospel music discography. Songs include Beyond Me, Never Seen, Onye Nwere Jesus, Free of Charge, Na Your Hand, God in All Seasons, and more.",
+  alternates: { canonical: 'https://yadahworld.com/releases' },
 }
 
 export default async function ReleasesIndexPage() {
