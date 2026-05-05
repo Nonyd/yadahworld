@@ -267,7 +267,7 @@ export default function Footer({
             href={g('creditHref')}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-jost text-[11px] tracking-[0.12em] transition-colors hover:text-[#C9A84C]"
+            className="font-jost text-[11px] tracking-[0.12em] transition-colors hover:text-ivory"
             style={{ color: 'rgba(253,250,245,0.55)' }}
           >
             {g('creditLine')}
