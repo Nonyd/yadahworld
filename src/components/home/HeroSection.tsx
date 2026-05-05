@@ -283,7 +283,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             <motion.div
               animate={{ x: ['-50%', '0%'] }}
               transition={{
-                duration: 45,
+                duration: 120,
                 repeat: Infinity,
                 ease: 'linear',
               }}
@@ -303,7 +303,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             <motion.div
               animate={{ x: ['0%', '-50%'] }}
               transition={{
-                duration: 70,
+                duration: 180,
                 repeat: Infinity,
                 ease: 'linear',
               }}
@@ -323,7 +323,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             <motion.div
               animate={{ x: ['-50%', '0%'] }}
               transition={{
-                duration: 48,
+                duration: 130,
                 repeat: Infinity,
                 ease: 'linear',
               }}
@@ -343,7 +343,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             <motion.div
               animate={{ x: ['0%', '-50%'] }}
               transition={{
-                duration: 50,
+                duration: 140,
                 repeat: Infinity,
                 ease: 'linear',
               }}
