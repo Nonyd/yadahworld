@@ -90,7 +90,7 @@ export const metadata: Metadata = {
     canonical: 'https://yadahworld.com',
   },
   verification: {
-    google: '',
+    google: 'Oez4ct1K_8jcfXnWWqMikJF-h6LGQu-pnZ2Swu-RHog',
   },
 }
 
