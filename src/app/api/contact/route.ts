@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { sendMail } from '@/lib/mailer'
 import { prisma } from '@/lib/prisma'
 import { getNotifyEmail } from '@/lib/site-settings'
+import { checkRateLimit, escapeHtml, getClientIp, normalizeEmailHeader } from '@/lib/security'
 
 const contactSchema = z.object({
   name: z.string().min(2),
@@ -12,6 +13,16 @@ const contactSchema = z.object({
 })
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req)
+  const throttle = checkRateLimit({
+    key: `api:contact:${ip}`,
+    max: 5,
+    windowMs: 10 * 60 * 1000,
+  })
+  if (!throttle.allowed) {
+    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+  }
+
   let body: unknown
   try {
     body = await req.json()
@@ -25,6 +36,10 @@ export async function POST(req: NextRequest) {
   }
 
   const { name, email, subject, message } = parsed.data
+  const safeName = escapeHtml(name)
+  const safeEmail = escapeHtml(email)
+  const safeSubject = escapeHtml(subject)
+  const safeMessage = escapeHtml(message).replace(/\n/g, '<br/>')
 
   try {
     await prisma.contactMessage.create({
@@ -41,8 +56,8 @@ export async function POST(req: NextRequest) {
     await sendMail({
       to: notifyEmail,
       subject: `Contact: ${subject}`,
-      replyTo: `"${name}" <${email}>`,
-      html: `<p><strong>${name}</strong> (<a href="mailto:${email}">${email}</a>)</p><p>${message.replace(/\n/g, '<br/>')}</p>`,
+      replyTo: `"${normalizeEmailHeader(name)}" <${normalizeEmailHeader(email)}>`,
+      html: `<p><strong>${safeName}</strong> (<a href="mailto:${safeEmail}">${safeEmail}</a>)</p><p>${safeMessage}</p>`,
     })
   } catch (e) {
     console.error('Brevo / mailer contact error:', e)

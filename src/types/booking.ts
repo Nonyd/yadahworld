@@ -50,5 +50,17 @@ function refineExpectationWhenOthers<T extends { whatExpected: string[]; expecta
 export const step3Schema = step3Fields.superRefine(refineExpectationWhenOthers)
 
 export const bookingFormSchema = step1Schema.merge(step2Schema).merge(step3Fields).superRefine(refineExpectationWhenOthers)
+  .superRefine((data, ctx) => {
+    const eventDate = new Date(`${data.eventDate}T00:00:00`)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    if (Number.isNaN(eventDate.getTime()) || eventDate < today) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Event date must be today or in the future',
+        path: ['eventDate'],
+      })
+    }
+  })
 
 export type BookingFormValues = z.infer<typeof bookingFormSchema>

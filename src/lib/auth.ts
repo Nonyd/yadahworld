@@ -1,5 +1,7 @@
 import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import bcrypt from 'bcryptjs'
+import { checkRateLimit, getClientIp } from '@/lib/security'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -9,18 +11,29 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         const adminEmail = process.env.ADMIN_EMAIL
-        const adminPassword = process.env.ADMIN_PASSWORD
+        const adminPasswordHash = process.env.ADMIN_PASSWORD
+        const email = credentials?.email?.trim().toLowerCase()
+        const password = credentials?.password
+        const ip = getClientIp(req)
+        const throttle = checkRateLimit({
+          key: `auth:admin-login:${ip}:${email ?? 'unknown'}`,
+          max: 6,
+          windowMs: 10 * 60 * 1000,
+        })
+
+        if (!throttle.allowed) return null
+
         if (
-          credentials?.email &&
-          credentials?.password &&
+          email &&
+          password &&
           adminEmail &&
-          adminPassword &&
-          credentials.email === adminEmail &&
-          credentials.password === adminPassword
+          adminPasswordHash &&
+          email === adminEmail.trim().toLowerCase() &&
+          (await bcrypt.compare(password, adminPasswordHash))
         ) {
-          return { id: '1', email: credentials.email, name: 'Admin' }
+          return { id: '1', email, name: 'Admin' }
         }
         return null
       },
@@ -29,7 +42,8 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/admin/login',
   },
-  session: { strategy: 'jwt' },
+  session: { strategy: 'jwt', maxAge: 8 * 60 * 60 },
+  jwt: { maxAge: 8 * 60 * 60 },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user }) {

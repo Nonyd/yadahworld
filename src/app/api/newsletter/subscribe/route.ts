@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { addBrevoContact, sendBrevoWelcomeEmail } from '@/lib/brevo'
 import { z } from 'zod'
+import { checkRateLimit, getClientIp } from '@/lib/security'
 
 const schema = z.object({
   email: z.string().email('Please enter a valid email address').transform((s) => s.trim().toLowerCase()),
@@ -10,6 +11,16 @@ const schema = z.object({
 })
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req)
+  const throttle = checkRateLimit({
+    key: `api:newsletter-subscribe:${ip}`,
+    max: 4,
+    windowMs: 10 * 60 * 1000,
+  })
+  if (!throttle.allowed) {
+    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+  }
+
   try {
     const body = await req.json()
     const parsed = schema.safeParse(body)

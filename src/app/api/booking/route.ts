@@ -3,15 +3,7 @@ import { sendMail } from '@/lib/mailer'
 import { prisma } from '@/lib/prisma'
 import { getNotifyEmail } from '@/lib/site-settings'
 import { bookingFormSchema } from '@/types/booking'
-
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-}
+import { checkRateLimit, escapeHtml, getClientIp } from '@/lib/security'
 
 function normalizeWhatExpected(value: unknown): string[] {
   if (Array.isArray(value)) return value.map(String)
@@ -20,6 +12,16 @@ function normalizeWhatExpected(value: unknown): string[] {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req)
+  const throttle = checkRateLimit({
+    key: `api:booking:${ip}`,
+    max: 4,
+    windowMs: 10 * 60 * 1000,
+  })
+  if (!throttle.allowed) {
+    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+  }
+
   let body: unknown
   try {
     body = await req.json()
@@ -89,7 +91,7 @@ export async function POST(req: NextRequest) {
     })
   } catch (e) {
     console.error('Booking DB error:', e)
-    return NextResponse.json({ error: 'Could not save booking. Check DATABASE_URL and run prisma db push.' }, { status: 500 })
+    return NextResponse.json({ error: 'Could not save booking.' }, { status: 500 })
   }
 
   const notifyEmail = await getNotifyEmail()

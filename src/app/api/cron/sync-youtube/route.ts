@@ -6,9 +6,13 @@ export const maxDuration = 60
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization')
-  const cronSecret = process.env.CRON_SECRET
+  const cronSecret = process.env.CRON_SECRET?.trim()
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret) {
+    return NextResponse.json({ error: 'Cron is not configured' }, { status: 503 })
+  }
+
+  if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -17,6 +21,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, results, timestamp: new Date().toISOString() })
   } catch (err) {
     console.error('YouTube sync error:', err)
-    return NextResponse.json({ error: String(err) }, { status: 500 })
+    return NextResponse.json({ error: 'Sync failed' }, { status: 500 })
   }
 }

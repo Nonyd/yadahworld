@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendTicketEmail } from '@/lib/ticket-email'
 import { z } from 'zod'
+import { checkRateLimit, getClientIp } from '@/lib/security'
 
 const schema = z.object({
   fullName: z.string().min(2),
@@ -11,6 +12,16 @@ const schema = z.object({
 })
 
 export async function POST(req: NextRequest, { params }: { params: { slug: string } }) {
+  const ip = getClientIp(req)
+  const throttle = checkRateLimit({
+    key: `api:event-register:${ip}:${params.slug}`,
+    max: 6,
+    windowMs: 10 * 60 * 1000,
+  })
+  if (!throttle.allowed) {
+    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+  }
+
   try {
     let body: unknown
     try {
@@ -54,6 +65,18 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
       if (totalSold >= event.totalCapacity) {
         return NextResponse.json({ error: 'This event is sold out' }, { status: 409 })
       }
+    }
+
+    const duplicateRegistration = await prisma.eventRegistration.findFirst({
+      where: {
+        eventId: event.id,
+        email,
+        paymentStatus: { in: ['PENDING', 'PAID', 'FREE'] },
+      },
+      select: { id: true },
+    })
+    if (duplicateRegistration) {
+      return NextResponse.json({ error: 'This email is already registered for this event.' }, { status: 409 })
     }
 
     if (tier.price === 0) {

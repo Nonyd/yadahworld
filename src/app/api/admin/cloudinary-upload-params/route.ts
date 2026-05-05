@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
   /** Keep signing minimal — every key here must be sent on the multipart upload to Cloudinary. */
   const paramsToSign: Record<string, string> = {
     folder,
+    allowed_formats: 'jpg,jpeg,png,webp,gif,heic,heif,avif',
     timestamp: String(timestamp),
   }
 
@@ -62,5 +63,6 @@ export async function POST(req: NextRequest) {
     cloudName,
     folder,
     folderKey,
+    allowedFormats: paramsToSign.allowed_formats.split(','),
   })
 }
