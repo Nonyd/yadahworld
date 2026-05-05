@@ -90,6 +90,8 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
           bookingId={booking.id}
           initialStatus={booking.status}
           initialNotes={booking.adminNotes ?? ''}
+          initialDeclineReason={booking.declineReason ?? ''}
+          initialConfirmationNote={booking.confirmationNote ?? ''}
           bookerEmail={booking.email}
           eventName={booking.eventName}
           fullName={booking.fullName}

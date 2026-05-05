@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { sendMail } from '@/lib/mailer'
+import { renderEmailCard, renderEmailTemplate, sendMail } from '@/lib/mailer'
 import { prisma } from '@/lib/prisma'
 import { getNotifyEmail } from '@/lib/site-settings'
 import { checkRateLimit, escapeHtml, getClientIp, normalizeEmailHeader } from '@/lib/security'
@@ -57,7 +57,21 @@ export async function POST(req: NextRequest) {
       to: notifyEmail,
       subject: `Contact: ${subject}`,
       replyTo: `"${normalizeEmailHeader(name)}" <${normalizeEmailHeader(email)}>`,
-      html: `<p><strong>${safeName}</strong> (<a href="mailto:${safeEmail}">${safeEmail}</a>)</p><p>${safeMessage}</p>`,
+      html: renderEmailTemplate({
+        eyebrow: 'Yadah Contact',
+        title: 'New Contact Message',
+        previewText: `New contact message from ${safeName}`,
+        intro: 'A new message was submitted from the public contact form.',
+        bodyHtml: `${renderEmailCard(
+          'Sender Details',
+          `<p style="margin:0 0 6px;"><strong>Name:</strong> ${safeName}</p>
+           <p style="margin:0 0 6px;"><strong>Email:</strong> <a href="mailto:${safeEmail}" style="color:#6d28d9;">${safeEmail}</a></p>
+           <p style="margin:0;"><strong>Subject:</strong> ${safeSubject}</p>`,
+        )}
+        ${renderEmailCard('Message', `<p style="margin:0; line-height:1.8;">${safeMessage}</p>`)}`,
+        closing: 'Please review and respond as needed.',
+        signedBy: 'Yadah Website',
+      }),
     })
   } catch (e) {
     console.error('Brevo / mailer contact error:', e)

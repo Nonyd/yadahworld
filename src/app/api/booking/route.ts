@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendMail } from '@/lib/mailer'
+import { renderEmailRows, renderEmailTemplate, sendMail } from '@/lib/mailer'
 import { prisma } from '@/lib/prisma'
 import { getNotifyEmail } from '@/lib/site-settings'
 import { bookingFormSchema } from '@/types/booking'
@@ -101,67 +101,55 @@ export async function POST(req: NextRequest) {
       to: notifyEmail,
       subject: `New Booking Request: ${data.eventName}`,
       replyTo: `"${safeData.fullName}" <${data.email}>`,
-      html: `
-        <div style="font-family: Arial, Helvetica, sans-serif; color: #1f2937;">
-          <h2 style="margin-bottom: 16px; color: #111827;">New Booking Request</h2>
-          <table style="border-collapse: collapse; width: 100%; max-width: 720px;">
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Full Name</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.fullName}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Email</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.email}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Phone</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.phone}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Organization</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.churchName}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Website</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.website || '-'}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Organization Address</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.organizationAddress}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Organization Phone</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.orgPhone}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Organization Email</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.orgEmail}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Event Name/Theme</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.eventName}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Nature of Event</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.natureOfEvent}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Expected From Yadah</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.whatExpected}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Expectation Details</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.expectationDetails || '-'}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Event Date</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.eventDate}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Event Time</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.eventTime}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Event Address</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.fullEventAddress}</td></tr>
-            <tr><td style="padding: 8px; border: 1px solid #e5e7eb;"><strong>Additional Info</strong></td><td style="padding: 8px; border: 1px solid #e5e7eb;">${safeData.additionalInfo || '-'}</td></tr>
-          </table>
-        </div>
-      `,
+      html: renderEmailTemplate({
+        eyebrow: 'Yadah Booking',
+        title: 'New Booking Request',
+        previewText: `${safeData.fullName} submitted a booking request`,
+        intro: 'A new booking request has been submitted through the booking form.',
+        bodyHtml: `<table style="width:100%; border-collapse: collapse;">${renderEmailRows([
+          { label: 'Full Name', value: safeData.fullName },
+          { label: 'Email', value: safeData.email },
+          { label: 'Phone', value: safeData.phone },
+          { label: 'Organization', value: safeData.churchName },
+          { label: 'Website', value: safeData.website || '-' },
+          { label: 'Organization Address', value: safeData.organizationAddress },
+          { label: 'Organization Phone', value: safeData.orgPhone },
+          { label: 'Organization Email', value: safeData.orgEmail },
+          { label: 'Event Name/Theme', value: safeData.eventName },
+          { label: 'Nature of Event', value: safeData.natureOfEvent },
+          { label: 'Expected From Yadah', value: safeData.whatExpected },
+          { label: 'Expectation Details', value: safeData.expectationDetails || '-' },
+          { label: 'Event Date', value: safeData.eventDate },
+          { label: 'Event Time', value: safeData.eventTime },
+          { label: 'Event Address', value: safeData.fullEventAddress },
+          { label: 'Additional Info', value: safeData.additionalInfo || '-' },
+        ])}</table>`,
+        closing: 'Reply to this message to follow up with the requester.',
+        signedBy: 'Yadah Website',
+      }),
     })
 
     await sendMail({
       to: data.email,
       subject: 'Your Booking Request Has Been Received',
-      html: `
-        <div style="margin:0; padding: 32px 16px; background:#f5f7fb; font-family: Arial, Helvetica, sans-serif; color:#1f2937;">
-          <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden;">
-            <div style="background: linear-gradient(135deg, #3b1f69 0%, #7a3ec8 100%); color: #ffffff; padding: 28px 24px;">
-              <p style="margin: 0; font-size: 13px; letter-spacing: 0.6px; text-transform: uppercase; opacity: 0.9;">Yadah Booking</p>
-              <h2 style="margin: 8px 0 0; font-size: 24px; line-height: 1.3;">Booking Request Received</h2>
-            </div>
-            <div style="padding: 24px;">
-              <p style="margin: 0 0 12px;">Dear ${safeData.fullName},</p>
-              <p style="margin: 0 0 12px; line-height: 1.6;">
-                Thank you for reaching out to Yadah. Your booking request has been received and logged successfully.
-              </p>
-              <div style="margin: 18px 0; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 16px; background: #fafafa;">
-                <p style="margin: 0 0 8px;"><strong>Event:</strong> ${safeData.eventName}</p>
-                <p style="margin: 0 0 8px;"><strong>Date:</strong> ${safeData.eventDate}</p>
-                <p style="margin: 0;"><strong>Expected:</strong> ${safeData.whatExpected}</p>
-              </div>
-              <p style="margin: 0 0 12px; line-height: 1.6;">
-                Please note this email is only an acknowledgment and does not confirm the booking yet.
-                Our management team will review your request and contact you as soon as possible.
-              </p>
-              <p style="margin: 16px 0 0; line-height: 1.6;">
-                God bless you,<br/>
-                <strong>Yadah Management Team</strong><br/>
-                SonsHub Media
-              </p>
-            </div>
-            <div style="padding: 14px 24px; font-size: 12px; color: #6b7280; background: #f9fafb; border-top: 1px solid #e5e7eb;">
-              This is an automated confirmation email from yadahworld.com.
-            </div>
-          </div>
+      html: renderEmailTemplate({
+        eyebrow: 'Yadah Booking',
+        title: 'Booking Request Received',
+        previewText: 'Your booking request has been logged successfully.',
+        greeting: `Dear ${safeData.fullName},`,
+        intro:
+          'Thank you for reaching out to Yadah. Your booking request has been received and logged successfully.',
+        bodyHtml: `<div style="border: 1px solid #e5e7eb; border-radius: 12px; background: #f8fafc; padding: 16px; margin: 18px 0;">
+          <p style="margin:0 0 8px;"><strong>Event:</strong> ${safeData.eventName}</p>
+          <p style="margin:0 0 8px;"><strong>Date:</strong> ${safeData.eventDate}</p>
+          <p style="margin:0;"><strong>Expected:</strong> ${safeData.whatExpected}</p>
         </div>
-      `,
+        <p style="margin: 0 0 12px; line-height: 1.7; color: #334155;">
+          Please note this email is only an acknowledgment and does not confirm the booking yet.
+          Our management team will review your request and contact you as soon as possible.
+        </p>`,
+        signedBy: 'Yadah Management Team',
+      }),
     })
   } catch (e) {
     console.error('Brevo / mailer error:', e)

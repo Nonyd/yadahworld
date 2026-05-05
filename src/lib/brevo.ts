@@ -102,65 +102,22 @@ export async function sendBrevoWelcomeEmail({ email, name }: { email: string; na
     return
   }
 
-  const { sendMail } = await import('@/lib/mailer')
+  const { renderEmailTemplate, sendMail } = await import('@/lib/mailer')
   const first = name?.trim() ? escapeHtml(name.trim().split(/\s+/)[0]!) : ''
   const unsubUrl = `${siteBaseUrl()}/api/newsletter/unsubscribe?email=${encodeURIComponent(email)}`
 
   await sendMail({
     to: email,
     subject: "Welcome to Yadah's Ministry Updates",
-    html: `
-      <div style="font-family: Georgia, serif; max-width: 600px;
-                  margin: 0 auto; padding: 40px 20px;
-                  color: #2A2520; background: #F7F3EC;">
-        <img
-          src="https://res.cloudinary.com/dxliuat50/image/upload/v1777837569/Yadah_White_4x_cd09dg.png"
-          alt="Yadah"
-          style="height: 40px; width: auto;
-                 filter: brightness(0); margin-bottom: 32px;"
-        />
-        <h1 style="font-size: 28px; font-weight: 400;
-                   margin-bottom: 16px; color: #2A2520;">
-          Welcome${first ? `, ${first}` : ''}.
-        </h1>
-        <p style="font-size: 16px; line-height: 1.8;
-                  margin-bottom: 16px; color: #8A7F72;">
-          Thank you for subscribing to ministry updates from Yadah.
-        </p>
-        <p style="font-size: 16px; line-height: 1.8;
-                  margin-bottom: 16px; color: #8A7F72;">
-          You will receive updates about new music releases,
-          upcoming events, and moments from Yadah's ministry
-          around the world.
-        </p>
-        <blockquote style="border-left: 2px solid #8B6914;
-                           padding-left: 24px; margin: 32px 0;
-                           font-style: italic; color: #2A2520;
-                           font-size: 18px; line-height: 1.6;">
-          "The Voice of Jesus Christ to Nations."
-        </blockquote>
-        <p style="font-size: 16px; line-height: 1.8;
-                  color: #8A7F72; margin-bottom: 32px;">
-          God bless you.
-        </p>
-        <a href="https://yadahworld.com"
-           style="display: inline-block;
-                  background: #6B2737; color: white;
-                  padding: 12px 32px; text-decoration: none;
-                  font-family: sans-serif; font-size: 11px;
-                  letter-spacing: 0.2em; text-transform: uppercase;">
-          Visit Yadahworld.com
-        </a>
-        <p style="font-size: 11px; color: #8A7F72;
-                  margin-top: 40px; letter-spacing: 0.1em;">
-          You are receiving this because you subscribed at
-          yadahworld.com.
-          <a href="${unsubUrl}"
-             style="color: #8B6914;">
-            Unsubscribe
-          </a>
-        </p>
-      </div>
-    `,
+    html: renderEmailTemplate({
+      eyebrow: 'Yadah Newsletter',
+      title: `Welcome${first ? `, ${first}` : ''}`,
+      previewText: 'Thanks for subscribing to ministry updates.',
+      intro:
+        "Thank you for subscribing to ministry updates from Yadah. You will receive updates about new music releases, upcoming events, and moments from Yadah's ministry around the world.",
+      bodyHtml: `<p style="margin: 14px 0; line-height: 1.7; color: #334155;">You are receiving this because you subscribed at yadahworld.com. <a href="${unsubUrl}" style="color:#6d28d9;">Unsubscribe</a></p>`,
+      action: { label: 'Visit Yadahworld.com', href: siteBaseUrl() },
+      signedBy: 'Yadah Media Team',
+    }),
   })
 }

@@ -20,6 +20,11 @@ export default function MessagesInbox({ messages }: { messages: InboxMessage[] }
   const [markAllBusy, setMarkAllBusy] = useState(false)
   const [deleteBusy, setDeleteBusy] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [replyOpenId, setReplyOpenId] = useState<string | null>(null)
+  const [replySubject, setReplySubject] = useState<Record<string, string>>({})
+  const [replyMessage, setReplyMessage] = useState<Record<string, string>>({})
+  const [replyBusyId, setReplyBusyId] = useState<string | null>(null)
+  const [replyMsg, setReplyMsg] = useState<Record<string, string>>({})
   const selectAllRef = useRef<HTMLInputElement>(null)
 
   const allSelected = messages.length > 0 && selectedIds.length === messages.length
@@ -99,6 +104,34 @@ export default function MessagesInbox({ messages }: { messages: InboxMessage[] }
   }
 
   const colCount = 7
+
+  const sendReply = async (message: InboxMessage) => {
+    const subject = replySubject[message.id] ?? `Re: ${message.subject}`
+    const body = replyMessage[message.id] ?? `Dear ${message.name},\n\n`
+    setReplyBusyId(message.id)
+    setReplyMsg((prev) => ({ ...prev, [message.id]: '' }))
+    try {
+      const res = await fetch(`/api/admin/messages/${message.id}/reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject, message: body }),
+      })
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as { error?: string } | null
+        throw new Error(data?.error || 'Could not send reply.')
+      }
+      setReplyMsg((prev) => ({ ...prev, [message.id]: `Reply sent to ${message.email}.` }))
+      setReplyOpenId(null)
+      router.refresh()
+    } catch (error) {
+      setReplyMsg((prev) => ({
+        ...prev,
+        [message.id]: error instanceof Error ? error.message : 'Could not send reply.',
+      }))
+    } finally {
+      setReplyBusyId(null)
+    }
+  }
 
   return (
     <div>
@@ -203,13 +236,24 @@ export default function MessagesInbox({ messages }: { messages: InboxMessage[] }
                           >
                             Mark as read
                           </button>
-                          <a
-                            href={`mailto:${m.email}?subject=${encodeURIComponent(`Re: ${m.subject}`)}`}
+                          <button
+                            type="button"
                             className="admin-btn admin-btn-ghost text-[10px]"
-                            onClick={(e) => e.stopPropagation()}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setReplyOpenId((id) => (id === m.id ? null : m.id))
+                              setReplySubject((prev) => ({
+                                ...prev,
+                                [m.id]: prev[m.id] ?? `Re: ${m.subject}`,
+                              }))
+                              setReplyMessage((prev) => ({
+                                ...prev,
+                                [m.id]: prev[m.id] ?? `Dear ${m.name},\n\n`,
+                              }))
+                            }}
                           >
                             Reply
-                          </a>
+                          </button>
                           <button
                             type="button"
                             disabled={busyId === m.id || deleteBusy}
@@ -222,6 +266,50 @@ export default function MessagesInbox({ messages }: { messages: InboxMessage[] }
                             Delete message
                           </button>
                         </div>
+                        {replyMsg[m.id] && <p className="mt-3 text-sm text-admin-muted">{replyMsg[m.id]}</p>}
+                        {replyOpenId === m.id && (
+                          <form
+                            className="mt-4 space-y-3 border-t border-admin-border pt-4"
+                            onSubmit={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              void sendReply(m)
+                            }}
+                          >
+                            <div>
+                              <label className="admin-label">Reply subject</label>
+                              <input
+                                className="admin-input"
+                                value={replySubject[m.id] ?? ''}
+                                onChange={(e) =>
+                                  setReplySubject((prev) => ({
+                                    ...prev,
+                                    [m.id]: e.target.value,
+                                  }))
+                                }
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="admin-label">Reply message</label>
+                              <textarea
+                                className="admin-input min-h-[120px] resize-y"
+                                rows={5}
+                                value={replyMessage[m.id] ?? ''}
+                                onChange={(e) =>
+                                  setReplyMessage((prev) => ({
+                                    ...prev,
+                                    [m.id]: e.target.value,
+                                  }))
+                                }
+                                required
+                              />
+                            </div>
+                            <button type="submit" disabled={replyBusyId === m.id} className="admin-btn admin-btn-primary text-[10px]">
+                              {replyBusyId === m.id ? 'Sending…' : 'Send reply'}
+                            </button>
+                          </form>
+                        )}
                       </td>
                     </tr>
                   )}

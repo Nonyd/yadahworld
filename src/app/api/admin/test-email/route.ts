@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
-import { sendMail } from '@/lib/mailer'
+import { renderEmailTemplate, sendMail } from '@/lib/mailer'
 import { getSiteSettingsRow } from '@/lib/site-settings'
 
 export async function POST() {
@@ -22,7 +22,13 @@ export async function POST() {
     await sendMail({
       to,
       subject: 'Yadah Admin — Test Email',
-      html: '<p>Your Brevo SMTP is configured correctly. This is a test from Yadah Studio.</p>',
+      html: renderEmailTemplate({
+        eyebrow: 'Yadah Admin',
+        title: 'SMTP Test Successful',
+        previewText: 'Your Brevo SMTP configuration is working.',
+        intro: 'Your Brevo SMTP is configured correctly. This is a test from Yadah Studio.',
+        signedBy: 'Yadah Admin Console',
+      }),
       settingsOverride: settings,
     })
     return NextResponse.json({ success: true })

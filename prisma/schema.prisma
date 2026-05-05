@@ -29,6 +29,10 @@ model BookingRequest {
   additionalInfo     String?
   status             BookingStatus @default(PENDING)
   adminNotes         String?       @map("notes")
+  declineReason      String?
+  confirmationNote   String?
+  lastStatusEmailSentAt DateTime?
+  replies            BookingReply[]
 }
 
 model ContactMessage {
@@ -39,6 +43,27 @@ model ContactMessage {
   subject   String
   message   String
   read      Boolean  @default(false)
+  replies   ContactMessageReply[]
+}
+
+model BookingReply {
+  id               String         @id @default(cuid())
+  createdAt        DateTime       @default(now())
+  bookingRequestId String
+  bookingRequest   BookingRequest @relation(fields: [bookingRequestId], references: [id], onDelete: Cascade)
+  subject          String
+  message          String
+  sentByEmail      String?
+}
+
+model ContactMessageReply {
+  id               String         @id @default(cuid())
+  createdAt        DateTime       @default(now())
+  contactMessageId String
+  contactMessage   ContactMessage @relation(fields: [contactMessageId], references: [id], onDelete: Cascade)
+  subject          String
+  message          String
+  sentByEmail      String?
 }
 
 model Product {
