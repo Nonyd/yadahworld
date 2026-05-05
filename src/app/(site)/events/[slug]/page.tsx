@@ -15,7 +15,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default async function EventDetailPage({ params }: { params: { slug: string } }) {
+export default async function EventDetailPage({
+  params,
+  searchParams,
+}: {
+  params: { slug: string }
+  searchParams?: { tier?: string; claim?: string; claim_expired?: string }
+}) {
   const event = await prisma.event.findFirst({
     where: {
       slug: params.slug,
@@ -24,7 +30,7 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
     include: {
       tiers: {
         where: { isActive: true },
-        orderBy: { price: 'asc' },
+        orderBy: [{ sortOrder: 'asc' }, { price: 'asc' }],
       },
       speakers: { orderBy: { order: 'asc' } },
       _count: { select: { registrations: true, interests: true } },
@@ -44,7 +50,10 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
     },
   })
 
-  const isSoldOut = event.totalCapacity !== null && totalSold >= event.totalCapacity
+  const tiersAllSold =
+    event.tiers.length > 0 && event.tiers.every((t) => t.capacity !== null && t.sold >= t.capacity)
+  const isSoldOut =
+    (event.totalCapacity !== null && totalSold >= event.totalCapacity) || tiersAllSold
 
   const eventDate = new Date(event.date).toLocaleDateString('en-GB', {
     weekday: 'long',
@@ -133,13 +142,17 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
                   label: 'Venue',
                   value: event.isOnline ? 'Online / Livestream' : event.venueName ?? 'To Be Announced',
                   sub: event.venueAddress ? `${event.venueAddress}, ${event.venueCity}` : undefined,
+                  mapsQuery:
+                    !event.isOnline && (event.venueAddress || event.venueName)
+                      ? [event.venueName, event.venueAddress, event.venueCity, event.venueCountry].filter(Boolean).join(', ')
+                      : undefined,
                 },
                 {
                   label: 'Type',
                   value:
                     event.type === 'PHYSICAL' ? 'Physical Event' : event.type === 'ONLINE' ? 'Online / Livestream' : 'Hybrid Event',
                 },
-              ].map(({ label, value, sub }) => (
+              ].map(({ label, value, sub, mapsQuery }) => (
                 <div key={label}>
                   <p className="eyebrow mb-1">{label}</p>
                   <p className="font-baskerville text-sm" style={{ color: 'var(--body)' }}>
@@ -149,6 +162,17 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
                     <p className="font-baskerville text-xs mt-1" style={{ color: 'var(--muted)' }}>
                       {sub}
                     </p>
+                  )}
+                  {mapsQuery && (
+                    <a
+                      className="font-jost text-xs mt-2 inline-block underline"
+                      style={{ color: 'var(--gold)' }}
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Open in Google Maps
+                    </a>
                   )}
                 </div>
               ))}
@@ -237,7 +261,15 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
                   </p>
                 </div>
               ) : (
-                <EventRegistrationForm slug={event.slug} tiers={event.tiers} totalCapacity={event.totalCapacity} totalSold={totalSold} />
+                <EventRegistrationForm
+                  slug={event.slug}
+                  tiers={event.tiers}
+                  totalCapacity={event.totalCapacity}
+                  totalSold={totalSold}
+                  initialTierId={searchParams?.tier}
+                  claimToken={searchParams?.claim && searchParams.claim !== 'expired' ? searchParams.claim : undefined}
+                  claimExpired={searchParams?.claim === 'expired'}
+                />
               )}
             </div>
           </div>

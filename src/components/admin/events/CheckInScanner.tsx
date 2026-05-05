@@ -115,7 +115,9 @@ export default function CheckInScanner({
         ? 'transparent'
         : scanState === 'WRONG_EVENT'
           ? 'rgba(139,105,20,0.88)'
-          : 'rgba(107,39,55,0.88)'
+          : scanState === 'ALREADY_CHECKED_IN'
+            ? 'rgba(180,130,20,0.88)'
+            : 'rgba(107,39,55,0.88)'
 
   return (
     <div className="flex min-h-[70vh] flex-col gap-6">

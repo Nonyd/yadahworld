@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { slugify } from '@/lib/slug'
-import type { Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { z } from 'zod'
 
 const tierSchema = z.object({
@@ -14,6 +14,20 @@ const tierSchema = z.object({
   price: z.number().nonnegative(),
   currency: z.enum(['NGN', 'USD']),
   capacity: z.number().int().positive().nullable().optional(),
+  isActive: z.boolean().optional(),
+  salesStart: z.string().optional().nullable(),
+  salesEnd: z.string().optional().nullable(),
+  perks: z.array(z.string()).optional(),
+  sortOrder: z.number().int().optional(),
+})
+
+const promoCodeSchema = z.object({
+  id: z.string().optional(),
+  code: z.string().min(1),
+  discountType: z.enum(['PERCENTAGE', 'FIXED']).optional(),
+  discountValue: z.number().int().nonnegative(),
+  maxUses: z.number().int().positive().nullable().optional(),
+  expiresAt: z.string().optional().nullable(),
   isActive: z.boolean().optional(),
 })
 
@@ -46,7 +60,13 @@ const patchSchema = z.object({
   dressCode: z.string().optional().nullable(),
   requirements: z.string().optional().nullable(),
   totalCapacity: z.number().int().positive().nullable().optional(),
+  bodyHtml: z.string().optional().nullable(),
+  thumbnailImage: z.string().optional().nullable(),
+  isRecurring: z.boolean().optional(),
+  recurringPattern: z.unknown().optional().nullable(),
+  parentEventId: z.string().optional().nullable(),
   tiers: z.array(tierSchema).optional(),
+  promoCodes: z.array(promoCodeSchema).optional(),
   speakers: z.array(speakerSchema).optional(),
 })
 
@@ -73,7 +93,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const d = parsed.data
   const existing = await prisma.event.findUnique({
     where: { id: params.id },
-    include: { tiers: true },
+    include: { tiers: true, promoCodes: true },
   })
   if (!existing) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -125,6 +145,17 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (d.dressCode !== undefined) eventUpdate.dressCode = d.dressCode?.trim() || null
   if (d.requirements !== undefined) eventUpdate.requirements = d.requirements ?? null
   if (d.totalCapacity !== undefined) eventUpdate.totalCapacity = d.totalCapacity ?? null
+  if (d.bodyHtml !== undefined) eventUpdate.bodyHtml = d.bodyHtml ?? null
+  if (d.thumbnailImage !== undefined) eventUpdate.thumbnailImage = d.thumbnailImage?.trim() || null
+  if (d.isRecurring !== undefined) eventUpdate.isRecurring = d.isRecurring
+  if (d.recurringPattern !== undefined) {
+    eventUpdate.recurringPattern =
+      d.recurringPattern === null ? Prisma.JsonNull : (d.recurringPattern as Prisma.InputJsonValue)
+  }
+  if (d.parentEventId !== undefined) {
+    const pid = d.parentEventId?.trim()
+    eventUpdate.parentEvent = pid ? { connect: { id: pid } } : { disconnect: true }
+  }
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -160,6 +191,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
             if (cap !== null && cap < ex.sold) {
               throw new Error(`Tier "${t.name}" capacity cannot be below tickets sold (${ex.sold}).`)
             }
+            const parseOptDate = (s: string | null | undefined) => {
+              if (!s?.trim()) return null
+              const dt = new Date(s)
+              return Number.isNaN(dt.getTime()) ? null : dt
+            }
             await tx.ticketTier.update({
               where: { id: t.id },
               data: {
@@ -169,9 +205,18 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
                 currency: t.currency,
                 capacity: cap,
                 isActive: isAct,
+                salesStart: t.salesStart !== undefined ? parseOptDate(t.salesStart) : undefined,
+                salesEnd: t.salesEnd !== undefined ? parseOptDate(t.salesEnd) : undefined,
+                perks: t.perks ?? undefined,
+                sortOrder: t.sortOrder ?? undefined,
               },
             })
           } else {
+            const parseOptDate = (s: string | null | undefined) => {
+              if (!s?.trim()) return null
+              const dt = new Date(s)
+              return Number.isNaN(dt.getTime()) ? null : dt
+            }
             await tx.ticketTier.create({
               data: {
                 eventId: params.id,
@@ -181,6 +226,51 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
                 currency: t.currency,
                 capacity: cap,
                 isActive: isAct,
+                salesStart: parseOptDate(t.salesStart),
+                salesEnd: parseOptDate(t.salesEnd),
+                perks: t.perks ?? [],
+                sortOrder: t.sortOrder ?? 0,
+              },
+            })
+          }
+        }
+      }
+
+      if (d.promoCodes) {
+        const submittedPromoIds = new Set(d.promoCodes.map((p) => p.id).filter((id): id is string => Boolean(id)))
+        for (const ex of existing.promoCodes) {
+          if (!submittedPromoIds.has(ex.id)) {
+            await tx.promoCode.delete({ where: { id: ex.id } })
+          }
+        }
+        for (const p of d.promoCodes) {
+          const code = p.code.trim().toUpperCase()
+          const expiresAt =
+            p.expiresAt?.trim() === '' || p.expiresAt === null || p.expiresAt === undefined
+              ? null
+              : new Date(p.expiresAt)
+          if (p.id && existing.promoCodes.some((e) => e.id === p.id)) {
+            await tx.promoCode.update({
+              where: { id: p.id },
+              data: {
+                code,
+                discountType: p.discountType ?? 'PERCENTAGE',
+                discountValue: p.discountValue,
+                maxUses: p.maxUses ?? null,
+                expiresAt: expiresAt && !Number.isNaN(expiresAt.getTime()) ? expiresAt : null,
+                isActive: p.isActive ?? true,
+              },
+            })
+          } else {
+            await tx.promoCode.create({
+              data: {
+                eventId: params.id,
+                code,
+                discountType: p.discountType ?? 'PERCENTAGE',
+                discountValue: p.discountValue,
+                maxUses: p.maxUses ?? null,
+                expiresAt: expiresAt && !Number.isNaN(expiresAt.getTime()) ? expiresAt : null,
+                isActive: p.isActive ?? true,
               },
             })
           }

@@ -58,17 +58,36 @@ export async function POST(req: NextRequest) {
     })
   }
 
+  if (registration.paymentStatus === 'WAITLISTED') {
+    return NextResponse.json({
+      success: false,
+      status: 'INVALID',
+      message: 'Waitlisted — not a valid ticket yet',
+      name: registration.fullName,
+    })
+  }
+
+  if (registration.paymentStatus === 'CANCELLED' || registration.paymentStatus === 'REFUNDED') {
+    return NextResponse.json({
+      success: false,
+      status: 'INVALID',
+      message: 'This ticket is no longer valid',
+      name: registration.fullName,
+    })
+  }
+
   if (registration.checkedIn) {
     return NextResponse.json({
       success: false,
       status: 'ALREADY_CHECKED_IN',
       message: 'Already checked in',
       name: registration.fullName,
+      tier: registration.tier.name,
       checkedInAt: registration.checkedInAt,
     })
   }
 
-  await prisma.eventRegistration.update({
+  const updated = await prisma.eventRegistration.update({
     where: { id: registration.id },
     data: {
       checkedIn: true,
@@ -84,5 +103,6 @@ export async function POST(req: NextRequest) {
     name: registration.fullName,
     tier: registration.tier.name,
     event: registration.event.title,
+    checkedInAt: updated.checkedInAt,
   })
 }

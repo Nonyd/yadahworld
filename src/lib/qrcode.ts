@@ -1,12 +1,8 @@
 import QRCode from 'qrcode'
 
-const siteUrl = () =>
-  (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '')
-
+/** QR payload is the raw ticket code so door scanners work without URL parsing. */
 export async function generateQRCodeDataUrl(ticketCode: string): Promise<string> {
-  const url = `${siteUrl()}/tickets/${ticketCode}`
-
-  const dataUrl = await QRCode.toDataURL(url, {
+  const dataUrl = await QRCode.toDataURL(ticketCode.trim(), {
     width: 400,
     margin: 2,
     color: {
@@ -20,9 +16,7 @@ export async function generateQRCodeDataUrl(ticketCode: string): Promise<string>
 }
 
 export async function generateQRCodeBuffer(ticketCode: string): Promise<Buffer> {
-  const url = `${siteUrl()}/tickets/${ticketCode}`
-
-  return QRCode.toBuffer(url, {
+  return QRCode.toBuffer(ticketCode.trim(), {
     width: 400,
     margin: 2,
     color: {

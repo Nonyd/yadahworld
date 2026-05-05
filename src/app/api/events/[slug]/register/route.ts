@@ -1,6 +1,10 @@
+import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import type { PromoCode } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
-import { sendTicketEmail } from '@/lib/ticket-email'
+import { sendTicketBundleEmail } from '@/lib/ticket-email'
+import { paystackSecret } from '@/lib/shop-payments'
+import { validatePromoForCheckout } from '@/lib/event-promo'
 import { z } from 'zod'
 import { checkRateLimit, getClientIp } from '@/lib/security'
 
@@ -9,13 +13,24 @@ const schema = z.object({
   email: z.string().email(),
   phone: z.string().min(7),
   tierId: z.string(),
+  quantity: z.number().int().min(1).max(10).optional().default(1),
+  promoCode: z.string().optional().nullable(),
+  gateway: z.enum(['paystack', 'flutterwave']).optional().default('paystack'),
+  claimToken: z.string().optional().nullable(),
 })
+
+function tierSalesOpen(tier: { salesStart: Date | null; salesEnd: Date | null }) {
+  const now = new Date()
+  if (tier.salesStart && tier.salesStart > now) return { ok: false as const, msg: 'Ticket sales have not started for this tier yet.' }
+  if (tier.salesEnd && tier.salesEnd < now) return { ok: false as const, msg: 'Ticket sales have ended for this tier.' }
+  return { ok: true as const }
+}
 
 export async function POST(req: NextRequest, { params }: { params: { slug: string } }) {
   const ip = getClientIp(req)
   const throttle = checkRateLimit({
     key: `api:event-register:${ip}:${params.slug}`,
-    max: 6,
+    max: 8,
     windowMs: 10 * 60 * 1000,
   })
   if (!throttle.allowed) {
@@ -36,7 +51,9 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
       return NextResponse.json({ error: msg }, { status: 400 })
     }
 
-    const { fullName, email, phone, tierId } = parsed.data
+    const { fullName, email, phone, tierId, quantity, promoCode, gateway, claimToken } = parsed.data
+
+    const settings = await prisma.siteSettings.findUnique({ where: { id: 1 } }).catch(() => null)
 
     const event = await prisma.event.findFirst({
       where: { slug: params.slug, status: 'PUBLISHED' },
@@ -46,13 +63,43 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
       return NextResponse.json({ error: 'Event not found' }, { status: 404 })
     }
 
+    if (claimToken?.trim()) {
+      const claimRow = await prisma.eventRegistration.findFirst({
+        where: {
+          eventId: event.id,
+          tierId,
+          waitlistClaimToken: claimToken.trim(),
+          paymentStatus: 'WAITLISTED',
+          waitlistClaimExpires: { gt: new Date() },
+        },
+      })
+      if (!claimRow) {
+        return NextResponse.json({ error: 'Invalid or expired claim link.' }, { status: 400 })
+      }
+      if (claimRow.email.toLowerCase() !== email.toLowerCase()) {
+        return NextResponse.json({ error: 'Use the same email address we sent the invite to.' }, { status: 400 })
+      }
+      await prisma.eventRegistration.delete({ where: { id: claimRow.id } })
+    }
+
     const tier = event.tiers.find((t) => t.id === tierId)
     if (!tier || !tier.isActive) {
       return NextResponse.json({ error: 'Ticket tier not found' }, { status: 404 })
     }
 
-    if (tier.capacity !== null && tier.sold >= tier.capacity) {
-      return NextResponse.json({ error: 'This ticket tier is sold out' }, { status: 409 })
+    const sales = tierSalesOpen(tier)
+    if (!sales.ok) {
+      return NextResponse.json({ error: sales.msg }, { status: 400 })
+    }
+
+    const qty = quantity
+    const spotsNeeded = qty
+
+    if (tier.capacity !== null && tier.sold + spotsNeeded > tier.capacity) {
+      return NextResponse.json(
+        { error: 'Not enough tickets left for this tier.', code: 'TIER_CAPACITY' },
+        { status: 409 },
+      )
     }
 
     if (event.totalCapacity) {
@@ -62,8 +109,8 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
           paymentStatus: { in: ['PAID', 'FREE'] },
         },
       })
-      if (totalSold >= event.totalCapacity) {
-        return NextResponse.json({ error: 'This event is sold out' }, { status: 409 })
+      if (totalSold + spotsNeeded > event.totalCapacity) {
+        return NextResponse.json({ error: 'This event is sold out.', code: 'EVENT_CAPACITY' }, { status: 409 })
       }
     }
 
@@ -71,62 +118,126 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
       where: {
         eventId: event.id,
         email,
-        paymentStatus: { in: ['PENDING', 'PAID', 'FREE'] },
+        paymentStatus: { in: ['PENDING', 'PAID', 'FREE', 'WAITLISTED'] },
       },
       select: { id: true },
     })
     if (duplicateRegistration) {
-      return NextResponse.json({ error: 'This email is already registered for this event.' }, { status: 409 })
+      return NextResponse.json({ error: 'This email already has an active registration for this event.' }, { status: 409 })
     }
 
-    if (tier.price === 0) {
-      const registration = await prisma.eventRegistration.create({
-        data: {
+    const subtotal = tier.price * qty
+    let discountAmount = 0
+    let appliedPromoId: string | null = null
+    let promoRow: PromoCode | null = null
+
+    if (promoCode?.trim() && subtotal > 0) {
+      promoRow = await prisma.promoCode.findFirst({
+        where: {
           eventId: event.id,
-          tierId: tier.id,
-          fullName,
-          email,
-          phone,
-          amount: 0,
-          currency: tier.currency,
-          paymentStatus: 'FREE',
+          code: { equals: promoCode.trim(), mode: 'insensitive' },
+          isActive: true,
         },
       })
+      const v = validatePromoForCheckout(promoRow, subtotal)
+      if (!v.ok) {
+        return NextResponse.json({ error: v.error }, { status: 400 })
+      }
+      discountAmount = v.discountAmount
+      appliedPromoId = v.promo.id
+    }
 
-      await prisma.ticketTier.update({
-        where: { id: tier.id },
-        data: { sold: { increment: 1 } },
+    const totalKobo = Math.max(0, subtotal - discountAmount)
+
+    if (tier.price === 0 || totalKobo === 0) {
+      const created = await prisma.$transaction(async (tx) => {
+        const rows = []
+        for (let i = 0; i < qty; i++) {
+          const r = await tx.eventRegistration.create({
+            data: {
+              eventId: event.id,
+              tierId: tier.id,
+              fullName,
+              email,
+              phone,
+              quantity: 1,
+              amount: 0,
+              currency: tier.currency,
+              paymentStatus: 'FREE',
+              promoCode: promoCode?.trim() || null,
+              discountAmount: i === 0 ? discountAmount : 0,
+            },
+          })
+          rows.push(r)
+        }
+        await tx.ticketTier.update({
+          where: { id: tier.id },
+          data: { sold: { increment: qty } },
+        })
+        if (appliedPromoId && discountAmount > 0) {
+          await tx.promoCode.update({
+            where: { id: appliedPromoId },
+            data: { usedCount: { increment: 1 } },
+          })
+        }
+        return rows
       })
 
-      await sendTicketEmail({ registration, event, tier })
+      await sendTicketBundleEmail({
+        registrations: created,
+        event,
+        tier,
+      })
 
       return NextResponse.json({
         success: true,
-        ticketCode: registration.ticketCode,
-        message: 'Registration successful. Check your email for your ticket.',
+        ticketCodes: created.map((c) => c.ticketCode),
+        ticketCode: created[0]?.ticketCode,
+        message: 'Registration successful. Check your email for your ticket(s).',
       })
     }
 
-    const paystackKey = process.env.PAYSTACK_SECRET_KEY
+    if (gateway === 'flutterwave') {
+      return NextResponse.json(
+        { error: 'Flutterwave checkout for events is coming soon. Please choose Paystack.' },
+        { status: 503 },
+      )
+    }
+
+    const paystackKey = paystackSecret(settings)
     if (!paystackKey) {
       return NextResponse.json({ error: 'Payment not configured' }, { status: 503 })
     }
 
-    const registration = await prisma.eventRegistration.create({
-      data: {
-        eventId: event.id,
-        tierId: tier.id,
-        fullName,
-        email,
-        phone,
-        amount: tier.price,
-        currency: tier.currency,
-        paymentStatus: 'PENDING',
-        paymentProvider: 'paystack',
-      },
+    const orderGroupId = randomUUID()
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+
+    const created = await prisma.$transaction(async (tx) => {
+      const rows = []
+      for (let i = 0; i < qty; i++) {
+        const r = await tx.eventRegistration.create({
+          data: {
+            eventId: event.id,
+            tierId: tier.id,
+            fullName,
+            email,
+            phone,
+            quantity: 1,
+            amount: i === 0 ? totalKobo : 0,
+            currency: tier.currency,
+            paymentStatus: 'PENDING',
+            paymentProvider: 'paystack',
+            promoCode: promoCode?.trim() || null,
+            discountAmount: i === 0 ? discountAmount : 0,
+            orderGroupId,
+          },
+        })
+        rows.push(r)
+      }
+      return rows
     })
 
-    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+    const primary = created[0]!
 
     const paystackRes = await fetch('https://api.paystack.co/transaction/initialize', {
       method: 'POST',
@@ -136,16 +247,17 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
       },
       body: JSON.stringify({
         email,
-        amount: tier.price,
+        amount: totalKobo,
         currency: tier.currency,
-        reference: registration.ticketCode,
-        callback_url: `${siteUrl}/tickets/${registration.ticketCode}?verify=true`,
+        reference: orderGroupId,
+        callback_url: `${siteUrl}/tickets/${primary.ticketCode}?verify=true`,
         metadata: {
-          registrationId: registration.id,
-          ticketCode: registration.ticketCode,
+          orderGroupId,
+          registrationIds: created.map((c) => c.id),
           eventTitle: event.title,
           tierName: tier.name,
           fullName,
+          quantity: qty,
         },
       }),
     })
@@ -157,19 +269,20 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
     }
 
     if (!paystackData.status) {
-      await prisma.eventRegistration.delete({
-        where: { id: registration.id },
+      await prisma.eventRegistration.deleteMany({
+        where: { id: { in: created.map((c) => c.id) } },
       })
       return NextResponse.json(
         { error: paystackData.message || 'Payment initialization failed' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
     return NextResponse.json({
       success: true,
       paymentUrl: paystackData.data?.authorization_url,
-      reference: paystackData.data?.reference,
+      reference: paystackData.data?.reference ?? orderGroupId,
+      ticketCode: primary.ticketCode,
     })
   } catch (err) {
     console.error('Registration error:', err)

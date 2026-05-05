@@ -5,6 +5,8 @@ import type { Metadata } from 'next'
 import { getCopyString, type SiteCopy } from '@/lib/site-copy'
 import { getSiteCopy } from '@/lib/site-settings'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Events — Yadah',
 }
@@ -25,7 +27,7 @@ export default async function EventsPage() {
       status: { in: ['PUBLISHED', 'COMING_SOON'] },
     },
     include: {
-      tiers: { where: { isActive: true } },
+      tiers: { where: { isActive: true }, orderBy: [{ sortOrder: 'asc' }, { price: 'asc' }] },
       _count: {
         select: {
           registrations: {
@@ -42,7 +44,7 @@ export default async function EventsPage() {
         date: { lt: now },
       },
       include: {
-        tiers: { where: { isActive: true } },
+        tiers: { where: { isActive: true }, orderBy: [{ sortOrder: 'asc' }, { price: 'asc' }] },
         _count: {
           select: {
             registrations: {
@@ -102,7 +104,11 @@ function EventCard({ event, past = false, copy }: { event: EventListRow; past?: 
   const ev = (k: string) => getCopyString(copy, `eventsPage.${k}`)
   const isComingSoon = event.status === 'COMING_SOON'
   const eventDate = new Date(event.date)
-  const isSoldOut = event.totalCapacity !== null && event._count.registrations >= event.totalCapacity
+  const tiersAllSold =
+    event.tiers.length > 0 && event.tiers.every((t) => t.capacity !== null && t.sold >= t.capacity)
+  const isSoldOut =
+    (event.totalCapacity !== null && event._count.registrations >= event.totalCapacity) || tiersAllSold
+  const allTiersFree = event.tiers.length > 0 && event.tiers.every((t) => t.price === 0)
 
   return (
     <Link href={`/events/${event.slug}`} style={{ textDecoration: 'none' }}>
@@ -131,6 +137,11 @@ function EventCard({ event, past = false, copy }: { event: EventListRow; past?: 
             {isSoldOut && !isComingSoon && (
               <span className="ui-label px-3 py-1" style={{ background: 'rgba(107,39,55,0.9)', color: 'white' }}>
                 {ev('badgeSoldOut')}
+              </span>
+            )}
+            {allTiersFree && !isComingSoon && !isSoldOut && (
+              <span className="ui-label px-3 py-1 ml-2" style={{ background: 'rgba(40,100,40,0.85)', color: 'white' }}>
+                Free
               </span>
             )}
             {event.type === 'ONLINE' && !isComingSoon && (

@@ -360,6 +360,13 @@ enum PaymentStatus {
   FREE
   FAILED
   REFUNDED
+  WAITLISTED
+  CANCELLED
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
 }
 
 enum EventType {
@@ -391,33 +398,41 @@ model CampusTourApplication {
 }
 
 model Event {
-  id            String                @id @default(cuid())
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
-  title         String
-  slug          String                @unique
-  description   String?               @db.Text
-  date          DateTime
-  endDate       DateTime?
-  doorsOpen     String?
-  timezone      String                @default("Africa/Lagos")
-  type          EventType             @default(PHYSICAL)
-  venueName     String?
-  venueAddress  String?
-  venueCity     String?
-  venueCountry  String                @default("Nigeria")
-  isOnline      Boolean               @default(false)
-  streamUrl     String?
-  bannerImage   String?
-  dressCode     String?
-  requirements  String?               @db.Text
-  status        EventStatus           @default(DRAFT)
-  isFeatured    Boolean               @default(false)
-  totalCapacity Int?
-  registrations EventRegistration[]
-  tiers         TicketTier[]
-  speakers      EventSpeaker[]
-  interests     EventInterest[]
+  id               String              @id @default(cuid())
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  title            String
+  slug             String              @unique
+  description      String?             @db.Text
+  bodyHtml         String?             @db.Text
+  date             DateTime
+  endDate          DateTime?
+  doorsOpen        String?
+  timezone         String              @default("Africa/Lagos")
+  type             EventType           @default(PHYSICAL)
+  venueName        String?
+  venueAddress     String?
+  venueCity        String?
+  venueCountry     String              @default("Nigeria")
+  isOnline         Boolean             @default(false)
+  streamUrl        String?
+  bannerImage      String?
+  thumbnailImage   String?
+  dressCode        String?
+  requirements     String?             @db.Text
+  status           EventStatus         @default(DRAFT)
+  isFeatured       Boolean             @default(false)
+  totalCapacity    Int?
+  isRecurring      Boolean             @default(false)
+  recurringPattern Json?
+  parentEventId    String?
+  parentEvent      Event?              @relation("EventSeries", fields: [parentEventId], references: [id], onDelete: SetNull)
+  childEvents      Event[]             @relation("EventSeries")
+  registrations    EventRegistration[]
+  tiers            TicketTier[]
+  speakers         EventSpeaker[]
+  interests        EventInterest[]
+  promoCodes       PromoCode[]
 }
 
 model EventInterest {
@@ -444,39 +459,67 @@ model EventSpeaker {
 }
 
 model TicketTier {
-  id              String                @id @default(cuid())
-  createdAt       DateTime              @default(now())
-  eventId         String
-  event           Event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  name            String
-  description     String?
-  price           Int                   @default(0)
-  currency        String                @default("NGN")
-  capacity        Int?
-  sold            Int                   @default(0)
-  isActive        Boolean               @default(true)
-  registrations   EventRegistration[]
+  id            String              @id @default(cuid())
+  createdAt     DateTime            @default(now())
+  eventId       String
+  event         Event               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  price         Int                 @default(0)
+  currency      String              @default("NGN")
+  capacity      Int?
+  sold          Int                 @default(0)
+  isActive      Boolean             @default(true)
+  salesStart    DateTime?
+  salesEnd      DateTime?
+  perks         String[]            @default([])
+  sortOrder     Int                 @default(0)
+  registrations EventRegistration[]
+}
+
+model PromoCode {
+  id            String       @id @default(cuid())
+  createdAt     DateTime     @default(now())
+  eventId       String
+  event         Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  code          String
+  discountType  DiscountType @default(PERCENTAGE)
+  discountValue Int
+  maxUses       Int?
+  usedCount     Int          @default(0)
+  expiresAt     DateTime?
+  isActive      Boolean      @default(true)
+
+  @@unique([eventId, code])
 }
 
 model EventRegistration {
-  id              String        @id @default(cuid())
-  createdAt       DateTime      @default(now())
-  eventId         String
-  event           Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  tierId          String
-  tier            TicketTier    @relation(fields: [tierId], references: [id])
-  fullName        String
-  email           String
-  phone           String
-  amount          Int           @default(0)
-  currency        String        @default("NGN")
-  paymentStatus   PaymentStatus @default(PENDING)
-  paymentRef      String?       @unique
-  paymentProvider String?
-  ticketCode      String        @unique @default(cuid())
-  qrCodeUrl       String?
-  checkedIn       Boolean       @default(false)
-  checkedInAt     DateTime?
-  checkedInBy     String?
-  source          String        @default("web")
+  id                   String        @id @default(cuid())
+  createdAt            DateTime      @default(now())
+  eventId              String
+  event                Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tierId               String
+  tier                 TicketTier    @relation(fields: [tierId], references: [id])
+  fullName             String
+  email                String
+  phone                String
+  quantity             Int           @default(1)
+  amount               Int           @default(0)
+  currency             String        @default("NGN")
+  paymentStatus        PaymentStatus @default(PENDING)
+  paymentRef           String?
+  paymentProvider      String?
+  ticketCode           String        @unique @default(cuid())
+  qrCodeUrl            String?
+  checkedIn            Boolean       @default(false)
+  checkedInAt          DateTime?
+  checkedInBy          String?
+  source               String        @default("web")
+  promoCode            String?
+  discountAmount       Int           @default(0)
+  isWaitlisted         Boolean       @default(false)
+  waitlistPos          Int?
+  waitlistClaimToken   String?       @unique
+  waitlistClaimExpires DateTime?
+  orderGroupId         String?
 }

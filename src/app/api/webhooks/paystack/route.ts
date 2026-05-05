@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { prisma } from '@/lib/prisma'
-import { sendTicketEmail } from '@/lib/ticket-email'
+import { finalizePaidEventRegistrations } from '@/lib/event-paystack-finalize'
 
 export async function POST(req: NextRequest) {
   const body = await req.text()
@@ -28,38 +27,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (event.event === 'charge.success' && event.data?.reference) {
-    const reference = event.data.reference
-
-    const registration = await prisma.eventRegistration.findUnique({
-      where: { ticketCode: reference },
-      include: {
-        event: true,
-        tier: true,
-      },
-    })
-
-    if (!registration || registration.paymentStatus === 'PAID') {
-      return NextResponse.json({ received: true })
-    }
-
-    const updated = await prisma.eventRegistration.update({
-      where: { id: registration.id },
-      data: {
-        paymentStatus: 'PAID',
-        paymentRef: event.data.reference,
-      },
-    })
-
-    await prisma.ticketTier.update({
-      where: { id: registration.tierId },
-      data: { sold: { increment: 1 } },
-    })
-
-    await sendTicketEmail({
-      registration: updated,
-      event: registration.event,
-      tier: registration.tier,
-    })
+    await finalizePaidEventRegistrations(event.data.reference)
   }
 
   return NextResponse.json({ received: true })

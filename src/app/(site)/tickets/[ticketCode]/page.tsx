@@ -1,19 +1,38 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import { generateQRCodeDataUrl } from '@/lib/qrcode'
+import { verifyPaystackChargeAndFinalize } from '@/lib/event-paystack-finalize'
 
 export default async function TicketPage({
   params,
+  searchParams,
 }: {
   params: { ticketCode: string }
-  searchParams?: { verify?: string }
+  searchParams?: { verify?: string; reference?: string; trxref?: string }
 }) {
-  const registration = await prisma.eventRegistration.findUnique({
+  const settings = await prisma.siteSettings.findUnique({ where: { id: 1 } }).catch(() => null)
+
+  let registration = await prisma.eventRegistration.findUnique({
     where: { ticketCode: params.ticketCode },
     include: { event: true, tier: true },
   })
 
   if (!registration) notFound()
+
+  if (searchParams?.verify === 'true' && registration.paymentStatus === 'PENDING') {
+    const ref =
+      searchParams.reference?.trim() ||
+      searchParams.trxref?.trim() ||
+      registration.orderGroupId ||
+      registration.ticketCode
+    if (ref) {
+      await verifyPaystackChargeAndFinalize(ref, settings)
+      registration = await prisma.eventRegistration.findUniqueOrThrow({
+        where: { ticketCode: params.ticketCode },
+        include: { event: true, tier: true },
+      })
+    }
+  }
 
   const qrDataUrl = await generateQRCodeDataUrl(params.ticketCode)
 
