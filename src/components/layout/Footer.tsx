@@ -62,7 +62,7 @@ export default function Footer({
             <p className="font-baskerville italic text-lg text-[var(--muted)] text-center mt-4">{g('preFooterAttribution')}</p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <Link href="/gospel" className="btn-primary">
-                {g('preFooterCta')}
+                SEE GOOD NEWS
               </Link>
               <Link href="/releases" className="btn-ghost">
                 <span className="arrow-line" />
