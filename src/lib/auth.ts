@@ -1,7 +1,7 @@
 import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
-import { checkRateLimit, getClientIp } from '@/lib/security'
+import { checkRateLimit } from '@/lib/security'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -16,7 +16,7 @@ export const authOptions: NextAuthOptions = {
         const adminPasswordHash = process.env.ADMIN_PASSWORD
         const email = credentials?.email?.trim().toLowerCase()
         const password = credentials?.password
-        const ip = getClientIp(req)
+        const ip = (req?.headers?.['x-forwarded-for'] as string)?.split(',')[0]?.trim() ?? 'unknown'
         const throttle = checkRateLimit({
           key: `auth:admin-login:${ip}:${email ?? 'unknown'}`,
           max: 6,
