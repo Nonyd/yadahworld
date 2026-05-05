@@ -12,7 +12,7 @@ type Bucket = {
 const rateLimitBuckets = new Map<string, Bucket>()
 
 function cleanupRateLimitBuckets(now: number) {
-  for (const [key, bucket] of rateLimitBuckets.entries()) {
+  for (const [key, bucket] of Array.from(rateLimitBuckets.entries())) {
     if (bucket.resetAt <= now) {
       rateLimitBuckets.delete(key)
     }
