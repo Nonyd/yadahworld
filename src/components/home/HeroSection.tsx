@@ -264,7 +264,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
       {/* STATE 2 */}
       <div ref={state2Ref} className="absolute inset-0 z-10" style={{ opacity: 0 }}>
         <div
-          className="pointer-events-none absolute inset-0 flex flex-col overflow-hidden"
+          className="hero-marquee-layer pointer-events-none absolute inset-0 flex flex-col overflow-hidden"
           style={{ zIndex: 1, height: '100%', justifyContent: 'space-evenly' }}
         >
           <div style={{ overflow: 'hidden' }}>
@@ -466,13 +466,18 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
 
       <style>{`
         @media (max-width: 768px) {
+          .hero-marquee-layer {
+            z-index: 0 !important;
+            justify-content: center !important;
+            gap: clamp(0.4rem, 2.2vw, 1rem);
+          }
           .hero-image-container {
             width: 100% !important;
             left: 0 !important;
             right: auto !important;
           }
           .hero-image-container img {
-            opacity: 0.3;
+            opacity: 0.82;
             object-fit: cover;
             object-position: top center;
           }
@@ -480,7 +485,9 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             left: 2rem !important;
           }
           .hero-marquee-word {
-            font-size: clamp(1.75rem, 8vw, 3rem) !important;
+            font-size: clamp(2.3rem, 11vw, 4.7rem) !important;
+            padding-right: 1.6rem !important;
+            color: rgba(253,250,245,0.12) !important;
           }
         }
       `}</style>
