@@ -3,7 +3,7 @@ import AboutPageClient from '@/components/about/AboutPageClient'
 import { getSiteCopy, getSiteVisuals } from '@/lib/site-settings'
 
 export const metadata: Metadata = {
-  title: 'About Yadah — Nigerian Female Gospel Music Minister',
+  title: 'About Yadah — The Voice of Jesus to Nations',
   description:
     'Learn about Yadah Kukeurim Daniel — one of the top female gospel music ministers and worship ministers in Nigeria. Based in Abuja, Nigeria, with 7+ years of ministry and millions of lives touched globally.',
   alternates: { canonical: 'https://yadahworld.com/about' },

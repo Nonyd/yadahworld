@@ -6,7 +6,7 @@ import { bookingHrefFromCopy, getCopyString, splitCopyByToken } from '@/lib/site
 import { buildSocialLinks, getPublicBranding, getSiteCopy, getSiteSettingsRow } from '@/lib/site-settings'
 
 export const metadata: Metadata = {
-  title: 'Contact — Book Yadah for Your Event',
+  title: 'Contact — Reach Out to Yadah',
   description:
     "Contact Yadah's ministry team for bookings, press enquiries, or general questions. Book one of Nigeria's top female gospel music ministers for your church, conference, or worship event.",
   alternates: { canonical: 'https://yadahworld.com/contact' },

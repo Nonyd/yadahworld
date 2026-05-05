@@ -37,7 +37,7 @@ const baskerville = Libre_Baskerville({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://yadahworld.com'),
   title: {
-    default: 'Yadah — Top Female Gospel Music Minister in Nigeria',
+    default: 'Yadah — The Voice of Jesus to Nations',
     template: '%s | Yadah',
   },
   description:
