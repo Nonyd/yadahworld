@@ -34,6 +34,11 @@ export default function AdminLoginClient({ logoUrl, siteName }: { logoUrl: strin
   return (
     <div className="admin-app relative min-h-screen flex items-center justify-center px-4 py-16">
       <div className="admin-card w-full max-w-md p-8 sm:p-10">
+        <div className="mb-6">
+          <a href="/" className="text-[10px] font-medium uppercase tracking-[0.16em] text-admin-muted hover:text-admin-text">
+            ← Back to website
+          </a>
+        </div>
         <div className="flex justify-center">
           <AdminBrandedLogo logoUrl={logoUrl} siteName={siteName} width={280} height={72} className="h-14 w-auto" priority />
         </div>
