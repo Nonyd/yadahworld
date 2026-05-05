@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
     await sendMail({
       to: notifyEmail,
       subject: `Contact: ${subject}`,
+      replyTo: `"${name}" <${email}>`,
       html: `<p><strong>${name}</strong> (<a href="mailto:${email}">${email}</a>)</p><p>${message.replace(/\n/g, '<br/>')}</p>`,
     })
   } catch (e) {

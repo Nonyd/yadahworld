@@ -18,11 +18,13 @@ export async function sendMail({
   to,
   subject,
   html,
+  replyTo,
   settingsOverride,
 }: {
   to: string
   subject: string
   html: string
+  replyTo?: string
   /** When omitted, loads row id=1 from DB. */
   settingsOverride?: SiteSettings | null
 }) {
@@ -45,5 +47,6 @@ export async function sendMail({
     to,
     subject,
     html,
+    ...(replyTo ? { replyTo } : {}),
   })
 }
