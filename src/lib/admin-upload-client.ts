@@ -59,6 +59,8 @@ type SignedParams = {
   apiKey: string
   cloudName: string
   folder: string
+  /** Must be POSTed with the same comma-separated value the server signed. */
+  allowedFormats?: string[]
 }
 
 function parseCloudinaryUploadResponse(text: string): { secure_url?: string; error?: string } {
@@ -144,6 +146,9 @@ export function uploadAdminImage(
         fd.append('timestamp', String(pData.timestamp))
         fd.append('signature', pData.signature)
         fd.append('folder', pData.folder)
+        if (pData.allowedFormats?.length) {
+          fd.append('allowed_formats', pData.allowedFormats.join(','))
+        }
         xhr.send(fd)
       } catch (e) {
         reject(e instanceof Error ? e : new Error('Upload failed'))
