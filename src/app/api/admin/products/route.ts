@@ -6,23 +6,38 @@ import { prisma } from '@/lib/prisma'
 import { uniqueProductSlug } from '@/lib/site-content'
 import { z } from 'zod'
 
+const variantSchema = z.object({
+  name: z.string().min(1),
+  value: z.string().min(1),
+  stock: z.number().int().min(0),
+  price: z.number().int().min(0).optional().nullable(),
+  sku: z.string().optional().nullable(),
+})
+
 const createSchema = z.object({
   name: z.string().min(1),
   slug: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   price: z.number().int().min(0),
-  currency: z.enum(['NGN', 'USD']).optional(),
+  comparePrice: z.number().int().optional().nullable(),
   category: z.string().optional().nullable(),
-  inStock: z.boolean().optional(),
-  images: z.array(z.string()).max(5).optional(),
-  stripeId: z.string().optional().nullable(),
+  tags: z.array(z.string()).optional(),
+  images: z.array(z.string()).max(20).optional(),
+  type: z.enum(['PHYSICAL', 'DIGITAL', 'BOOK']).optional(),
+  isActive: z.boolean().optional(),
+  isFeatured: z.boolean().optional(),
+  digitalFile: z.string().optional().nullable(),
+  variants: z.array(variantSchema).optional(),
 })
 
 export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
-    const items = await prisma.product.findMany({ orderBy: { createdAt: 'desc' } })
+    const items = await prisma.product.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { variants: true },
+    })
     return NextResponse.json(items)
   } catch (e) {
     console.error(e)
@@ -48,7 +63,8 @@ export async function POST(req: NextRequest) {
 
   const d = parsed.data
   const slug = (d.slug?.trim() && d.slug.trim()) || (await uniqueProductSlug(d.name))
-  const images = (d.images ?? []).map((u) => u.trim()).filter(Boolean).slice(0, 5)
+  const images = (d.images ?? []).map((u) => u.trim()).filter(Boolean).slice(0, 20)
+  const tags = (d.tags ?? []).map((t) => t.trim()).filter(Boolean)
 
   try {
     const row = await prisma.product.create({
@@ -57,11 +73,26 @@ export async function POST(req: NextRequest) {
         slug,
         description: d.description?.trim() || null,
         price: d.price,
-        currency: d.currency ?? 'NGN',
+        comparePrice: d.comparePrice ?? null,
         category: d.category?.trim() || null,
-        inStock: d.inStock ?? true,
+        tags,
         images,
-        stripeId: d.stripeId?.trim() || null,
+        type: d.type ?? 'PHYSICAL',
+        isActive: d.isActive ?? true,
+        isFeatured: d.isFeatured ?? false,
+        digitalFile: d.digitalFile?.trim() || null,
+        variants:
+          d.variants && d.variants.length > 0
+            ? {
+                create: d.variants.map((v) => ({
+                  name: v.name.trim(),
+                  value: v.value.trim(),
+                  stock: v.stock,
+                  price: v.price ?? null,
+                  sku: v.sku?.trim() || null,
+                })),
+              }
+            : undefined,
       },
     })
     try {

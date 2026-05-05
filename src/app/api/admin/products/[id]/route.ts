@@ -6,23 +6,38 @@ import { prisma } from '@/lib/prisma'
 import { uniqueProductSlug } from '@/lib/site-content'
 import { z } from 'zod'
 
+const variantSchema = z.object({
+  name: z.string().min(1),
+  value: z.string().min(1),
+  stock: z.number().int().min(0),
+  price: z.number().int().min(0).optional().nullable(),
+  sku: z.string().optional().nullable(),
+})
+
 const patchSchema = z.object({
   name: z.string().min(1).optional(),
   slug: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   price: z.number().int().min(0).optional(),
-  currency: z.enum(['NGN', 'USD']).optional(),
+  comparePrice: z.number().int().optional().nullable(),
   category: z.string().optional().nullable(),
-  inStock: z.boolean().optional(),
-  images: z.array(z.string()).max(5).optional(),
-  stripeId: z.string().optional().nullable(),
+  tags: z.array(z.string()).optional(),
+  images: z.array(z.string()).max(20).optional(),
+  type: z.enum(['PHYSICAL', 'DIGITAL', 'BOOK']).optional(),
+  isActive: z.boolean().optional(),
+  isFeatured: z.boolean().optional(),
+  digitalFile: z.string().optional().nullable(),
+  variants: z.array(variantSchema).optional(),
 })
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
-    const row = await prisma.product.findUnique({ where: { id: params.id } })
+    const row = await prisma.product.findUnique({
+      where: { id: params.id },
+      include: { variants: true },
+    })
     if (!row) return NextResponse.json({ error: 'Not found' }, { status: 404 })
     return NextResponse.json(row)
   } catch (e) {
@@ -52,11 +67,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (d.name !== undefined) data.name = d.name.trim()
   if (d.description !== undefined) data.description = d.description?.trim() || null
   if (d.price !== undefined) data.price = d.price
-  if (d.currency !== undefined) data.currency = d.currency
+  if (d.comparePrice !== undefined) data.comparePrice = d.comparePrice ?? null
   if (d.category !== undefined) data.category = d.category?.trim() || null
-  if (d.inStock !== undefined) data.inStock = d.inStock
-  if (d.images !== undefined) data.images = d.images.map((u) => u.trim()).filter(Boolean).slice(0, 5)
-  if (d.stripeId !== undefined) data.stripeId = d.stripeId?.trim() || null
+  if (d.tags !== undefined) data.tags = d.tags.map((t) => t.trim()).filter(Boolean)
+  if (d.images !== undefined) data.images = d.images.map((u) => u.trim()).filter(Boolean).slice(0, 20)
+  if (d.type !== undefined) data.type = d.type
+  if (d.isActive !== undefined) data.isActive = d.isActive
+  if (d.isFeatured !== undefined) data.isFeatured = d.isFeatured
+  if (d.digitalFile !== undefined) data.digitalFile = d.digitalFile?.trim() || null
 
   if (d.slug !== undefined && d.slug !== null) {
     const s = d.slug.trim()
@@ -75,9 +93,26 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   try {
-    await prisma.product.update({
-      where: { id: params.id },
-      data,
+    await prisma.$transaction(async (tx) => {
+      await tx.product.update({
+        where: { id: params.id },
+        data,
+      })
+      if (d.variants !== undefined) {
+        await tx.productVariant.deleteMany({ where: { productId: params.id } })
+        if (d.variants.length > 0) {
+          await tx.productVariant.createMany({
+            data: d.variants.map((v) => ({
+              productId: params.id,
+              name: v.name.trim(),
+              value: v.value.trim(),
+              stock: v.stock,
+              price: v.price ?? null,
+              sku: v.sku?.trim() || null,
+            })),
+          })
+        }
+      }
     })
   } catch (e) {
     console.error(e)

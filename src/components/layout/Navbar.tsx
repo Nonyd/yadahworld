@@ -10,6 +10,7 @@ import { useTheme } from 'next-themes'
 import { DEFAULT_SITE_LOGO_URL } from '@/lib/default-branding'
 import type { PublicNavLink } from '@/lib/site-copy'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import CartNavButton from '@/components/layout/CartNavButton'
 
 export default function Navbar({
   siteName = 'Yadah',
@@ -84,6 +85,7 @@ export default function Navbar({
         </Link>
 
         <nav className="hidden lg:flex flex-1 items-center justify-end gap-6 xl:gap-8">
+          <CartNavButton onDarkHero={onDarkHero} />
           {navLinks.map((link) =>
             link.external ? (
               <a
@@ -109,7 +111,8 @@ export default function Navbar({
           )}
         </nav>
 
-        <div className="flex items-center gap-3 lg:hidden">
+        <div className="flex items-center gap-4 lg:hidden">
+          <CartNavButton onDarkHero={onDarkHero} />
           <button
             type="button"
             onClick={() => setMenuOpen(true)}

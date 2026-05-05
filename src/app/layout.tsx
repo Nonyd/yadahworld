@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Cormorant_Garamond, Libre_Baskerville, Playfair_Display, Jost } from 'next/font/google'
 import SessionProvider from '@/components/providers/SessionProvider'
 import ThemeProvider from '@/components/providers/ThemeProvider'
+import { CartProvider } from '@/components/shop/CartProvider'
 import SiteCookieConsent from '@/components/consent/SiteCookieConsent'
 import PersonSchema from '@/components/seo/PersonSchema'
 import './globals.css'
@@ -108,7 +109,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <PersonSchema />
         <ThemeProvider>
-          <SessionProvider>{children}</SessionProvider>
+          <SessionProvider>
+            <CartProvider>{children}</CartProvider>
+          </SessionProvider>
         </ThemeProvider>
         <SiteCookieConsent />
       </body>

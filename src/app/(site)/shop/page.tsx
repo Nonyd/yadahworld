@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
+import type { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
-import ShopGrid from '@/components/shop/ShopGrid'
+import ShopProductGrid from '@/components/shop/ShopProductGrid'
 import { getCopyString } from '@/lib/site-copy'
 import { getSiteCopy } from '@/lib/site-settings'
 
@@ -10,10 +11,13 @@ export default async function ShopPage() {
   const copy = await getSiteCopy()
   const s = (k: string) => getCopyString(copy, `shop.${k}`)
 
-  let products: Awaited<ReturnType<typeof prisma.product.findMany>> = []
+  type ShopRow = Prisma.ProductGetPayload<{ include: { variants: true } }>
+  let products: ShopRow[] = []
   try {
     products = await prisma.product.findMany({
-      orderBy: { createdAt: 'desc' },
+      where: { isActive: true },
+      include: { variants: true },
+      orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
     })
   } catch {
     products = []
@@ -28,7 +32,7 @@ export default async function ShopPage() {
           <br />
           <em className="font-playfair italic text-[var(--accent)]">{s('heading2')}</em>
         </h1>
-        <ShopGrid products={products} copy={copy} />
+        <ShopProductGrid products={products} copy={copy} />
       </div>
     </div>
   )

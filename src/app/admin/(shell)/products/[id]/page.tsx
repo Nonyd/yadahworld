@@ -7,7 +7,7 @@ import ProductForm from '@/components/admin/cms/ProductForm'
 export default async function EditProductPage({ params }: { params: { id: string } }) {
   let product = null
   try {
-    product = await prisma.product.findUnique({ where: { id: params.id } })
+    product = await prisma.product.findUnique({ where: { id: params.id }, include: { variants: true } })
   } catch {
     product = null
   }

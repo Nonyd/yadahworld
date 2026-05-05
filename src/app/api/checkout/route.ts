@@ -33,15 +33,20 @@ export async function POST(req: NextRequest) {
 
   if (body.productSlug?.trim()) {
     const slug = body.productSlug.trim()
-    const product = await prisma.product.findUnique({ where: { slug } }).catch(() => null)
+    const product = await prisma.product.findUnique({ where: { slug }, include: { variants: true } }).catch(() => null)
     if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
-    if (!product.inStock) return NextResponse.json({ error: 'Out of stock' }, { status: 400 })
-    const cur = (product.currency || 'NGN').toLowerCase()
+    if (!product.isActive) return NextResponse.json({ error: 'Product unavailable' }, { status: 400 })
+    if (product.variants.length > 0) {
+      return NextResponse.json({ error: 'This product uses the cart checkout. Open the shop and add it to your cart.' }, { status: 400 })
+    }
+    if (product.type !== 'DIGITAL') {
+      return NextResponse.json({ error: 'Physical products use the shop checkout.' }, { status: 400 })
+    }
     const img = product.images[0]
     const lineItems = [
       {
         price_data: {
-          currency: cur === 'usd' ? 'usd' : 'ngn',
+          currency: 'ngn',
           product_data: {
             name: product.name,
             images: img ? [img] : [],

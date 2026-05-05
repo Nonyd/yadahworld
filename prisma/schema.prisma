@@ -67,40 +67,100 @@ model ContactMessageReply {
 }
 
 model Product {
-  id          String      @id @default(cuid())
-  createdAt   DateTime    @default(now())
-  name        String
-  description String?
-  price       Int
-  currency    String      @default("NGN")
-  images      String[]
-  category    String?
-  inStock     Boolean     @default(true)
-  stripeId    String?
-  slug        String      @unique
-  orders      OrderItem[]
+  id            String           @id @default(cuid())
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @default(now()) @updatedAt
+  name          String
+  slug          String           @unique
+  description   String?
+  type          ProductType      @default(PHYSICAL)
+  price         Int // kobo (NGN smallest unit)
+  comparePrice  Int?
+  images        String[]
+  isActive      Boolean          @default(true)
+  isFeatured    Boolean          @default(false)
+  category      String?
+  tags          String[]         @default([])
+  digitalFile   String?
+  variants      ProductVariant[]
+  orders        OrderItem[]
+}
+
+enum ProductType {
+  PHYSICAL
+  DIGITAL
+  BOOK
+}
+
+model ProductVariant {
+  id        String      @id @default(cuid())
+  productId String
+  product   Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  value     String
+  stock     Int         @default(0)
+  price     Int?
+  sku       String?
+  orders    OrderItem[]
 }
 
 model Order {
-  id                String      @id @default(cuid())
-  createdAt         DateTime    @default(now())
-  customerName      String
-  customerEmail     String
-  amount            Int
-  currency          String
-  status            OrderStatus @default(PENDING)
-  stripePaymentId   String?
-  items             OrderItem[]
+  id              String            @id @default(cuid())
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  orderNumber     String            @unique
+  status          OrderStatus       @default(PENDING)
+  customerName    String
+  customerEmail   String
+  customerPhone   String?
+  shippingAddress Json?
+  items           OrderItem[]
+  subtotal        Int
+  shippingFee     Int               @default(0)
+  discount        Int               @default(0)
+  total           Int
+  paymentGateway  String?
+  paymentRef      String?
+  paymentStatus   ShopPaymentStatus @default(UNPAID)
+  notes             String?
+  trackingNumber  String?
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+  /// JSON array: [{ "status": "SHIPPED", "at": "ISO8601", "note": "..." }]
+  statusHistory     Json?
+  lastStatusEmailAt DateTime?
+  checkoutSession ShopCheckoutSession?
+}
+
+/// Binds a payment gateway reference to a server-validated cart snapshot until the order is created after payment.
+model ShopCheckoutSession {
+  id           String    @id @default(cuid())
+  createdAt    DateTime  @default(now())
+  expiresAt    DateTime
+  reference    String    @unique
+  gateway      String
+  linesJson    Json
+  customerJson Json
+  shippingJson Json?
+  subtotal     Int
+  shippingFee  Int
+  total        Int
+  orderId      String?   @unique
+  order        Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Int
+  id             String          @id @default(cuid())
+  orderId        String
+  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product         @relation(fields: [productId], references: [id])
+  variantId      String?
+  variant        ProductVariant? @relation(fields: [variantId], references: [id])
+  quantity       Int
+  price          Int
+  name           String
+  variantLabel   String?
 }
 
 model SiteSettings {
@@ -256,10 +316,18 @@ enum BookingStatus {
 
 enum OrderStatus {
   PENDING
-  PAID
+  PROCESSING
   SHIPPED
   DELIVERED
   CANCELLED
+  REFUNDED
+}
+
+enum ShopPaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+  FAILED
 }
 
 enum SubscriberStatus {
