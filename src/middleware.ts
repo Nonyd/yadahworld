@@ -7,7 +7,14 @@ export default withAuth({
   callbacks: {
     authorized: ({ token, req }) => {
       const p = req.nextUrl.pathname
+
+      // Always allow login page
       if (p === '/admin/login' || p.startsWith('/admin/login/')) return true
+
+      // Always allow NextAuth API routes
+      if (p.startsWith('/api/auth/')) return true
+
+      // CSRF check for admin API state-changing requests
       if (p.startsWith('/api/admin/') && STATE_CHANGING_METHODS.has(req.method)) {
         const origin = req.headers.get('origin')
         const host = req.headers.get('host')
