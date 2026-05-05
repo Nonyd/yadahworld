@@ -31,13 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  const events = await prisma.siteEvent.findMany({ select: { slug: true, updatedAt: true } })
-  const eventPages = events.map((e) => ({
-    url: `${base}/events/${e.slug}`,
-    lastModified: e.updatedAt,
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }))
+  const eventPages: MetadataRoute.Sitemap = []
 
-  return [...staticPages, ...releasePages, ...eventPages]
+  return [...staticPages, ...releasePages]
 }
