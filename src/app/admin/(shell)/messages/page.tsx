@@ -5,7 +5,15 @@ import MessagesInbox, { type InboxMessage } from '@/components/admin/messages/Me
 export default async function MessagesPage() {
   let messages: Awaited<ReturnType<typeof prisma.contactMessage.findMany>> = []
   try {
-    messages = await prisma.contactMessage.findMany({ orderBy: { createdAt: 'desc' }, take: 100 })
+    messages = await prisma.contactMessage.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+      include: {
+        replies: {
+          orderBy: { createdAt: 'asc' },
+        },
+      },
+    })
   } catch {
     messages = []
   }
@@ -18,6 +26,13 @@ export default async function MessagesPage() {
     subject: m.subject,
     message: m.message,
     read: m.read,
+    replies: m.replies.map((r) => ({
+      id: r.id,
+      createdAt: new Date(r.createdAt).toLocaleString('en-GB'),
+      subject: r.subject,
+      message: r.message,
+      sentByEmail: r.sentByEmail ?? '',
+    })),
   }))
 
   return (

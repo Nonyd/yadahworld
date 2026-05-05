@@ -11,6 +11,13 @@ export type InboxMessage = {
   subject: string
   message: string
   read: boolean
+  replies: {
+    id: string
+    createdAt: string
+    subject: string
+    message: string
+    sentByEmail: string
+  }[]
 }
 
 export default function MessagesInbox({ messages }: { messages: InboxMessage[] }) {
@@ -221,9 +228,25 @@ export default function MessagesInbox({ messages }: { messages: InboxMessage[] }
                   {open && (
                     <tr className="border-b border-admin-border bg-admin-bg/40">
                       <td colSpan={colCount} className="px-4 py-6">
-                        <blockquote className="border-l-2 border-admin-border pl-4 text-sm leading-relaxed text-admin-text/90 whitespace-pre-wrap">
-                          {m.message}
-                        </blockquote>
+                        <div className="space-y-3">
+                          <div className="rounded-lg border border-admin-border bg-white p-4">
+                            <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.16em] text-admin-muted">From {m.name}</p>
+                            <blockquote className="border-l-2 border-admin-border pl-4 text-sm leading-relaxed text-admin-text/90 whitespace-pre-wrap">
+                              {m.message}
+                            </blockquote>
+                            <p className="mt-2 text-[11px] text-admin-muted">{m.createdAt}</p>
+                          </div>
+                          {m.replies.map((reply) => (
+                            <div key={reply.id} className="rounded-lg border border-admin-border bg-admin-bg/20 p-4">
+                              <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.16em] text-admin-muted">
+                                Admin reply{reply.sentByEmail ? ` • ${reply.sentByEmail}` : ''}
+                              </p>
+                              <p className="text-xs text-admin-muted">{reply.subject}</p>
+                              <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-admin-text/90">{reply.message}</p>
+                              <p className="mt-2 text-[11px] text-admin-muted">{reply.createdAt}</p>
+                            </div>
+                          ))}
+                        </div>
                         <div className="mt-4 flex flex-wrap gap-3">
                           <button
                             type="button"

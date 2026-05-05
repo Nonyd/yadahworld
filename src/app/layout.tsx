@@ -36,6 +36,10 @@ const baskerville = Libre_Baskerville({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://yadahworld.com'),
+  icons: {
+    icon: [{ url: '/icon.png', type: 'image/png' }],
+    apple: [{ url: '/apple-icon.png', type: 'image/png' }],
+  },
   title: {
     default: 'Yadah — The Voice of Jesus to Nations',
     template: '%s | Yadah',

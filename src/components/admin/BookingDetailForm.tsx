@@ -23,6 +23,7 @@ export default function BookingDetailForm({
   eventName,
   fullName,
   submittedAt,
+  replies,
 }: {
   bookingId: string
   initialStatus: BookingStatus
@@ -33,6 +34,13 @@ export default function BookingDetailForm({
   eventName: string
   fullName: string
   submittedAt: string
+  replies: {
+    id: string
+    createdAt: string
+    subject: string
+    message: string
+    sentByEmail: string
+  }[]
 }) {
   const router = useRouter()
   const [status, setStatus] = useState(initialStatus)
@@ -159,6 +167,23 @@ export default function BookingDetailForm({
           </button>
         </div>
       </form>
+      <div className="space-y-3 border-t border-admin-border pt-6">
+        <p className="admin-label">Conversation thread</p>
+        {replies.length === 0 ? (
+          <p className="text-sm text-admin-muted">No replies sent yet.</p>
+        ) : (
+          replies.map((reply) => (
+            <div key={reply.id} className="rounded-lg border border-admin-border bg-admin-bg/20 p-4">
+              <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-admin-muted">
+                Admin reply{reply.sentByEmail ? ` • ${reply.sentByEmail}` : ''}
+              </p>
+              <p className="mt-1 text-xs text-admin-muted">{reply.subject}</p>
+              <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-admin-text/90">{reply.message}</p>
+              <p className="mt-2 text-[11px] text-admin-muted">{reply.createdAt}</p>
+            </div>
+          ))
+        )}
+      </div>
       {replyOpen && (
         <form onSubmit={onReply} className="space-y-4 border-t border-admin-border pt-6">
           <div>

@@ -65,6 +65,18 @@ const WORDS_ROW_VOICE = [
   'THE VOICE OF JESUS TO NATIONS',
 ]
 
+/** Longer tracks for marquee (esp. mobile); duplicate segments so motion feels continuous */
+function repeatWords(words: string[], times: number) {
+  const out: string[] = []
+  for (let t = 0; t < times; t++) out.push(...words)
+  return out
+}
+
+const MARQUEE_ROW_1 = repeatWords(WORDS_ROW_1, 5)
+const MARQUEE_ROW_VOICE = repeatWords(WORDS_ROW_VOICE, 5)
+const MARQUEE_ROW_2 = repeatWords(WORDS_ROW_2, 5)
+const MARQUEE_ROW_3 = repeatWords(WORDS_ROW_3, 5)
+
 const bookBtnStyle: CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
@@ -280,7 +292,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
                 width: 'max-content',
               }}
             >
-              {[...WORDS_ROW_1, ...WORDS_ROW_1].map((word, i) => (
+              {[...MARQUEE_ROW_1, ...MARQUEE_ROW_1].map((word, i) => (
                 <span key={`r1-${i}`} className="hero-marquee-word" style={wordStyle}>
                   {word}
                 </span>
@@ -300,7 +312,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
                 width: 'max-content',
               }}
             >
-              {[...WORDS_ROW_VOICE, ...WORDS_ROW_VOICE].map((word, i) => (
+              {[...MARQUEE_ROW_VOICE, ...MARQUEE_ROW_VOICE].map((word, i) => (
                 <span key={`r2-${i}`} className="hero-marquee-word" style={wordStyle}>
                   {word}
                 </span>
@@ -320,7 +332,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
                 width: 'max-content',
               }}
             >
-              {[...WORDS_ROW_2, ...WORDS_ROW_2].map((word, i) => (
+              {[...MARQUEE_ROW_2, ...MARQUEE_ROW_2].map((word, i) => (
                 <span key={`r3-${i}`} className="hero-marquee-word" style={wordStyle}>
                   {word}
                 </span>
@@ -340,7 +352,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
                 width: 'max-content',
               }}
             >
-              {[...WORDS_ROW_3, ...WORDS_ROW_3].map((word, i) => (
+              {[...MARQUEE_ROW_3, ...MARQUEE_ROW_3].map((word, i) => (
                 <span key={`r4-${i}`} className="hero-marquee-word" style={wordStyle}>
                   {word}
                 </span>
@@ -350,7 +362,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
         </div>
 
         <div
-          className="pointer-events-none absolute inset-0"
+          className="hero-gradient-left pointer-events-none absolute inset-0"
           style={{
             zIndex: 2,
             background: `linear-gradient(
@@ -364,7 +376,7 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
         />
 
         <div
-          className="pointer-events-none absolute bottom-0 left-0 right-0"
+          className="hero-gradient-bottom pointer-events-none absolute bottom-0 left-0 right-0"
           style={{
             zIndex: 3,
             height: '25%',
@@ -471,13 +483,21 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             justify-content: center !important;
             gap: clamp(0.4rem, 2.2vw, 1rem);
           }
+          /* Portrait sits above scrolling type; gradients stay on top for readability */
           .hero-image-container {
             width: 100% !important;
             left: 0 !important;
             right: auto !important;
+            z-index: 2 !important;
+          }
+          .hero-gradient-left {
+            z-index: 3 !important;
+          }
+          .hero-gradient-bottom {
+            z-index: 4 !important;
           }
           .hero-image-container img {
-            opacity: 0.82;
+            opacity: 1 !important;
             object-fit: cover;
             object-position: top center;
           }
@@ -485,9 +505,13 @@ export default function HeroSection({ heroImageUrl, bookingHref = '/booking' }: 
             left: 2rem !important;
           }
           .hero-marquee-word {
-            font-size: clamp(2.3rem, 11vw, 4.7rem) !important;
-            padding-right: 1.6rem !important;
-            color: rgba(253,250,245,0.12) !important;
+            font-size: clamp(2.65rem, 12.5vw, 5.5rem) !important;
+            font-weight: 900 !important;
+            padding-right: 2rem !important;
+            letter-spacing: 0.06em !important;
+            color: rgba(253,250,245,0.26) !important;
+            -webkit-text-stroke: 0.45px rgba(253,250,245,0.35);
+            paint-order: stroke fill;
           }
         }
       `}</style>

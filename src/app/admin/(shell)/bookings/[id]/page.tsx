@@ -18,6 +18,11 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
   try {
     booking = await prisma.bookingRequest.findUnique({
       where: { id: params.id },
+      include: {
+        replies: {
+          orderBy: { createdAt: 'asc' },
+        },
+      },
     })
   } catch {
     booking = null
@@ -96,6 +101,13 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
           eventName={booking.eventName}
           fullName={booking.fullName}
           submittedAt={submittedAt}
+          replies={booking.replies.map((reply) => ({
+            id: reply.id,
+            createdAt: new Date(reply.createdAt).toLocaleString('en-GB'),
+            subject: reply.subject,
+            message: reply.message,
+            sentByEmail: reply.sentByEmail ?? '',
+          }))}
         />
       </div>
     </div>
