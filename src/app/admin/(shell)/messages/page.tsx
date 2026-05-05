@@ -3,7 +3,7 @@ import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import MessagesInbox, { type InboxMessage } from '@/components/admin/messages/MessagesInbox'
 
 export default async function MessagesPage() {
-  let messages: Awaited<ReturnType<typeof prisma.contactMessage.findMany>> = []
+  let messages: Awaited<ReturnType<typeof prisma.contactMessage.findMany<{ include: { replies: true } }>>> = []
   try {
     messages = await prisma.contactMessage.findMany({
       orderBy: { createdAt: 'desc' },
