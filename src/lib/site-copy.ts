@@ -140,7 +140,7 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     body2:
       'She made her official debut in 2017 with "Goodie Goodie" under the management of SonsHub Media. Her discography includes hit songs such as "Beyond Me", "Never Seen", "Onye Nwere Jesus", "Free of Charge", and "Na Your Hand" — songs that have reached people across continents, inviting hearts into worship and the presence of God.',
     stat1n: 'Millions',
-    stat1l: 'Lives Touched Globally',
+    stat1l: 'Of Lives Touched',
     ministryEyebrow: 'Ministry',
     ministryLead: 'Yadah is available to minister.',
     ministryBody:

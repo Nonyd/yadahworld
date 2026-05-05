@@ -13,14 +13,11 @@ const active = { color: 'var(--gold-light)' as const }
 function pathActive(pathname: string, href: string): boolean {
   const h = href.trim()
   if (!h || h.startsWith('/#')) return false
+  // External URLs: never match Next pathname — their URL pathname is often `/`,
+  // which would wrongly highlight links (e.g. Room For You) on the site homepage.
+  if (h.startsWith('http://') || h.startsWith('https://')) return false
+
   let path = h
-  if (h.startsWith('http://') || h.startsWith('https://')) {
-    try {
-      path = new URL(h).pathname
-    } catch {
-      return false
-    }
-  }
   if (path.includes('#')) {
     path = path.split('#')[0] || '/'
   }

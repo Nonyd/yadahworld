@@ -86,7 +86,7 @@ export default function AboutSnippet({
             transition={{ delay: 0.6 }}
             className="flex gap-10 mb-12 pb-10 border-b border-[rgba(42,37,32,0.1)] flex-wrap"
           >
-            {[{ n: 'Millions', label: 'Lives Touched' }].map(({ n, label }) => (
+            {[{ n: 'Millions', label: 'Of Lives Touched' }].map(({ n, label }) => (
               <div key={label}>
                 <p className="font-playfair text-5xl font-normal text-[var(--accent)] leading-none mb-1">{n}</p>
                 <p className="ui-label text-[var(--muted)]">{label}</p>
