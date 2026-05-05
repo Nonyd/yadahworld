@@ -129,7 +129,7 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
     mantraEyebrow: 'Her Mantra',
     mantraQuote:
       "I believe in the one and only true God. I believe in Christ's cross and all that it is to a believer.",
-    mantraAttribution: '— Yadah',
+    mantraAttribution: '- Yadah',
     ministerEyebrow: '03 — The Minister',
     stageName: 'Yadah',
     fullName: 'Kukeurim Daniel',

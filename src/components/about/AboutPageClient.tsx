@@ -23,6 +23,13 @@ export default function AboutPageClient({
   const bio1Html = proseHtmlFromStored(a('body1'))
   const bio2Html = proseHtmlFromStored(a('body2'))
 
+  /** About-page mantra line: prefer `- Yadah`; override CMS if it still contains the old full name. */
+  const mantraAttributionLine = (() => {
+    const s = a('mantraAttribution').trim()
+    if (/kukeurim/i.test(s)) return '- Yadah'
+    return s || '- Yadah'
+  })()
+
   const statRows = [{ number: a('stat1n'), label: a('stat1l') }]
 
   return (
@@ -80,7 +87,7 @@ export default function AboutPageClient({
             &ldquo;{a('mantraQuote')}&rdquo;
           </blockquote>
           <p className="font-jost text-xs tracking-[0.2em] uppercase mt-10" style={{ color: 'var(--muted)' }}>
-            {a('mantraAttribution')}
+            {mantraAttributionLine}
           </p>
         </div>
       </section>
@@ -102,7 +109,7 @@ export default function AboutPageClient({
             >
               <Image
                 src={aboutPortrait}
-                alt="Yadah Kukeurim Daniel"
+                alt="Yadah"
                 fill
                 className="object-cover object-top"
                 sizes="(max-width: 768px) 100vw, 42vw"
