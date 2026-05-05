@@ -77,7 +77,7 @@ export default function Navbar({
             width={320}
             height={80}
             priority
-            className="h-9 w-auto md:h-12"
+            className="h-10 w-auto md:h-14"
             style={logoStyle}
             sizes="(max-width: 768px) 140px, 180px"
           />
