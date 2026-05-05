@@ -14,7 +14,7 @@ export function usePublicVideoLightbox(videos: PublicVideo[]) {
     () =>
       videos.map((v) => ({
         video: v,
-        youtubeId: extractYoutubeVideoId(v.youtubeUrl),
+        youtubeId: extractYoutubeVideoId(v.youtubeUrl) || v.youtubeVideoId?.trim() || null,
       })),
     [videos],
   )
