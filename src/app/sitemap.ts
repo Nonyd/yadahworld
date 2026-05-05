@@ -23,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: path === '' ? 1 : 0.8,
   }))
 
-  const releases = await prisma.release.findMany({ select: { slug: true, updatedAt: true } })
+  const releases = await prisma.siteRelease.findMany({ select: { slug: true, updatedAt: true } })
   const releasePages = releases.map((r) => ({
     url: `${base}/releases/${r.slug}`,
     lastModified: r.updatedAt,
@@ -31,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  const events = await prisma.event.findMany({ select: { slug: true, updatedAt: true } })
+  const events = await prisma.siteEvent.findMany({ select: { slug: true, updatedAt: true } })
   const eventPages = events.map((e) => ({
     url: `${base}/events/${e.slug}`,
     lastModified: e.updatedAt,
