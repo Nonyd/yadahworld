@@ -165,9 +165,18 @@ type FormState = {
   paystackPublicKey: string
   paystackSecretKey: string
   paystackEnabled: boolean
+  paystackMode: 'test' | 'live'
+  paystackWebhookSecret: string
   flutterwavePublicKey: string
   flutterwaveSecretKey: string
   flutterwaveEnabled: boolean
+  flutterwaveMode: 'test' | 'live'
+  flutterwaveWebhookSecret: string
+  payazaPublicKey: string
+  payazaSecretKey: string
+  payazaEnabled: boolean
+  payazaMode: 'test' | 'live'
+  payazaWebhookSecret: string
 }
 
 function toFormState(row: SiteSettings | null): FormState {
@@ -213,9 +222,18 @@ function toFormState(row: SiteSettings | null): FormState {
     paystackPublicKey: row?.paystackPublicKey ?? '',
     paystackSecretKey: row?.paystackSecretKey ?? '',
     paystackEnabled: row?.paystackEnabled ?? false,
+    paystackMode: row?.paystackMode === 'live' ? 'live' : 'test',
+    paystackWebhookSecret: row?.paystackWebhookSecret ?? '',
     flutterwavePublicKey: row?.flutterwavePublicKey ?? '',
     flutterwaveSecretKey: row?.flutterwaveSecretKey ?? '',
     flutterwaveEnabled: row?.flutterwaveEnabled ?? false,
+    flutterwaveMode: row?.flutterwaveMode === 'live' ? 'live' : 'test',
+    flutterwaveWebhookSecret: row?.flutterwaveWebhookSecret ?? '',
+    payazaPublicKey: row?.payazaPublicKey ?? '',
+    payazaSecretKey: row?.payazaSecretKey ?? '',
+    payazaEnabled: row?.payazaEnabled ?? false,
+    payazaMode: row?.payazaMode === 'live' ? 'live' : 'test',
+    payazaWebhookSecret: row?.payazaWebhookSecret ?? '',
   }
 }
 
@@ -228,6 +246,70 @@ function Badge({ live }: { live: boolean }) {
     <span className="rounded-full bg-amber-500/15 px-2 py-0.5 font-jost text-[10px] font-medium uppercase tracking-wider text-amber-900">
       Not set
     </span>
+  )
+}
+
+function WebhookUrlCopy({ url }: { url: string }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <div className="rounded-md border border-admin-border bg-admin-surface/50 p-3">
+      <p className="mb-2 text-xs text-admin-muted">Set your webhook URL to:</p>
+      <div className="flex flex-wrap items-center gap-2">
+        <code className="max-w-full min-w-0 flex-1 break-all font-mono text-[11px] text-admin-text">{url}</code>
+        <button
+          type="button"
+          className="admin-btn admin-btn-secondary shrink-0 text-[10px]"
+          onClick={() => {
+            void navigator.clipboard.writeText(url).then(() => {
+              setCopied(true)
+              setTimeout(() => setCopied(false), 2000)
+            })
+          }}
+        >
+          {copied ? 'Copied' : 'Copy'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function ModeToggle({
+  idPrefix,
+  value,
+  onChange,
+}: {
+  idPrefix: string
+  value: 'test' | 'live'
+  onChange: (v: 'test' | 'live') => void
+}) {
+  return (
+    <div>
+      <p className="admin-label mb-2">Mode</p>
+      <div className="flex flex-wrap gap-2">
+        <label className="flex cursor-pointer items-center gap-2 rounded-full border border-admin-border px-3 py-1.5 text-xs has-[:checked]:border-admin-accent has-[:checked]:bg-admin-accent/10">
+          <input
+            id={`${idPrefix}-test`}
+            type="radio"
+            name={`${idPrefix}-mode`}
+            className="h-3.5 w-3.5"
+            checked={value === 'test'}
+            onChange={() => onChange('test')}
+          />
+          Test
+        </label>
+        <label className="flex cursor-pointer items-center gap-2 rounded-full border border-admin-border px-3 py-1.5 text-xs has-[:checked]:border-admin-accent has-[:checked]:bg-admin-accent/10">
+          <input
+            id={`${idPrefix}-live`}
+            type="radio"
+            name={`${idPrefix}-mode`}
+            className="h-3.5 w-3.5"
+            checked={value === 'live'}
+            onChange={() => onChange('live')}
+          />
+          Live
+        </label>
+      </div>
+    </div>
   )
 }
 
@@ -277,9 +359,11 @@ function PassRow({
 export default function AdminSettingsForm({
   initial,
   integrationEnv,
+  publicSiteUrl,
 }: {
   initial: SiteSettings | null
   integrationEnv: AdminSettingsIntegrationEnv
+  publicSiteUrl: string
 }) {
   const router = useRouter()
   const galleryFilesId = useId()
@@ -357,6 +441,7 @@ export default function AdminSettingsForm({
     Boolean(initial?.stripeSecretKey?.trim())
   const paystackLive = Boolean(form.paystackPublicKey?.trim() && form.paystackSecretKey?.trim())
   const flutterLive = Boolean(form.flutterwavePublicKey?.trim() && form.flutterwaveSecretKey?.trim())
+  const payazaLive = Boolean(form.payazaPublicKey?.trim() && form.payazaSecretKey?.trim())
 
   const appendGalleryFiles = async (files: FileList | null) => {
     if (!files?.length) return
@@ -501,9 +586,18 @@ export default function AdminSettingsForm({
           paystackPublicKey: form.paystackPublicKey || null,
           paystackSecretKey: form.paystackSecretKey || null,
           paystackEnabled: form.paystackEnabled,
+          paystackMode: form.paystackMode,
+          paystackWebhookSecret: form.paystackWebhookSecret || null,
           flutterwavePublicKey: form.flutterwavePublicKey || null,
           flutterwaveSecretKey: form.flutterwaveSecretKey || null,
           flutterwaveEnabled: form.flutterwaveEnabled,
+          flutterwaveMode: form.flutterwaveMode,
+          flutterwaveWebhookSecret: form.flutterwaveWebhookSecret || null,
+          payazaPublicKey: form.payazaPublicKey || null,
+          payazaSecretKey: form.payazaSecretKey || null,
+          payazaEnabled: form.payazaEnabled,
+          payazaMode: form.payazaMode,
+          payazaWebhookSecret: form.payazaWebhookSecret || null,
           siteContentJson: buildSiteContentJsonFromDotMap(copyForm),
         }),
       })
@@ -1012,16 +1106,41 @@ export default function AdminSettingsForm({
               />
               <span className="text-sm text-admin-text">Enable Paystack</span>
             </label>
-            <div className="grid gap-6 sm:grid-cols-2">
-              {field('paystackPublicKey', 'Public key')}
-              <PassRow
-                id="paystackSec"
-                label="Secret key"
-                value={form.paystackSecretKey}
-                onChange={(v) => set('paystackSecretKey', v)}
-                badgeLive={paystackLive}
+            <ModeToggle
+              idPrefix="paystack"
+              value={form.paystackMode}
+              onChange={(v) => setForm((f) => ({ ...f, paystackMode: v }))}
+            />
+            <div>
+              <div className="mb-1 flex flex-wrap items-center gap-2">
+                <label className="admin-label mb-0" htmlFor="paystackPublicKey">
+                  Public key
+                </label>
+                <Badge live={Boolean(form.paystackPublicKey?.trim())} />
+              </div>
+              <input
+                id="paystackPublicKey"
+                className="admin-input"
+                value={form.paystackPublicKey}
+                onChange={(e) => set('paystackPublicKey', e.target.value)}
+                autoComplete="off"
               />
             </div>
+            <PassRow
+              id="paystackSec"
+              label="Secret key"
+              value={form.paystackSecretKey}
+              onChange={(v) => set('paystackSecretKey', v)}
+              badgeLive={Boolean(form.paystackSecretKey?.trim())}
+            />
+            <PassRow
+              id="paystackWh"
+              label="Webhook secret"
+              value={form.paystackWebhookSecret}
+              onChange={(v) => set('paystackWebhookSecret', v)}
+              badgeLive={Boolean(form.paystackWebhookSecret?.trim())}
+            />
+            <WebhookUrlCopy url={`${publicSiteUrl}/api/webhooks/paystack`} />
           </div>
 
           <div className="admin-card space-y-6 p-6 sm:p-8">
@@ -1038,16 +1157,96 @@ export default function AdminSettingsForm({
               />
               <span className="text-sm text-admin-text">Enable Flutterwave</span>
             </label>
-            <div className="grid gap-6 sm:grid-cols-2">
-              {field('flutterwavePublicKey', 'Public key')}
-              <PassRow
-                id="flutterSec"
-                label="Secret key"
-                value={form.flutterwaveSecretKey}
-                onChange={(v) => set('flutterwaveSecretKey', v)}
-                badgeLive={flutterLive}
+            <ModeToggle
+              idPrefix="flutterwave"
+              value={form.flutterwaveMode}
+              onChange={(v) => setForm((f) => ({ ...f, flutterwaveMode: v }))}
+            />
+            <div>
+              <div className="mb-1 flex flex-wrap items-center gap-2">
+                <label className="admin-label mb-0" htmlFor="flutterwavePublicKey">
+                  Public key
+                </label>
+                <Badge live={Boolean(form.flutterwavePublicKey?.trim())} />
+              </div>
+              <input
+                id="flutterwavePublicKey"
+                className="admin-input"
+                value={form.flutterwavePublicKey}
+                onChange={(e) => set('flutterwavePublicKey', e.target.value)}
+                autoComplete="off"
               />
             </div>
+            <PassRow
+              id="flutterSec"
+              label="Secret key"
+              value={form.flutterwaveSecretKey}
+              onChange={(v) => set('flutterwaveSecretKey', v)}
+              badgeLive={Boolean(form.flutterwaveSecretKey?.trim())}
+            />
+            <PassRow
+              id="flutterWh"
+              label="Webhook secret"
+              value={form.flutterwaveWebhookSecret}
+              onChange={(v) => set('flutterwaveWebhookSecret', v)}
+              badgeLive={Boolean(form.flutterwaveWebhookSecret?.trim())}
+            />
+            <WebhookUrlCopy url={`${publicSiteUrl}/api/webhooks/flutterwave`} />
+          </div>
+
+          <div className="admin-card space-y-6 p-6 sm:p-8">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="font-playfair text-lg text-admin-text">Payments — Payaza</h2>
+              <Badge live={payazaLive} />
+            </div>
+            <label className="flex cursor-pointer items-center gap-3">
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded border-admin-border"
+                checked={form.payazaEnabled}
+                onChange={(e) => set('payazaEnabled', e.target.checked)}
+              />
+              <span className="text-sm text-admin-text">Enable Payaza</span>
+            </label>
+            <ModeToggle
+              idPrefix="payaza"
+              value={form.payazaMode}
+              onChange={(v) => setForm((f) => ({ ...f, payazaMode: v }))}
+            />
+            <div>
+              <div className="mb-1 flex flex-wrap items-center gap-2">
+                <label className="admin-label mb-0" htmlFor="payazaPublicKey">
+                  Public key
+                </label>
+                <Badge live={Boolean(form.payazaPublicKey?.trim())} />
+              </div>
+              <input
+                id="payazaPublicKey"
+                className="admin-input"
+                value={form.payazaPublicKey}
+                onChange={(e) => set('payazaPublicKey', e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+            <PassRow
+              id="payazaSec"
+              label="Secret key"
+              value={form.payazaSecretKey}
+              onChange={(v) => set('payazaSecretKey', v)}
+              badgeLive={Boolean(form.payazaSecretKey?.trim())}
+            />
+            <PassRow
+              id="payazaWh"
+              label="Webhook secret"
+              value={form.payazaWebhookSecret}
+              onChange={(v) => set('payazaWebhookSecret', v)}
+              badgeLive={Boolean(form.payazaWebhookSecret?.trim())}
+            />
+            <WebhookUrlCopy url={`${publicSiteUrl}/api/webhooks/payaza`} />
+            <p className="text-xs leading-relaxed text-admin-muted">
+              Payaza API base: <span className="font-mono text-admin-text">https://api.payaza.africa</span> — Auth header:{' '}
+              <span className="font-mono text-admin-text">Payaza-Auth: Bearer {'{secret}'}</span>
+            </p>
           </div>
         </div>
       )}

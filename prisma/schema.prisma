@@ -202,12 +202,23 @@ model SiteSettings {
 
   socialTiktok String?
 
-  paystackPublicKey    String?
-  paystackSecretKey    String?
-  paystackEnabled      Boolean @default(false)
-  flutterwavePublicKey String?
-  flutterwaveSecretKey String?
-  flutterwaveEnabled   Boolean @default(false)
+  paystackPublicKey     String?
+  paystackSecretKey     String?
+  paystackEnabled       Boolean @default(false)
+  paystackMode          String  @default("test") // "test" | "live"
+  paystackWebhookSecret String?
+
+  flutterwavePublicKey      String?
+  flutterwaveSecretKey      String?
+  flutterwaveEnabled        Boolean @default(false)
+  flutterwaveMode           String  @default("test") // "test" | "live"
+  flutterwaveWebhookSecret  String?
+
+  payazaPublicKey     String?
+  payazaSecretKey     String?
+  payazaEnabled       Boolean @default(false)
+  payazaMode          String  @default("test") // "test" | "live"
+  payazaWebhookSecret String?
   stripeEnabled         Boolean @default(false)
   stripeSecretKey       String?
   stripePublishableKey  String?

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { createCheckoutSession } from '@/lib/shop-checkout'
-import { paystackSecret } from '@/lib/shop-payments'
+import { getPaystackConfig } from '@/lib/site-settings'
 
 const bodySchema = z.object({
   lines: z.array(
@@ -30,8 +30,7 @@ const bodySchema = z.object({
 })
 
 export async function POST(req: NextRequest) {
-  const settings = await prisma.siteSettings.findUnique({ where: { id: 1 } }).catch(() => null)
-  const secret = paystackSecret(settings)
+  const { secretKey: secret } = await getPaystackConfig()
   if (!secret) {
     return NextResponse.json({ error: 'Paystack is not configured.' }, { status: 503 })
   }

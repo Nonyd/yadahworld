@@ -10,8 +10,6 @@ export default async function TicketPage({
   params: { ticketCode: string }
   searchParams?: { verify?: string; reference?: string; trxref?: string }
 }) {
-  const settings = await prisma.siteSettings.findUnique({ where: { id: 1 } }).catch(() => null)
-
   let registration = await prisma.eventRegistration.findUnique({
     where: { ticketCode: params.ticketCode },
     include: { event: true, tier: true },
@@ -26,7 +24,7 @@ export default async function TicketPage({
       registration.orderGroupId ||
       registration.ticketCode
     if (ref) {
-      await verifyPaystackChargeAndFinalize(ref, settings)
+      await verifyPaystackChargeAndFinalize(ref)
       registration = await prisma.eventRegistration.findUniqueOrThrow({
         where: { ticketCode: params.ticketCode },
         include: { event: true, tier: true },

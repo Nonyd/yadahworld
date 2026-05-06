@@ -1,7 +1,6 @@
-import type { SiteSettings } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { sendTicketBundleEmail } from '@/lib/ticket-email'
-import { paystackSecret } from '@/lib/shop-payments'
+import { getPaystackConfig } from '@/lib/site-settings'
 
 /** Marks pending event registration(s) paid and sends ticket email. Idempotent. */
 export async function finalizePaidEventRegistrations(reference: string): Promise<boolean> {
@@ -65,11 +64,8 @@ export async function finalizePaidEventRegistrations(reference: string): Promise
   return true
 }
 
-export async function verifyPaystackChargeAndFinalize(
-  reference: string,
-  settings: SiteSettings | null,
-): Promise<{ ok: boolean; message: string }> {
-  const secret = paystackSecret(settings)
+export async function verifyPaystackChargeAndFinalize(reference: string): Promise<{ ok: boolean; message: string }> {
+  const { secretKey: secret } = await getPaystackConfig()
   if (!secret) {
     return { ok: false, message: 'Payment not configured' }
   }

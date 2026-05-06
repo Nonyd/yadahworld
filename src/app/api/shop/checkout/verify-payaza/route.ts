@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { verifyAndFulfillPayaza } from '@/lib/shop-gateway-verify'
 
-const schema = z.object({ reference: z.string().min(4) })
+const schema = z.object({ reference: z.string().min(8) })
 
 export async function POST(req: NextRequest) {
   let body: unknown

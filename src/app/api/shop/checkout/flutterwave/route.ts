@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { createCheckoutSession } from '@/lib/shop-checkout'
-import { flutterwaveSecret } from '@/lib/shop-payments'
+import { getFlutterwaveConfig } from '@/lib/site-settings'
 
 const bodySchema = z.object({
   lines: z.array(
@@ -30,8 +30,8 @@ const bodySchema = z.object({
 })
 
 export async function POST(req: NextRequest) {
-  const settings = await prisma.siteSettings.findUnique({ where: { id: 1 } }).catch(() => null)
-  const secret = flutterwaveSecret(settings)
+  const fw = await getFlutterwaveConfig()
+  const secret = fw.secretKey
   if (!secret) {
     return NextResponse.json({ error: 'Flutterwave is not configured.' }, { status: 503 })
   }
@@ -90,6 +90,6 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     paymentLink: fwData.data.link,
     txRef: session.reference,
-    publicKey: settings?.flutterwavePublicKey?.trim() || process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || '',
+    publicKey: fw.publicKey,
   })
 }

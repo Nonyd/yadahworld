@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { finalizePaidEventRegistrations } from '@/lib/event-paystack-finalize'
+import { getPaystackConfig } from '@/lib/site-settings'
 
 export async function POST(req: NextRequest) {
   const body = await req.text()
   const signature = req.headers.get('x-paystack-signature')
-  const secret = process.env.PAYSTACK_SECRET_KEY?.trim()
+  const config = await getPaystackConfig()
+  const secret = (config.webhookSecret || config.secretKey).trim()
 
   if (!secret || !signature) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

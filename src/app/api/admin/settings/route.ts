@@ -34,9 +34,18 @@ const patchSchema = z.object({
   paystackPublicKey: z.string().optional().nullable(),
   paystackSecretKey: z.string().optional().nullable(),
   paystackEnabled: z.boolean().optional(),
+  paystackMode: z.enum(['test', 'live']).optional(),
+  paystackWebhookSecret: z.string().optional().nullable(),
   flutterwavePublicKey: z.string().optional().nullable(),
   flutterwaveSecretKey: z.string().optional().nullable(),
   flutterwaveEnabled: z.boolean().optional(),
+  flutterwaveMode: z.enum(['test', 'live']).optional(),
+  flutterwaveWebhookSecret: z.string().optional().nullable(),
+  payazaPublicKey: z.string().optional().nullable(),
+  payazaSecretKey: z.string().optional().nullable(),
+  payazaEnabled: z.boolean().optional(),
+  payazaMode: z.enum(['test', 'live']).optional(),
+  payazaWebhookSecret: z.string().optional().nullable(),
   stripeEnabled: z.boolean().optional(),
   stripeSecretKey: z.string().optional().nullable(),
   stripePublishableKey: z.string().optional().nullable(),
@@ -64,7 +73,11 @@ function sanitizeSettingsResponse(row: SiteSettings): Partial<SiteSettings> {
   const clone: Partial<SiteSettings> = { ...row }
   clone.brevoSmtpPass = maskSecret(row.brevoSmtpPass ?? null)
   clone.paystackSecretKey = maskSecret(row.paystackSecretKey ?? null)
+  clone.paystackWebhookSecret = maskSecret(row.paystackWebhookSecret ?? null)
   clone.flutterwaveSecretKey = maskSecret(row.flutterwaveSecretKey ?? null)
+  clone.flutterwaveWebhookSecret = maskSecret(row.flutterwaveWebhookSecret ?? null)
+  clone.payazaSecretKey = maskSecret(row.payazaSecretKey ?? null)
+  clone.payazaWebhookSecret = maskSecret(row.payazaWebhookSecret ?? null)
   clone.stripeSecretKey = maskSecret(row.stripeSecretKey ?? null)
   clone.stripeWebhookSecret = maskSecret(row.stripeWebhookSecret ?? null)
   return clone
@@ -133,9 +146,18 @@ export async function PATCH(req: NextRequest) {
   if (d.paystackPublicKey !== undefined) data.paystackPublicKey = emptyToNull(d.paystackPublicKey)
   if (d.paystackSecretKey !== undefined) data.paystackSecretKey = emptyToNull(d.paystackSecretKey)
   if (d.paystackEnabled !== undefined) data.paystackEnabled = d.paystackEnabled
+  if (d.paystackMode !== undefined) data.paystackMode = d.paystackMode
+  if (d.paystackWebhookSecret !== undefined) data.paystackWebhookSecret = emptyToNull(d.paystackWebhookSecret)
   if (d.flutterwavePublicKey !== undefined) data.flutterwavePublicKey = emptyToNull(d.flutterwavePublicKey)
   if (d.flutterwaveSecretKey !== undefined) data.flutterwaveSecretKey = emptyToNull(d.flutterwaveSecretKey)
   if (d.flutterwaveEnabled !== undefined) data.flutterwaveEnabled = d.flutterwaveEnabled
+  if (d.flutterwaveMode !== undefined) data.flutterwaveMode = d.flutterwaveMode
+  if (d.flutterwaveWebhookSecret !== undefined) data.flutterwaveWebhookSecret = emptyToNull(d.flutterwaveWebhookSecret)
+  if (d.payazaPublicKey !== undefined) data.payazaPublicKey = emptyToNull(d.payazaPublicKey)
+  if (d.payazaSecretKey !== undefined) data.payazaSecretKey = emptyToNull(d.payazaSecretKey)
+  if (d.payazaEnabled !== undefined) data.payazaEnabled = d.payazaEnabled
+  if (d.payazaMode !== undefined) data.payazaMode = d.payazaMode
+  if (d.payazaWebhookSecret !== undefined) data.payazaWebhookSecret = emptyToNull(d.payazaWebhookSecret)
   if (d.stripeEnabled !== undefined) data.stripeEnabled = d.stripeEnabled
   if (d.stripeSecretKey !== undefined) data.stripeSecretKey = emptyToNull(d.stripeSecretKey)
   if (d.stripePublishableKey !== undefined) data.stripePublishableKey = emptyToNull(d.stripePublishableKey)

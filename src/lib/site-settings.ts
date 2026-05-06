@@ -159,3 +159,40 @@ export const getSiteCopy = cache(async (): Promise<SiteCopy> => {
   const row = await getSiteSettingsRow()
   return mergeSiteContent(row?.siteContentJson ?? null)
 })
+
+export async function getPaystackConfig() {
+  const s = await prisma.siteSettings.findUnique({ where: { id: 1 } })
+  return {
+    publicKey: s?.paystackPublicKey?.trim() || process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
+    secretKey: s?.paystackSecretKey?.trim() || process.env.PAYSTACK_SECRET_KEY || '',
+    enabled: s?.paystackEnabled ?? false,
+    mode: (s?.paystackMode || 'test') as 'test' | 'live',
+    webhookSecret: s?.paystackWebhookSecret?.trim() || process.env.PAYSTACK_WEBHOOK_SECRET || '',
+  }
+}
+
+export async function getFlutterwaveConfig() {
+  const s = await prisma.siteSettings.findUnique({ where: { id: 1 } })
+  return {
+    publicKey: s?.flutterwavePublicKey?.trim() || process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || '',
+    secretKey: s?.flutterwaveSecretKey?.trim() || process.env.FLUTTERWAVE_SECRET_KEY || '',
+    enabled: s?.flutterwaveEnabled ?? false,
+    mode: (s?.flutterwaveMode || 'test') as 'test' | 'live',
+    webhookSecret: s?.flutterwaveWebhookSecret?.trim() || process.env.FLUTTERWAVE_WEBHOOK_SECRET || '',
+  }
+}
+
+export async function getPayazaConfig() {
+  const s = await prisma.siteSettings.findUnique({ where: { id: 1 } })
+  return {
+    publicKey:
+      s?.payazaPublicKey?.trim() ||
+      process.env.NEXT_PUBLIC_PAYAZA_PUBLIC_KEY ||
+      process.env.PAYAZA_PUBLIC_KEY ||
+      '',
+    secretKey: s?.payazaSecretKey?.trim() || process.env.PAYAZA_SECRET_KEY || '',
+    enabled: s?.payazaEnabled ?? false,
+    mode: (s?.payazaMode || 'test') as 'test' | 'live',
+    webhookSecret: s?.payazaWebhookSecret?.trim() || process.env.PAYAZA_WEBHOOK_SECRET || '',
+  }
+}

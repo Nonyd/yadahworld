@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { PromoCode } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { sendTicketBundleEmail } from '@/lib/ticket-email'
-import { paystackSecret } from '@/lib/shop-payments'
+import { getPaystackConfig } from '@/lib/site-settings'
 import { validatePromoForCheckout } from '@/lib/event-promo'
 import { z } from 'zod'
 import { checkRateLimit, getClientIp } from '@/lib/security'
@@ -52,8 +52,6 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
     }
 
     const { fullName, email, phone, tierId, quantity, promoCode, gateway, claimToken } = parsed.data
-
-    const settings = await prisma.siteSettings.findUnique({ where: { id: 1 } }).catch(() => null)
 
     const event = await prisma.event.findFirst({
       where: { slug: params.slug, status: 'PUBLISHED' },
@@ -204,7 +202,7 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
       )
     }
 
-    const paystackKey = paystackSecret(settings)
+    const { secretKey: paystackKey } = await getPaystackConfig()
     if (!paystackKey) {
       return NextResponse.json({ error: 'Payment not configured' }, { status: 503 })
     }

@@ -12,9 +12,11 @@ type Step = 1 | 2 | 3
 export default function ShopCheckoutClient({
   paystackPk,
   flutterwavePk,
+  payazaPk,
 }: {
   paystackPk: string | null
   flutterwavePk: string | null
+  payazaPk: string | null
 }) {
   const { cart, cartTotal, clearCart } = useCart()
   const router = useRouter()
@@ -134,9 +136,19 @@ export default function ShopCheckoutClient({
     setBusy(true)
     setErr('')
     try {
-      const res = await fetch('/api/shop/checkout/payaza', { method: 'POST' })
-      const data = (await res.json()) as { error?: string }
+      const res = await fetch('/api/shop/checkout/payaza', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lines: linesPayload,
+          customer: { name, email, phone: phone || null },
+          shippingAddress:
+            needsShip ? { street, city, state, country, zip: zip || null } : null,
+        }),
+      })
+      const data = (await res.json()) as { paymentUrl?: string; error?: string }
       if (!res.ok) throw new Error(data.error || 'Payaza unavailable')
+      if (data.paymentUrl) window.location.href = data.paymentUrl
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'Payment error')
     } finally {
@@ -252,12 +264,13 @@ export default function ShopCheckoutClient({
               <button type="button" disabled={busy || !flutterwavePk} className="btn-outline disabled:opacity-40" onClick={() => void goFlutterwave()}>
                 Pay with Flutterwave
               </button>
-              <button type="button" disabled={busy} className="btn-outline opacity-80" onClick={() => void goPayaza()}>
+              <button type="button" disabled={busy || !payazaPk} className="btn-outline disabled:opacity-40" onClick={() => void goPayaza()}>
                 Pay with Payaza
               </button>
             </div>
             {!paystackPk && <p className="mt-2 text-xs text-muted">Paystack public key missing in env or site settings.</p>}
             {!flutterwavePk && <p className="mt-1 text-xs text-muted">Flutterwave public key missing.</p>}
+            {!payazaPk && <p className="mt-1 text-xs text-muted">Payaza public key missing in env or site settings.</p>}
             <button type="button" className="btn-ghost mt-8 text-sm" onClick={() => setStep(needsShip ? 2 : 1)}>
               Back
             </button>

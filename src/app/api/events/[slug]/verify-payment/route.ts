@@ -20,8 +20,7 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
     return NextResponse.json({ error: 'Event not found' }, { status: 404 })
   }
 
-  const settings = await prisma.siteSettings.findUnique({ where: { id: 1 } }).catch(() => null)
-  const result = await verifyPaystackChargeAndFinalize(reference, settings)
+  const result = await verifyPaystackChargeAndFinalize(reference)
 
   if (!result.ok) {
     return NextResponse.json({ error: result.message }, { status: 400 })
