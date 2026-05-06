@@ -42,7 +42,7 @@ export default function ShopCheckoutClient({
     try {
       if (
         typeof Intl === 'undefined' ||
-        typeof (Intl as Intl & { supportedValuesOf?: (key: string) => string[] }).supportedValuesOf !== 'function'
+        typeof (Intl as unknown as { supportedValuesOf?: (key: string) => string[] }).supportedValuesOf !== 'function'
       ) {
         return ['Nigeria']
       }
