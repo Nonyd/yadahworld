@@ -46,7 +46,7 @@ export default function ShopCheckoutClient({
       ) {
         return ['Nigeria']
       }
-      const list = (Intl as Intl & { supportedValuesOf: (key: string) => string[] }).supportedValuesOf('region')
+      const list = (Intl as unknown as { supportedValuesOf: (key: string) => string[] }).supportedValuesOf('region')
       const dn = new Intl.DisplayNames(['en'], { type: 'region' })
       const names = list.map((code) => dn.of(code)).filter((v): v is string => Boolean(v))
       return Array.from(new Set(names)).sort((a, b) => a.localeCompare(b))
