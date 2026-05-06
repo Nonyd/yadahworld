@@ -85,7 +85,6 @@ export default function Navbar({
         </Link>
 
         <nav className="hidden lg:flex flex-1 items-center justify-end gap-6 xl:gap-8">
-          <CartNavButton onDarkHero={onDarkHero} />
           {navLinks.map((link) =>
             link.external ? (
               <a
@@ -109,6 +108,8 @@ export default function Navbar({
               </Link>
             ),
           )}
+          <ThemeToggle />
+          <CartNavButton onDarkHero={onDarkHero} />
         </nav>
 
         <div className="flex items-center gap-4 lg:hidden">

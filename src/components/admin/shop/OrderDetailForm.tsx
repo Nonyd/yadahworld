@@ -27,6 +27,7 @@ export default function OrderDetailForm({ initial }: { initial: OrderFull }) {
   }, [initial.id, initial.updatedAt, initial.status, initial.trackingNumber, initial.notes])
 
   const history = (initial.statusHistory as { status: string; at: string; note?: string }[] | null) ?? []
+  const shipping = (initial.shippingAddress as Record<string, string> | null) ?? null
 
   const onSave = async () => {
     setSaving(true)
@@ -83,11 +84,19 @@ export default function OrderDetailForm({ initial }: { initial: OrderFull }) {
           <p className="mt-2 text-sm text-admin-text">{initial.customerName}</p>
           <p className="text-sm text-admin-muted">{initial.customerEmail}</p>
           {initial.customerPhone && <p className="text-sm text-admin-muted">{initial.customerPhone}</p>}
-          {initial.shippingAddress && typeof initial.shippingAddress === 'object' && (
+          {shipping ? (
             <div className="mt-4 text-sm text-admin-muted">
-              <p className="font-medium text-admin-text">Shipping</p>
-              <pre className="mt-2 whitespace-pre-wrap font-sans text-xs">{JSON.stringify(initial.shippingAddress, null, 2)}</pre>
+              <p className="font-medium text-admin-text">Shipping details</p>
+              <p className="mt-1 text-admin-muted">{shipping.name || initial.customerName}</p>
+              <p className="text-admin-muted">{shipping.street}</p>
+              <p className="text-admin-muted">
+                {shipping.city}, {shipping.state} {shipping.zip ?? ''}
+              </p>
+              <p className="text-admin-muted">{shipping.country}</p>
+              {shipping.phone ? <p className="text-admin-muted">{shipping.phone}</p> : null}
             </div>
+          ) : (
+            <div className="mt-4 text-sm text-admin-muted">Digital order — no shipping address.</div>
           )}
         </section>
 

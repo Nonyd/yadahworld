@@ -239,6 +239,23 @@ model SiteSettings {
 
   /// Merged with code defaults — editable page/section copy (nested JSON)
   siteContentJson Json?
+  /// order subtotal in kobo above which shipping is free (null = never free)
+  freeShippingThreshold Int?
+  /// fallback shipping rate in kobo
+  defaultShippingRate   Int      @default(150000)
+}
+
+model ShippingRate {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  /// Nigerian state name, "International", or "Default"
+  zone      String   @unique
+  /// Display name e.g. "Lagos", "International"
+  label     String
+  /// shipping fee in kobo
+  rate      Int
+  isActive  Boolean  @default(true)
 }
 
 enum PlaylistSlot {

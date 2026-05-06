@@ -103,6 +103,11 @@ const ADMIN_LINKS: {
     icon: <span className="text-lg font-normal leading-none text-current">◇</span>,
   },
   {
+    label: 'Shipping',
+    href: '/admin/shipping',
+    icon: <span className="text-lg font-normal leading-none text-current">⬒</span>,
+  },
+  {
     label: 'Events',
     href: '/admin/events',
     icon: (

@@ -31,13 +31,20 @@ function itemsTableHtml(order: OrderWithItems): string {
 
 function shippingBlock(order: OrderWithItems): string {
   const addr = order.shippingAddress as Record<string, string> | null | undefined
-  if (!addr?.street) return ''
+  if (!addr?.street) {
+    return `<p style="margin:12px 0 6px;"><strong>Delivery:</strong> Digital — download link will be provided</p>`
+  }
   return `
-    <p style="margin:12px 0 6px;font-weight:600;">Shipping address</p>
-    <p style="margin:0;line-height:1.6;color:#334155;">
+    <p style="margin:12px 0 6px;font-weight:600;">Shipping Details</p>
+    <p style="margin:0 0 4px;line-height:1.6;color:#334155;">
+      Shipping to:<br/>
+      ${escapeHtml(addr.name || order.customerName)}<br/>
       ${escapeHtml(addr.street)}<br/>
       ${escapeHtml(addr.city)}, ${escapeHtml(addr.state)}${addr.zip ? ` ${escapeHtml(addr.zip)}` : ''}<br/>
       ${escapeHtml(addr.country)}
+    </p>
+    <p style="margin:0;line-height:1.6;color:#334155;">
+      Shipping fee: ${formatNgnKobo(order.shippingFee)}
     </p>`
 }
 

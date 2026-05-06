@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto'
 import type { Prisma, ProductType } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
-import { shopShippingFeeKobo } from '@/lib/shop-shipping'
+import { resolveShippingRate } from '@/lib/shop-shipping'
 
 export type CheckoutLineInput = {
   productId: string
@@ -27,11 +27,13 @@ export type CheckoutCustomer = {
 }
 
 export type ShippingAddress = {
+  name: string
   street: string
   city: string
   state: string
   country: string
   zip?: string | null
+  phone?: string | null
 }
 
 export async function nextShopOrderNumber(tx: Prisma.TransactionClient): Promise<string> {
@@ -114,6 +116,7 @@ export async function createCheckoutSession(params: {
   lines: CheckoutLineInput[]
   customer: CheckoutCustomer
   shippingAddress: ShippingAddress | null
+  shippingFee?: number | null
 }): Promise<
   | {
       ok: true
@@ -130,7 +133,19 @@ export async function createCheckoutSession(params: {
   if (!resolved.ok) return resolved
 
   const subtotal = subtotalFromResolved(resolved.lines)
-  const shippingFee = shopShippingFeeKobo(subtotal, resolved.requiresShipping)
+  let shippingFee = 0
+  if (resolved.requiresShipping) {
+    const rate = await resolveShippingRate({
+      state: params.shippingAddress?.state,
+      country: params.shippingAddress?.country,
+      subtotal,
+      requiresShipping: true,
+    })
+    shippingFee = rate.rate
+  }
+  if (typeof params.shippingFee === 'number' && Number.isFinite(params.shippingFee) && params.shippingFee >= 0) {
+    shippingFee = Math.floor(params.shippingFee)
+  }
   const total = subtotal + shippingFee
 
   if (params.customer.name.trim().length < 2) return { ok: false, error: 'Enter your name.' }

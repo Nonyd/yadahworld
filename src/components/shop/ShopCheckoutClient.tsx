@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { useCart } from '@/components/shop/CartProvider'
 import { formatNgnKobo } from '@/lib/shop-money'
-import { shopShippingFeeKobo } from '@/lib/shop-shipping'
+import { NIGERIAN_STATES, defaultEstimatedShippingKobo } from '@/lib/shop-shipping'
 
 type Step = 1 | 2 | 3
 
@@ -35,8 +35,26 @@ export default function ShopCheckoutClient({
   const [state, setState] = useState('')
   const [country, setCountry] = useState('Nigeria')
   const [zip, setZip] = useState('')
+  const [shippingFee, setShippingFee] = useState(defaultEstimatedShippingKobo(needsShip))
+  const [shippingLabel, setShippingLabel] = useState('Shipping')
 
-  const shippingFee = shopShippingFeeKobo(cartTotal, needsShip)
+  const countries = useMemo(() => {
+    try {
+      if (
+        typeof Intl === 'undefined' ||
+        typeof (Intl as Intl & { supportedValuesOf?: (key: string) => string[] }).supportedValuesOf !== 'function'
+      ) {
+        return ['Nigeria']
+      }
+      const list = (Intl as Intl & { supportedValuesOf: (key: string) => string[] }).supportedValuesOf('region')
+      const dn = new Intl.DisplayNames(['en'], { type: 'region' })
+      const names = list.map((code) => dn.of(code)).filter((v): v is string => Boolean(v))
+      return Array.from(new Set(names)).sort((a, b) => a.localeCompare(b))
+    } catch {
+      return ['Nigeria']
+    }
+  }, [])
+
   const total = cartTotal + shippingFee
 
   const linesPayload = useMemo(
@@ -48,6 +66,35 @@ export default function ShopCheckoutClient({
       })),
     [cart],
   )
+
+  useEffect(() => {
+    if (!needsShip) {
+      setShippingFee(0)
+      setShippingLabel('Digital delivery')
+      return
+    }
+    setShippingFee(defaultEstimatedShippingKobo(true))
+    setShippingLabel('Shipping')
+  }, [needsShip])
+
+  useEffect(() => {
+    if (!needsShip) return
+    if (!country.trim()) return
+    if (country === 'Nigeria' && !state.trim()) return
+
+    void fetch('/api/shipping/rate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state, country, subtotal: cartTotal, requiresShipping: needsShip }),
+    })
+      .then(async (res) => {
+        const data = (await res.json()) as { rate?: number; label?: string; isFree?: boolean }
+        if (!res.ok || typeof data.rate !== 'number') return
+        setShippingFee(data.rate)
+        setShippingLabel(data.isFree ? 'Free shipping' : (data.label ?? 'Shipping'))
+      })
+      .catch(() => null)
+  }, [needsShip, state, country, cartTotal])
 
   useEffect(() => {
     const gw = searchParams.get('gw')
@@ -92,8 +139,9 @@ export default function ShopCheckoutClient({
           customer: { name, email, phone: phone || null },
           shippingAddress:
             needsShip
-              ? { street, city, state, country, zip: zip || null }
+              ? { name, phone: phone || null, street, city, state, country, zip: zip || null }
               : null,
+          shippingFee,
         }),
       })
       const data = (await res.json()) as { authorizationUrl?: string; error?: string }
@@ -118,8 +166,9 @@ export default function ShopCheckoutClient({
           customer: { name, email, phone: phone || null },
           shippingAddress:
             needsShip
-              ? { street, city, state, country, zip: zip || null }
+              ? { name, phone: phone || null, street, city, state, country, zip: zip || null }
               : null,
+          shippingFee,
         }),
       })
       const data = (await res.json()) as { paymentLink?: string; error?: string }
@@ -143,7 +192,8 @@ export default function ShopCheckoutClient({
           lines: linesPayload,
           customer: { name, email, phone: phone || null },
           shippingAddress:
-            needsShip ? { street, city, state, country, zip: zip || null } : null,
+            needsShip ? { name, phone: phone || null, street, city, state, country, zip: zip || null } : null,
+          shippingFee,
         }),
       })
       const data = (await res.json()) as { paymentUrl?: string; error?: string }
@@ -229,14 +279,32 @@ export default function ShopCheckoutClient({
                 <input className="w-full border border-[rgba(42,37,32,0.12)] bg-transparent px-4 py-3 font-jost text-sm" value={city} onChange={(e) => setCity(e.target.value)} />
               </div>
               <div>
-                <label className="ui-label mb-2 block">State / region</label>
-                <input className="w-full border border-[rgba(42,37,32,0.12)] bg-transparent px-4 py-3 font-jost text-sm" value={state} onChange={(e) => setState(e.target.value)} />
+                <label className="ui-label mb-2 block">State</label>
+                {country === 'Nigeria' ? (
+                  <select className="w-full border border-[rgba(42,37,32,0.12)] bg-transparent px-4 py-3 font-jost text-sm" value={state} onChange={(e) => setState(e.target.value)}>
+                    <option value="">Select a state</option>
+                    {NIGERIAN_STATES.map((zone) => (
+                      <option key={zone} value={zone}>
+                        {zone}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input className="w-full border border-[rgba(42,37,32,0.12)] bg-transparent px-4 py-3 font-jost text-sm" value={state} onChange={(e) => setState(e.target.value)} />
+                )}
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="ui-label mb-2 block">Country</label>
-                <input className="w-full border border-[rgba(42,37,32,0.12)] bg-transparent px-4 py-3 font-jost text-sm" value={country} onChange={(e) => setCountry(e.target.value)} />
+                <select className="w-full border border-[rgba(42,37,32,0.12)] bg-transparent px-4 py-3 font-jost text-sm" value={country} onChange={(e) => setCountry(e.target.value)}>
+                  {!countries.includes('Nigeria') ? <option value="Nigeria">Nigeria</option> : null}
+                  {countries.map((entry) => (
+                    <option key={entry} value={entry}>
+                      {entry}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="ui-label mb-2 block">Postal code (optional)</label>
@@ -300,8 +368,9 @@ export default function ShopCheckoutClient({
           </div>
           <div className="flex justify-between">
             <span className="text-muted">Shipping</span>
-            <span>{formatNgnKobo(shippingFee)}</span>
+            <span>{shippingFee <= 0 ? 'Free' : formatNgnKobo(shippingFee)}</span>
           </div>
+          <p className="text-xs text-muted">{!needsShip ? 'Digital delivery — no shipping required' : shippingLabel}</p>
           <div className="flex justify-between font-playfair text-lg text-body">
             <span>Total</span>
             <span className="text-accent">{formatNgnKobo(total)}</span>

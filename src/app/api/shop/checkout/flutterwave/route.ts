@@ -19,14 +19,17 @@ const bodySchema = z.object({
   }),
   shippingAddress: z
     .object({
+      name: z.string(),
       street: z.string(),
       city: z.string(),
       state: z.string(),
       country: z.string(),
       zip: z.string().optional().nullable(),
+      phone: z.string().optional().nullable(),
     })
     .optional()
     .nullable(),
+  shippingFee: z.number().int().min(0).optional(),
 })
 
 export async function POST(req: NextRequest) {
@@ -53,6 +56,7 @@ export async function POST(req: NextRequest) {
     lines: parsed.data.lines,
     customer: parsed.data.customer,
     shippingAddress: parsed.data.shippingAddress ?? null,
+    shippingFee: parsed.data.shippingFee,
   })
   if (!session.ok) {
     return NextResponse.json({ error: session.error }, { status: 400 })

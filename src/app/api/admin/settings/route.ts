@@ -61,6 +61,8 @@ const patchSchema = z.object({
   aboutBioShort: z.string().optional().nullable(),
   footerCopyright: z.string().optional().nullable(),
   locationDisplay: z.string().optional().nullable(),
+  freeShippingThreshold: z.number().int().optional().nullable(),
+  defaultShippingRate: z.number().int().optional(),
   siteContentJson: z.unknown().optional(),
 })
 
@@ -173,6 +175,8 @@ export async function PATCH(req: NextRequest) {
   if (d.aboutBioShort !== undefined) data.aboutBioShort = emptyToNull(d.aboutBioShort)
   if (d.footerCopyright !== undefined) data.footerCopyright = emptyToNull(d.footerCopyright)
   if (d.locationDisplay !== undefined) data.locationDisplay = emptyToNull(d.locationDisplay)
+  if (d.freeShippingThreshold !== undefined) data.freeShippingThreshold = d.freeShippingThreshold
+  if (d.defaultShippingRate !== undefined) data.defaultShippingRate = d.defaultShippingRate
   if (d.siteContentJson !== undefined && d.siteContentJson !== null && typeof d.siteContentJson === 'object') {
     data.siteContentJson = d.siteContentJson as object
   }

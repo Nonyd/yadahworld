@@ -4,13 +4,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useCart } from '@/components/shop/CartProvider'
 import { formatNgnKobo } from '@/lib/shop-money'
-import { shopShippingFeeKobo } from '@/lib/shop-shipping'
+import { defaultEstimatedShippingKobo } from '@/lib/shop-shipping'
 
 export default function ShopCartView() {
   const { cart, updateQuantity, removeFromCart, cartTotal } = useCart()
 
   const needsShip = cart.some((i) => i.requiresShipping === true)
-  const shipping = shopShippingFeeKobo(cartTotal, needsShip)
+  const shipping = defaultEstimatedShippingKobo(needsShip)
   const total = cartTotal + shipping
 
   if (!cart.length) {
