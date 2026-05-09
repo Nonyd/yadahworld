@@ -72,9 +72,9 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://yadahworld.com',
     siteName: 'Yadah',
-    title: 'Yadah — Top Female Gospel Music Minister in Nigeria',
+    title: 'Yadah — The Voice of Jesus to Nations',
     description:
-      'Yadah Kukeurim Daniel is one of the top female gospel music ministers in Nigeria. Her music has reached millions across nations with songs like Beyond Me, Never Seen, and Onye Nwere Jesus.',
+      'Gospel music minister and worshipper — The Voice of Jesus to Nations. Songs like Beyond Me, Never Seen, and Onye Nwere Jesus have reached millions across nations.',
     images: [
       {
         url: 'https://res.cloudinary.com/dxliuat50/image/upload/v1777918925/yadahworld/site/voxdyeip8crn9czxrrxx.png',
@@ -86,8 +86,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Yadah — Top Female Gospel Music Minister in Nigeria',
-    description: 'One of the top worship ministers in Nigeria. Gospel music that carries the presence of God.',
+    title: 'Yadah — The Voice of Jesus to Nations',
+    description: 'Gospel music minister and worshipper — The Voice of Jesus to Nations. Songs like Beyond Me, Never Seen, and Onye Nwere Jesus have reached millions across nations.',
     images: ['https://res.cloudinary.com/dxliuat50/image/upload/v1777918925/yadahworld/site/voxdyeip8crn9czxrrxx.png'],
     creator: '@yadahworld1',
   },
