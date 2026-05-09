@@ -6,6 +6,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { maskSecret } from '@/lib/security'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const patchSchema = z.object({
   siteName: z.string().min(1).optional(),
@@ -211,6 +212,11 @@ export async function PATCH(req: NextRequest) {
     } catch (revErr) {
       console.warn('revalidatePath after settings save:', revErr)
     }
+    await logAdminApiActivity(session, {
+      method: 'PATCH',
+      path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+      req,
+    })
     return NextResponse.json(sanitizeSettingsResponse(row))
   } catch (e) {
     console.error(e)

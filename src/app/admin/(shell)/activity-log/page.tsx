@@ -13,12 +13,14 @@ export default async function AdminActivityLogPage() {
     ipAddress: string | null
   }[] = []
 
+  let loadError: string | null = null
   try {
     logs = await prisma.adminActivityLog.findMany({
       orderBy: { createdAt: 'desc' },
       take: 2000,
     })
   } catch {
+    loadError = 'Could not load activity data. Ensure your database schema includes the AdminActivityLog table, then try again.'
     logs = []
   }
 
@@ -34,17 +36,14 @@ export default async function AdminActivityLogPage() {
   return (
     <div>
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <AdminPageHeader
-          title="Activity log"
-          description="Admin API activity: POST/PATCH/PUT/DELETE (including uploads), and GET routes whose path includes /export. Other reads are not recorded."
-        />
+        <AdminPageHeader title="Activity log" />
         <ActivityLogExportButton rows={exportRows} />
       </div>
 
-      {logs.length === 0 ? (
-        <p className="text-sm text-admin-muted">
-          No activity recorded yet. After syncing the database schema (see AdminActivityLog in Prisma), saving settings, exports, uploads, and other admin API actions will appear here.
-        </p>
+      {loadError ? (
+        <p className="text-sm text-red-700">{loadError}</p>
+      ) : logs.length === 0 ? (
+        <p className="text-sm text-admin-muted">No activity recorded yet.</p>
       ) : (
         <div className="admin-card overflow-x-auto">
           <table className="w-full min-w-[900px] text-left text-sm">

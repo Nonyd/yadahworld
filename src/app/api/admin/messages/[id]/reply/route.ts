@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { renderEmailTemplate, sendMail } from '@/lib/mailer'
 import { escapeHtml, normalizeEmailHeader } from '@/lib/security'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const replySchema = z.object({
   subject: z.string().trim().min(2),
@@ -59,5 +60,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: 'Could not send reply.' }, { status: 500 })
   }
 
+  await logAdminApiActivity(session, {
+    method: 'POST',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ ok: true })
 }

@@ -6,6 +6,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { extractYoutubePlaylistId } from '@/lib/youtube'
 import { z } from 'zod'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const slotSchema = z.nativeEnum(PlaylistSlot)
 
@@ -65,6 +66,11 @@ export async function POST(req: NextRequest) {
       },
     })
     revalidateMediaAndMinistrations()
+    await logAdminApiActivity(session, {
+      method: 'POST',
+      path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+      req,
+    })
     return NextResponse.json(row)
   } catch (e) {
     console.error(e)

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 import { z } from 'zod'
 
 const bodySchema = z.object({
@@ -29,6 +30,11 @@ export async function POST(req: NextRequest) {
   try {
     const result = await prisma.bookingRequest.deleteMany({
       where: { id: { in: parsed.data.ids } },
+    })
+    await logAdminApiActivity(session, {
+      method: 'POST',
+      path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+      req,
     })
     return NextResponse.json({ ok: true, deleted: result.count })
   } catch (e) {

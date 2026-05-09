@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { renderEmailTemplate, sendMail } from '@/lib/mailer'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 function siteBase() {
   return (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '')
@@ -66,6 +67,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
   }
 
+  await logAdminApiActivity(session, {
+    method: 'POST',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({
     success: true,
     sent,

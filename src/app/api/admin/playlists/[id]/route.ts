@@ -6,6 +6,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { extractYoutubePlaylistId } from '@/lib/youtube'
 import { z } from 'zod'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const slotSchema = z.nativeEnum(PlaylistSlot)
 
@@ -57,10 +58,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   revalidateMediaAndMinistrations()
 
+  await logAdminApiActivity(session, {
+    method: 'PATCH',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ ok: true })
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -73,5 +79,10 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
 
   revalidateMediaAndMinistrations()
 
+  await logAdminApiActivity(session, {
+    method: 'DELETE',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ ok: true })
 }

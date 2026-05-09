@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { renderEmailTemplate, sendMail } from '@/lib/mailer'
 import { getSiteSettingsRow } from '@/lib/site-settings'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 export async function POST() {
   const session = await getServerSession(authOptions)
@@ -30,6 +31,10 @@ export async function POST() {
         signedBy: 'Yadah Admin Console',
       }),
       settingsOverride: settings,
+    })
+    await logAdminApiActivity(session, {
+      method: 'POST',
+      path: '/api/admin/test-email',
     })
     return NextResponse.json({ success: true })
   } catch (err) {

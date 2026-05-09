@@ -552,7 +552,7 @@ model EventRegistration {
   orderGroupId         String?
 }
 
-/// Append-only audit trail for mutating admin API requests (middleware → internal ingest).
+/// Append-only audit trail written from admin API route handlers after successful actions.
 model AdminActivityLog {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())

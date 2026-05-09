@@ -3,6 +3,7 @@ import { getAdminJwt } from '@/lib/admin-auth'
 import { resolveAdminUploadFolder } from '@/lib/admin-cloudinary-folders'
 import { isCloudinaryUploadConfigured } from '@/lib/cloudinary-server'
 import { signCloudinaryUploadParams } from '@/lib/cloudinary-sign'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -56,6 +57,12 @@ export async function POST(req: NextRequest) {
 
   const signature = signCloudinaryUploadParams(paramsToSign, apiSecret)
 
+  await logAdminApiActivity(null, {
+    method: 'POST',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+    actorEmail: typeof token.email === 'string' ? token.email : null,
+  })
   return NextResponse.json({
     signature,
     timestamp,

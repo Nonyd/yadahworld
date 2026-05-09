@@ -3,6 +3,7 @@ import { getAdminJwt } from '@/lib/admin-auth'
 import { resolveAdminUploadFolder } from '@/lib/admin-cloudinary-folders'
 import { isCloudinaryUploadConfigured, uploadImageBuffer } from '@/lib/cloudinary-server'
 import { resolveImageMime } from '@/lib/upload-mime'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -88,6 +89,12 @@ export async function POST(req: NextRequest) {
   try {
     const buffer = Buffer.from(await file.arrayBuffer())
     const { secure_url } = await uploadImageBuffer(buffer, { folder })
+    await logAdminApiActivity(null, {
+      method: 'POST',
+      path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+      req,
+      actorEmail: typeof token.email === 'string' ? token.email : null,
+    })
     return NextResponse.json({ url: secure_url })
   } catch (e) {
     console.error(e)

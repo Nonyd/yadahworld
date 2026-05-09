@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 import { z } from 'zod'
 
 const bodySchema = z.object({
@@ -37,6 +38,11 @@ export async function POST(req: NextRequest) {
   const toDelete = ids.filter((id) => !skippedSet.has(id))
 
   if (toDelete.length === 0) {
+    await logAdminApiActivity(session, {
+      method: 'POST',
+      path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+      req,
+    })
     return NextResponse.json({
       ok: true,
       deleted: 0,
@@ -62,6 +68,11 @@ export async function POST(req: NextRequest) {
       console.warn('revalidatePath after product bulk delete:', revErr)
     }
 
+    await logAdminApiActivity(session, {
+      method: 'POST',
+      path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+      req,
+    })
     return NextResponse.json({
       ok: true,
       deleted: del.count,

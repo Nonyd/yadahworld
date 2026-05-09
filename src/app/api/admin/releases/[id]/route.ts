@@ -10,6 +10,7 @@ import { parseSpotifyEmbedUrl } from '@/lib/spotify-embed'
 import { extractYoutubeVideoId } from '@/lib/youtube'
 import { normalizeStreamingLinksJson } from '@/lib/streaming-links'
 import { z } from 'zod'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const streamingLinkInput = z.object({
   label: z.string().min(1).max(120),
@@ -123,10 +124,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     console.warn('revalidatePath after release update:', revErr)
   }
 
+  await logAdminApiActivity(session, {
+    method: 'PATCH',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ ok: true })
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -153,5 +159,10 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
     console.warn('revalidatePath after release delete:', revErr)
   }
 
+  await logAdminApiActivity(session, {
+    method: 'DELETE',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ ok: true })
 }

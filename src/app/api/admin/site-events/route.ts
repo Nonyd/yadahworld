@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const createSchema = z.object({
   title: z.string().min(1),
@@ -70,6 +71,11 @@ export async function POST(req: NextRequest) {
     } catch (revErr) {
       console.warn('revalidatePath after site-event create:', revErr)
     }
+    await logAdminApiActivity(session, {
+      method: 'POST',
+      path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+      req,
+    })
     return NextResponse.json(row)
   } catch (e) {
     console.error(e)

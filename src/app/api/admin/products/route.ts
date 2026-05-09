@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { uniqueProductSlug } from '@/lib/site-content'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 import { z } from 'zod'
 
 const variantSchema = z.object({
@@ -102,6 +103,11 @@ export async function POST(req: NextRequest) {
     } catch (revErr) {
       console.warn('revalidatePath after product create:', revErr)
     }
+    await logAdminApiActivity(session, {
+      method: 'POST',
+      path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+      req,
+    })
     return NextResponse.json(row)
   } catch (e) {
     console.error(e)

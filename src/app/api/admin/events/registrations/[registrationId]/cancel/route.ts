@@ -3,8 +3,9 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { notifyNextWaitlistForTier } from '@/lib/event-waitlist'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
-export async function POST(_req: NextRequest, { params }: { params: { registrationId: string } }) {
+export async function POST(req: NextRequest, { params }: { params: { registrationId: string } }) {
   const session = await getServerSession(authOptions)
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -37,5 +38,10 @@ export async function POST(_req: NextRequest, { params }: { params: { registrati
 
   await notifyNextWaitlistForTier(reg.tierId)
 
+  await logAdminApiActivity(session, {
+    method: 'POST',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ ok: true })
 }

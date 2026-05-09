@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -96,6 +97,11 @@ export async function POST(req: NextRequest) {
     },
   })
 
+  await logAdminApiActivity(session, {
+    method: 'POST',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({
     success: true,
     status: 'SUCCESS',

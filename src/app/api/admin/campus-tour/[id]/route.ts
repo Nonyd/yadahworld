@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const patchSchema = z.object({
   status: z.enum(['NEW', 'REVIEWING', 'CONFIRMED', 'DECLINED']),
@@ -30,6 +31,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const updated = await prisma.campusTourApplication.update({
       where: { id: params.id },
       data: { status: parsed.data.status },
+    })
+    await logAdminApiActivity(session, {
+      method: 'PATCH',
+      path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+      req,
     })
     return NextResponse.json(updated)
   } catch (e) {

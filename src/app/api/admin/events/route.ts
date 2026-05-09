@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { slugify } from '@/lib/slug'
 import { z } from 'zod'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const tierSchema = z.object({
   id: z.string().optional(),
@@ -166,6 +167,11 @@ export async function POST(req: NextRequest) {
     } catch (revErr) {
       console.warn('revalidatePath after event create:', revErr)
     }
+    await logAdminApiActivity(session, {
+      method: 'POST',
+      path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+      req,
+    })
     return NextResponse.json(row)
   } catch (e) {
     console.error(e)

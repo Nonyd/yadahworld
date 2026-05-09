@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma'
 import { slugify } from '@/lib/slug'
 import { Prisma } from '@prisma/client'
 import { z } from 'zod'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const tierSchema = z.object({
   id: z.string().optional(),
@@ -314,10 +315,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     console.warn('revalidatePath after event update:', revErr)
   }
 
+  await logAdminApiActivity(session, {
+    method: 'PATCH',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ ok: true })
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -344,5 +350,10 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
     console.warn('revalidatePath after event delete:', revErr)
   }
 
+  await logAdminApiActivity(session, {
+    method: 'DELETE',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ ok: true })
 }

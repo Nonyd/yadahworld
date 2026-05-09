@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import type { OrderStatus, Prisma } from '@prisma/client'
 import { sendShopOrderStatusEmail } from '@/lib/shop-emails'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const patchSchema = z.object({
   status: z.enum(['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED']).optional(),
@@ -110,10 +111,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
   }
 
+  await logAdminApiActivity(session, {
+    method: 'PATCH',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ ok: true })
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -130,5 +136,10 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
     return NextResponse.json({ error: 'Delete failed' }, { status: 500 })
   }
 
+  await logAdminApiActivity(session, {
+    method: 'DELETE',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ ok: true })
 }

@@ -1,14 +1,15 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 function csvCell(v: string | number) {
   const s = String(v)
   return `"${s.replace(/"/g, '""')}"`
 }
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -61,6 +62,11 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
   const safeName = event.title.replace(/\s+/g, '-').toLowerCase().replace(/[^a-z0-9-]/gi, '')
   const filename = `${safeName || 'event'}-registrations-${new Date().toISOString().split('T')[0]}.csv`
 
+  await logAdminApiActivity(session, {
+    method: 'GET',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return new NextResponse(csv, {
     headers: {
       'Content-Type': 'text/csv; charset=utf-8',

@@ -10,6 +10,7 @@ import { parseSpotifyEmbedUrl } from '@/lib/spotify-embed'
 import { extractYoutubeVideoId } from '@/lib/youtube'
 import { normalizeStreamingLinksJson } from '@/lib/streaming-links'
 import { z } from 'zod'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const streamingLinkInput = z.object({
   label: z.string().min(1).max(120),
@@ -111,6 +112,11 @@ export async function POST(req: NextRequest) {
     } catch (revErr) {
       console.warn('revalidatePath after release create:', revErr)
     }
+    await logAdminApiActivity(session, {
+      method: 'POST',
+      path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+      req,
+    })
     return NextResponse.json(row)
   } catch (e) {
     console.error(e)

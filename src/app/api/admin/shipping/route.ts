@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { z } from 'zod'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const patchSchema = z.object({
   rates: z.array(
@@ -57,5 +58,10 @@ export async function PATCH(req: NextRequest) {
   )
 
   const rates = await prisma.shippingRate.findMany({ orderBy: { zone: 'asc' } })
+  await logAdminApiActivity(session, {
+    method: 'PATCH',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ rates })
 }

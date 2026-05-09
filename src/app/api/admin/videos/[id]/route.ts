@@ -5,6 +5,7 @@ import { PlaylistSlot } from '@prisma/client'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const patchSchema = z
   .object({
@@ -100,5 +101,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   revalidateMediaAndMinistrations()
 
+  await logAdminApiActivity(session, {
+    method: 'PATCH',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ ok: true })
 }

@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { renderEmailCard, renderEmailTemplate, sendMail } from '@/lib/mailer'
 import { escapeHtml } from '@/lib/security'
+import { logAdminApiActivity } from '@/lib/admin-activity-log'
 
 const patchSchema = z.object({
   status: z.enum(['PENDING', 'REVIEWING', 'CONFIRMED', 'DECLINED']).optional(),
@@ -107,10 +108,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     return NextResponse.json({ error: 'Update failed' }, { status: 500 })
   }
 
+  await logAdminApiActivity(session, {
+    method: 'PATCH',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ ok: true })
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -123,5 +129,10 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
     return NextResponse.json({ error: 'Delete failed' }, { status: 500 })
   }
 
+  await logAdminApiActivity(session, {
+    method: 'DELETE',
+    path: `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    req,
+  })
   return NextResponse.json({ ok: true })
 }
