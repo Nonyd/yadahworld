@@ -77,7 +77,7 @@ export const metadata: Metadata = {
       'Gospel music minister and worshipper — The Voice of Jesus to Nations. Songs like Beyond Me, Never Seen, and Onye Nwere Jesus have reached millions across nations.',
     images: [
       {
-        url: 'https://res.cloudinary.com/dxliuat50/image/upload/v1778332587/yadahworld/site/qyurkxqhtdkaivhnoetr.png',
+        url: 'https://res.cloudinary.com/dxliuat50/image/upload/v1778352160/yadahworld/site/jp81aeryirlpfhmhdw6l.png',
         width: 1200,
         height: 630,
         alt: 'Yadah — Nigerian Gospel Music Minister',
@@ -88,7 +88,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Yadah — The Voice of Jesus to Nations',
     description: 'Gospel music minister and worshipper — The Voice of Jesus to Nations. Songs like Beyond Me, Never Seen, and Onye Nwere Jesus have reached millions across nations.',
-    images: ['https://res.cloudinary.com/dxliuat50/image/upload/v1778332587/yadahworld/site/qyurkxqhtdkaivhnoetr.png'],
+    images: ['https://res.cloudinary.com/dxliuat50/image/upload/v1778352160/yadahworld/site/jp81aeryirlpfhmhdw6l.png'],
     creator: '@yadahworld1',
   },
   alternates: {
