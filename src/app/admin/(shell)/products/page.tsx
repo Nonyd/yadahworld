@@ -1,10 +1,8 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import type { Product, ProductVariant } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
-import DeleteProductButton from '@/components/admin/cms/DeleteProductButton'
-import { formatNgnKobo } from '@/lib/shop-money'
+import AdminProductsTable from '@/components/admin/cms/AdminProductsTable'
 
 export default async function AdminProductsPage() {
   let products: (Product & { variants: ProductVariant[] })[] = []
@@ -16,6 +14,16 @@ export default async function AdminProductsPage() {
   } catch {
     products = []
   }
+
+  const tableRows = products.map((p) => ({
+    id: p.id,
+    name: p.name,
+    type: p.type,
+    price: p.price,
+    images: p.images,
+    isActive: p.isActive,
+    variants: p.variants.map((v) => ({ stock: v.stock })),
+  }))
 
   return (
     <div>
@@ -29,49 +37,7 @@ export default async function AdminProductsPage() {
       {products.length === 0 ? (
         <p className="text-sm text-admin-muted">No products yet. Add your first product.</p>
       ) : (
-        <div className="admin-card overflow-x-auto">
-          <table className="w-full min-w-[800px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-admin-border text-[10px] font-medium uppercase tracking-wider text-admin-muted">
-                <th className="px-4 py-3">Image</th>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Type</th>
-                <th className="px-4 py-3">Price</th>
-                <th className="px-4 py-3">Stock</th>
-                <th className="px-4 py-3">Active</th>
-                <th className="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((p) => {
-                const img = p.images[0]
-                const stock = p.variants.length ? p.variants.reduce((s, v) => s + v.stock, 0) : p.type === 'DIGITAL' ? '—' : 0
-                return (
-                  <tr key={p.id} className="border-b border-admin-border/80 last:border-0">
-                    <td className="px-4 py-3">
-                      <div className="relative h-12 w-12 overflow-hidden rounded border border-admin-border bg-admin-bg">
-                        {img ? <Image src={img} alt="" fill className="object-cover" sizes="48px" /> : null}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 font-medium text-admin-text">{p.name}</td>
-                    <td className="px-4 py-3 text-admin-muted">{p.type}</td>
-                    <td className="px-4 py-3 text-admin-muted">{formatNgnKobo(p.price)}</td>
-                    <td className="px-4 py-3 text-admin-muted">{stock}</td>
-                    <td className="px-4 py-3">{p.isActive ? 'Yes' : 'No'}</td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-2">
-                        <Link href={`/admin/products/${p.id}`} className="admin-btn admin-btn-secondary text-[10px]">
-                          Edit
-                        </Link>
-                        <DeleteProductButton id={p.id} />
-                      </div>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+        <AdminProductsTable products={tableRows} />
       )}
     </div>
   )

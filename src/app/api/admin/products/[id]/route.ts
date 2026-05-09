@@ -149,6 +149,19 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
+  const orderLines = await prisma.orderItem.count({
+    where: { productId: params.id },
+  })
+  if (orderLines > 0) {
+    return NextResponse.json(
+      {
+        error:
+          'This product cannot be deleted because it appears on one or more orders. Deactivate it in the editor instead, or remove those order lines only if your policy allows.',
+      },
+      { status: 409 },
+    )
+  }
+
   try {
     await prisma.product.delete({ where: { id: params.id } })
   } catch (e) {
