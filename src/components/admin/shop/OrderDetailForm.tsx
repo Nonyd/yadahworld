@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import type { Order, OrderItem, Product, ProductVariant, ShopPaymentStatus } from '@prisma/client'
 import { formatNgnKobo } from '@/lib/shop-money'
+import DeleteOrderButton from '@/components/admin/shop/DeleteOrderButton'
 
 type Item = OrderItem & { product: Pick<Product, 'images'>; variant: ProductVariant | null }
 type OrderFull = Order & { items: Item[] }
@@ -163,6 +164,13 @@ export default function OrderDetailForm({ initial }: { initial: OrderFull }) {
           <button type="button" disabled={saving} className="admin-btn admin-btn-primary mt-4 w-full text-[10px]" onClick={() => void onSave()}>
             {saving ? 'Saving…' : 'Save'}
           </button>
+          <DeleteOrderButton
+            id={initial.id}
+            orderNumber={initial.orderNumber}
+            variant="block"
+            disabled={saving}
+            redirectAfterDelete="/admin/orders"
+          />
         </section>
 
         <section className="admin-card p-6">

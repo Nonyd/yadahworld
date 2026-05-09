@@ -551,3 +551,16 @@ model EventRegistration {
   waitlistClaimExpires DateTime?
   orderGroupId         String?
 }
+
+/// Append-only audit trail for mutating admin API requests (middleware → internal ingest).
+model AdminActivityLog {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  method     String
+  path       String
+  actorEmail String?
+  actorId    String?
+  ipAddress  String?
+
+  @@index([createdAt(sort: Desc)])
+}
