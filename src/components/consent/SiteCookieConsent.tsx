@@ -27,6 +27,7 @@ export default function SiteCookieConsent() {
 
   const showBanner = ready && !hideBanner && choice === null
   const allowAnalytics = choice === 'analytics'
+  const showAnalytics = allowAnalytics && !hideBanner
 
   const pick = (c: CookieConsentChoice) => {
     writeCookieConsent(c)
@@ -35,7 +36,7 @@ export default function SiteCookieConsent() {
 
   return (
     <>
-      {allowAnalytics ? <Analytics /> : null}
+      {showAnalytics ? <Analytics /> : null}
       {showBanner ? (
         <div
           className="fixed inset-x-0 bottom-0 z-[10200] border-t border-[rgba(13,11,8,0.08)] bg-[var(--surface)] px-5 py-5 shadow-[0_-8px_32px_rgba(13,11,8,0.12)] md:px-10 dark:border-[rgba(201,168,76,0.1)]"
