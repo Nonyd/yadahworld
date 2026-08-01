@@ -117,7 +117,9 @@ export default async function ReleaseDetailPage({ params }: Props) {
             )}
             <p className="ui-label mt-4 text-muted">{releaseDateThenType(release)}</p>
 
-            {isSpotifySynced && tracks.length > 0 && <ReleaseTrackList tracks={tracks} />}
+            {isSpotifySynced && tracks.length > 0 && (
+              <ReleaseTrackList tracks={tracks} cover={release.cover} releaseTitle={release.title} />
+            )}
 
             {isSpotifySynced && release.spotifyAlbumId ? (
               <div className="mb-10 max-w-xl">
