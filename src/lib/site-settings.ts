@@ -196,3 +196,15 @@ export async function getPayazaConfig() {
     webhookSecret: s?.payazaWebhookSecret?.trim() || process.env.PAYAZA_WEBHOOK_SECRET || '',
   }
 }
+
+export async function getSpotifyConfig() {
+  const s = await prisma.siteSettings.findUnique({ where: { id: 1 } })
+  return {
+    clientId: s?.spotifyClientId?.trim() || process.env.SPOTIFY_CLIENT_ID || '',
+    clientSecret: s?.spotifyClientSecret?.trim() || process.env.SPOTIFY_CLIENT_SECRET || '',
+    artistId: s?.spotifyArtistId?.trim() || process.env.SPOTIFY_ARTIST_ID || '',
+    enabled: s?.spotifySyncEnabled ?? false,
+    lastSyncAt: s?.spotifyLastSyncAt ?? null,
+    lastSyncNote: s?.spotifyLastSyncNote ?? null,
+  }
+}

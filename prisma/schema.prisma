@@ -232,6 +232,13 @@ model SiteSettings {
   brevoFromName    String?
   brevoNotifyEmail String?
 
+  spotifyClientId     String?
+  spotifyClientSecret String?
+  spotifyArtistId     String?
+  spotifySyncEnabled  Boolean   @default(false)
+  spotifyLastSyncAt   DateTime?
+  spotifyLastSyncNote String?
+
   heroTagline       String?
   aboutBioShort     String?
   footerCopyright   String?
@@ -320,6 +327,26 @@ model SiteRelease {
   releasedAt         DateTime @default(now())
   /// When true, this release appears in the homepage music grid (order controlled by `order`).
   showOnHomepage     Boolean  @default(true)
+  /// Spotify album ID when this release was synced from Spotify (null = fully manual).
+  spotifyAlbumId     String?  @unique
+  /// External cover art URL from Spotify (largest image); do not download/re-upload.
+  coverExternalUrl   String?
+  /// Field names locked against Spotify sync after admin edits, e.g. ["title","spotify"].
+  lockedFields       Json?
+  lastSyncedAt       DateTime?
+  tracks             ReleaseTrack[]
+}
+
+model ReleaseTrack {
+  id             String      @id @default(cuid())
+  releaseId      String
+  release        SiteRelease @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  spotifyTrackId String?     @unique
+  name           String
+  trackNumber    Int
+  durationMs     Int?
+  /// 30s MP3 preview from Spotify, when available.
+  previewUrl     String?
 }
 
 model SiteEvent {

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import PublicHrefLink from '@/components/ui/PublicHrefLink'
+import ReleaseTrackList from '@/components/releases/ReleaseTrackList'
 import { bookingHrefFromCopy, getCopyString } from '@/lib/site-copy'
 import { formatReleaseDateDisplay } from '@/lib/release-date'
 import { releaseDateThenType, releaseTypeDateLine, releaseTypeUpperThenDate } from '@/lib/release-display'
@@ -40,6 +41,8 @@ export default async function ReleaseDetailPage({ params }: Props) {
   const typeUpper = release.type.toUpperCase()
   const musicVideoId = release.musicVideoYoutube ? extractYoutubeVideoId(release.musicVideoYoutube) : null
   const bodyHtml = proseHtmlFromStored(release.description?.trim() || d('bodyFallback'))
+  const isSpotifySynced = Boolean(release.spotifyAlbumId?.trim())
+  const tracks = release.tracks ?? []
 
   return (
     <article className="min-h-screen bg-bg pb-28 pt-32 md:px-20 px-8">
@@ -114,7 +117,24 @@ export default async function ReleaseDetailPage({ params }: Props) {
             )}
             <p className="ui-label mt-4 text-muted">{releaseDateThenType(release)}</p>
 
-            {release.spotifyEmbed?.trim() && (
+            {isSpotifySynced && tracks.length > 0 && <ReleaseTrackList tracks={tracks} />}
+
+            {isSpotifySynced && release.spotifyAlbumId ? (
+              <div className="mb-10 max-w-xl">
+                <h2 className="eyebrow mb-4">{d('spotifyEmbedHeading')}</h2>
+                <div className="overflow-hidden rounded-lg border border-gold-light/20 bg-surface shadow-[0_4px_24px_rgba(13,11,8,0.06)]">
+                  <iframe
+                    title="Spotify player"
+                    src={`https://open.spotify.com/embed/album/${release.spotifyAlbumId}?theme=0`}
+                    width="100%"
+                    height="352"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                    className="block w-full border-0"
+                  />
+                </div>
+              </div>
+            ) : release.spotifyEmbed?.trim() ? (
               <div className="mb-10 max-w-xl">
                 <h2 className="eyebrow mb-4">{d('spotifyEmbedHeading')}</h2>
                 <div className="overflow-hidden rounded-lg border border-gold-light/20 bg-surface shadow-[0_4px_24px_rgba(13,11,8,0.06)]">
@@ -129,7 +149,7 @@ export default async function ReleaseDetailPage({ params }: Props) {
                   />
                 </div>
               </div>
-            )}
+            ) : null}
 
             <div className="prose max-w-xl text-muted" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
 

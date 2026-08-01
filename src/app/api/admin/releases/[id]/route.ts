@@ -7,6 +7,7 @@ import { uniqueReleaseSlug } from '@/lib/site-content'
 import { slugify } from '@/lib/slug'
 import { parseReleasedAtInput } from '@/lib/release-date'
 import { parseSpotifyEmbedUrl } from '@/lib/spotify-embed'
+import { parseLockedFields } from '@/lib/spotify-sync'
 import { extractYoutubeVideoId } from '@/lib/youtube'
 import { normalizeStreamingLinksJson } from '@/lib/streaming-links'
 import { z } from 'zod'
@@ -40,6 +41,10 @@ const patchSchema = z.object({
 function emptyToNull(s: string | null | undefined) {
   const t = s?.trim()
   return t ? t : null
+}
+
+function sameInstant(a: Date, b: Date) {
+  return a.getTime() === b.getTime()
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
@@ -93,10 +98,41 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   const before = await prisma.siteRelease.findUnique({
     where: { id: params.id },
-    select: { slug: true },
+    select: {
+      slug: true,
+      spotifyAlbumId: true,
+      lockedFields: true,
+      title: true,
+      type: true,
+      year: true,
+      cover: true,
+      spotify: true,
+      apple: true,
+      releasedAt: true,
+    },
   })
   if (!before) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
+  // Synced releases: editing a sync-owned field locks it against future Spotify overwrites.
+  if (before.spotifyAlbumId) {
+    const locked = parseLockedFields(before.lockedFields)
+    if (d.title !== undefined && d.title.trim() !== before.title) locked.add('title')
+    if (d.type !== undefined && d.type.trim() !== before.type) locked.add('type')
+    if (d.year !== undefined && d.year.trim() !== before.year) locked.add('date')
+    if (d.releasedAt !== undefined) {
+      const next = parseReleasedAtInput(d.releasedAt, before.releasedAt)
+      if (!sameInstant(next, before.releasedAt)) locked.add('date')
+    }
+    if (d.cover !== undefined && d.cover.trim() !== before.cover) {
+      locked.add('cover')
+      // Prefer the admin-uploaded cover over the synced Spotify image.
+      data.coverExternalUrl = null
+    }
+    if (d.spotify !== undefined && emptyToNull(d.spotify) !== before.spotify) locked.add('spotify')
+    if (d.apple !== undefined && emptyToNull(d.apple) !== before.apple) locked.add('apple')
+    data.lockedFields = Array.from(locked)
   }
 
   try {

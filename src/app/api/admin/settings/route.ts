@@ -58,6 +58,10 @@ const patchSchema = z.object({
   brevoFromEmail: z.string().optional().nullable(),
   brevoFromName: z.string().optional().nullable(),
   brevoNotifyEmail: z.string().optional().nullable(),
+  spotifyClientId: z.string().optional().nullable(),
+  spotifyClientSecret: z.string().optional().nullable(),
+  spotifyArtistId: z.string().optional().nullable(),
+  spotifySyncEnabled: z.boolean().optional(),
   heroTagline: z.string().optional().nullable(),
   aboutBioShort: z.string().optional().nullable(),
   footerCopyright: z.string().optional().nullable(),
@@ -83,6 +87,7 @@ function sanitizeSettingsResponse(row: SiteSettings): Partial<SiteSettings> {
   clone.payazaWebhookSecret = maskSecret(row.payazaWebhookSecret ?? null)
   clone.stripeSecretKey = maskSecret(row.stripeSecretKey ?? null)
   clone.stripeWebhookSecret = maskSecret(row.stripeWebhookSecret ?? null)
+  clone.spotifyClientSecret = maskSecret(row.spotifyClientSecret ?? null)
   return clone
 }
 
@@ -172,6 +177,10 @@ export async function PATCH(req: NextRequest) {
   if (d.brevoFromEmail !== undefined) data.brevoFromEmail = emptyToNull(d.brevoFromEmail)
   if (d.brevoFromName !== undefined) data.brevoFromName = emptyToNull(d.brevoFromName)
   if (d.brevoNotifyEmail !== undefined) data.brevoNotifyEmail = emptyToNull(d.brevoNotifyEmail)
+  if (d.spotifyClientId !== undefined) data.spotifyClientId = emptyToNull(d.spotifyClientId)
+  if (d.spotifyClientSecret !== undefined) data.spotifyClientSecret = emptyToNull(d.spotifyClientSecret)
+  if (d.spotifyArtistId !== undefined) data.spotifyArtistId = emptyToNull(d.spotifyArtistId)
+  if (d.spotifySyncEnabled !== undefined) data.spotifySyncEnabled = d.spotifySyncEnabled
   if (d.heroTagline !== undefined) data.heroTagline = emptyToNull(d.heroTagline)
   if (d.aboutBioShort !== undefined) data.aboutBioShort = emptyToNull(d.aboutBioShort)
   if (d.footerCopyright !== undefined) data.footerCopyright = emptyToNull(d.footerCopyright)

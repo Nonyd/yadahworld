@@ -7,6 +7,14 @@ import { getVideosBySlot } from '@/lib/youtube-sync'
 import { youtubeWatchUrl } from '@/lib/youtube'
 import { listVideosForSlot } from '@/lib/videos-query'
 
+export type PublicReleaseTrack = {
+  id: string
+  name: string
+  trackNumber: number
+  durationMs: number | null
+  previewUrl: string | null
+}
+
 export type PublicRelease = {
   slug: string
   title: string
@@ -24,6 +32,11 @@ export type PublicRelease = {
   streamingLinks: StreamingLink[]
   isNew: boolean
   description: string | null
+  /** Present when synced from Spotify. */
+  spotifyAlbumId?: string | null
+  tracks?: PublicReleaseTrack[]
+  /** First available 30s preview URL (listing cards). */
+  previewUrl?: string | null
 }
 
 export type PublicEvent = {
@@ -203,6 +216,7 @@ function mapReleaseRow(r: {
   year: string
   releasedAt: Date
   cover: string
+  coverExternalUrl?: string | null
   spotify: string | null
   spotifyEmbed: string | null
   apple: string | null
@@ -211,7 +225,28 @@ function mapReleaseRow(r: {
   streamingLinks: unknown
   isNew: boolean
   description: string | null
+  spotifyAlbumId?: string | null
+  tracks?: {
+    id: string
+    name: string
+    trackNumber: number
+    durationMs: number | null
+    previewUrl: string | null
+  }[]
+  previewUrl?: string | null
 }): PublicRelease {
+  const tracks = (r.tracks ?? []).map((t) => ({
+    id: t.id,
+    name: t.name,
+    trackNumber: t.trackNumber,
+    durationMs: t.durationMs,
+    previewUrl: t.previewUrl,
+  }))
+  const previewUrl =
+    r.previewUrl?.trim() ||
+    tracks.find((t) => t.previewUrl?.trim())?.previewUrl?.trim() ||
+    null
+
   return {
     slug: r.slug,
     title: r.title,
@@ -219,7 +254,7 @@ function mapReleaseRow(r: {
     type: r.type,
     year: r.year,
     releasedAt: r.releasedAt.toISOString(),
-    cover: r.cover,
+    cover: r.coverExternalUrl?.trim() || r.cover,
     spotify: r.spotify,
     spotifyEmbed: r.spotifyEmbed,
     apple: r.apple,
@@ -228,6 +263,9 @@ function mapReleaseRow(r: {
     streamingLinks: normalizeStreamingLinksJson(r.streamingLinks),
     isNew: r.isNew,
     description: r.description,
+    spotifyAlbumId: r.spotifyAlbumId ?? null,
+    tracks,
+    previewUrl,
   }
 }
 
@@ -235,8 +273,22 @@ export async function getPublicReleases(): Promise<PublicRelease[]> {
   try {
     const rows = await prisma.siteRelease.findMany({
       orderBy: [{ releasedAt: 'desc' }, { createdAt: 'desc' }],
+      include: {
+        tracks: {
+          where: { previewUrl: { not: null } },
+          orderBy: { trackNumber: 'asc' },
+          take: 1,
+          select: { previewUrl: true },
+        },
+      },
     })
-    return rows.map(mapReleaseRow)
+    return rows.map((row) =>
+      mapReleaseRow({
+        ...row,
+        previewUrl: row.tracks[0]?.previewUrl ?? null,
+        tracks: [],
+      }),
+    )
   } catch {
     return FALLBACK_RELEASES
   }
@@ -258,7 +310,12 @@ export async function getHomepageReleases(): Promise<PublicRelease[]> {
 
 export async function getReleaseBySlug(slug: string): Promise<PublicRelease | null> {
   try {
-    const row = await prisma.siteRelease.findUnique({ where: { slug } })
+    const row = await prisma.siteRelease.findUnique({
+      where: { slug },
+      include: {
+        tracks: { orderBy: { trackNumber: 'asc' } },
+      },
+    })
     if (row) return mapReleaseRow(row)
     return null
   } catch {

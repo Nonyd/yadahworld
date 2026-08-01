@@ -13,6 +13,10 @@ type Mode = 'create' | 'edit'
 
 export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: SiteRelease }) {
   const router = useRouter()
+  const isSynced = Boolean(initial?.spotifyAlbumId)
+  const lockHint = isSynced ? (
+    <p className="mt-1 text-xs text-admin-muted">Editing this field locks it against Spotify sync.</p>
+  ) : null
   const [title, setTitle] = useState(initial?.title ?? '')
   const [slug, setSlug] = useState(initial?.slug ?? '')
   const [description, setDescription] = useState(initial?.description ?? '')
@@ -109,6 +113,7 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
         <div className="sm:col-span-2">
           <label className="admin-label">Title</label>
           <input className="admin-input" value={title} onChange={(e) => setTitle(e.target.value)} required />
+          {lockHint}
         </div>
         <div className="sm:col-span-2 flex flex-col gap-2 sm:flex-row sm:items-end">
           <div className="min-w-0 flex-1">
@@ -136,11 +141,13 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
         <div>
           <label className="admin-label">Type</label>
           <input className="admin-input" value={type} onChange={(e) => setType(e.target.value)} required />
+          {lockHint}
         </div>
         <div>
           <label className="admin-label">Year (display)</label>
           <input className="admin-input" value={year} onChange={(e) => setYear(e.target.value)} required />
           <p className="mt-1 text-xs text-admin-muted">Shown as “Type · Year” on the site. Sorting uses release date below.</p>
+          {lockHint}
         </div>
         <div>
           <label className="admin-label">Release date (catalog)</label>
@@ -152,6 +159,7 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
             required
           />
           <p className="mt-1 text-xs text-admin-muted">Exact date — controls order on the public /releases page (newest first).</p>
+          {lockHint}
         </div>
         <div className="sm:col-span-2">
           <AdminImageUpload
@@ -161,10 +169,12 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
             folder="releases"
             hint="Upload a square image (recommended 1200×1200 or larger). Stored as a Cloudinary URL, or paste any image URL."
           />
+          {lockHint}
         </div>
         <div className="sm:col-span-2">
           <label className="admin-label">Spotify URL</label>
           <input className="admin-input" value={spotify} onChange={(e) => setSpotify(e.target.value)} placeholder="https://..." />
+          {lockHint}
         </div>
         <div className="sm:col-span-2">
           <label className="admin-label">Spotify embed (optional)</label>
@@ -181,6 +191,7 @@ export default function ReleaseForm({ mode, initial }: { mode: Mode; initial?: S
         <div className="sm:col-span-2">
           <label className="admin-label">Apple Music URL</label>
           <input className="admin-input" value={apple} onChange={(e) => setApple(e.target.value)} />
+          {lockHint}
         </div>
         <div className="sm:col-span-2">
           <label className="admin-label">YouTube URL</label>

@@ -177,6 +177,10 @@ type FormState = {
   payazaEnabled: boolean
   payazaMode: 'test' | 'live'
   payazaWebhookSecret: string
+  spotifyClientId: string
+  spotifyClientSecret: string
+  spotifyArtistId: string
+  spotifySyncEnabled: boolean
 }
 
 function toFormState(row: SiteSettings | null): FormState {
@@ -234,6 +238,10 @@ function toFormState(row: SiteSettings | null): FormState {
     payazaEnabled: row?.payazaEnabled ?? false,
     payazaMode: row?.payazaMode === 'live' ? 'live' : 'test',
     payazaWebhookSecret: row?.payazaWebhookSecret ?? '',
+    spotifyClientId: row?.spotifyClientId ?? '',
+    spotifyClientSecret: row?.spotifyClientSecret ?? '',
+    spotifyArtistId: row?.spotifyArtistId ?? '',
+    spotifySyncEnabled: row?.spotifySyncEnabled ?? false,
   }
 }
 
@@ -442,6 +450,9 @@ export default function AdminSettingsForm({
   const paystackLive = Boolean(form.paystackPublicKey?.trim() && form.paystackSecretKey?.trim())
   const flutterLive = Boolean(form.flutterwavePublicKey?.trim() && form.flutterwaveSecretKey?.trim())
   const payazaLive = Boolean(form.payazaPublicKey?.trim() && form.payazaSecretKey?.trim())
+  const spotifyLive = Boolean(
+    form.spotifyClientId?.trim() && form.spotifyClientSecret?.trim() && form.spotifyArtistId?.trim(),
+  )
 
   const appendGalleryFiles = async (files: FileList | null) => {
     if (!files?.length) return
@@ -598,6 +609,10 @@ export default function AdminSettingsForm({
           payazaEnabled: form.payazaEnabled,
           payazaMode: form.payazaMode,
           payazaWebhookSecret: form.payazaWebhookSecret || null,
+          spotifyClientId: form.spotifyClientId || null,
+          spotifyClientSecret: form.spotifyClientSecret || null,
+          spotifyArtistId: form.spotifyArtistId || null,
+          spotifySyncEnabled: form.spotifySyncEnabled,
           siteContentJson: buildSiteContentJsonFromDotMap(copyForm),
         }),
       })
@@ -1247,6 +1262,76 @@ export default function AdminSettingsForm({
               Payaza API base: <span className="font-mono text-admin-text">https://api.payaza.africa</span> — Auth header:{' '}
               <span className="font-mono text-admin-text">Payaza-Auth: Bearer {'{secret}'}</span>
             </p>
+          </div>
+
+          <div className="admin-card space-y-6 p-6 sm:p-8">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="font-playfair text-lg text-admin-text">Spotify Sync</h2>
+              <Badge live={spotifyLive} />
+            </div>
+            <p className="text-sm text-admin-muted">
+              Auto-sync albums and singles from a Spotify artist into Releases. Requires a Spotify Developer app
+              (client credentials) and the artist ID from the Spotify artist page URL.
+            </p>
+            <label className="flex cursor-pointer items-center gap-3">
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded border-admin-border"
+                checked={form.spotifySyncEnabled}
+                onChange={(e) => set('spotifySyncEnabled', e.target.checked)}
+              />
+              <span className="text-sm text-admin-text">Enable Spotify sync</span>
+            </label>
+            <div>
+              <div className="mb-1 flex flex-wrap items-center gap-2">
+                <label className="admin-label mb-0" htmlFor="spotifyClientId">
+                  Client ID
+                </label>
+                <Badge live={Boolean(form.spotifyClientId?.trim())} />
+              </div>
+              <input
+                id="spotifyClientId"
+                className="admin-input"
+                value={form.spotifyClientId}
+                onChange={(e) => set('spotifyClientId', e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+            <PassRow
+              id="spotifyClientSecret"
+              label="Client secret"
+              value={form.spotifyClientSecret}
+              onChange={(v) => set('spotifyClientSecret', v)}
+              badgeLive={Boolean(form.spotifyClientSecret?.trim())}
+            />
+            <div>
+              <div className="mb-1 flex flex-wrap items-center gap-2">
+                <label className="admin-label mb-0" htmlFor="spotifyArtistId">
+                  Artist ID
+                </label>
+                <Badge live={Boolean(form.spotifyArtistId?.trim())} />
+              </div>
+              <input
+                id="spotifyArtistId"
+                className="admin-input"
+                value={form.spotifyArtistId}
+                onChange={(e) => set('spotifyArtistId', e.target.value)}
+                placeholder="From open.spotify.com/artist/…"
+                autoComplete="off"
+              />
+            </div>
+            <div className="rounded-md border border-admin-border bg-admin-surface/50 p-3">
+              <p className="text-xs text-admin-muted">Last sync</p>
+              <p className="mt-1 font-jost text-sm text-admin-text">
+                {initial?.spotifyLastSyncAt
+                  ? new Date(initial.spotifyLastSyncAt).toLocaleString('en-GB', {
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
+                    })
+                  : 'Never'}
+                {initial?.spotifyLastSyncNote ? ` — ${initial.spotifyLastSyncNote}` : ''}
+              </p>
+            </div>
           </div>
         </div>
       )}
