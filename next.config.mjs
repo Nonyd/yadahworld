@@ -41,7 +41,7 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value:
-              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' https://p.scdn.co; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com https://open.spotify.com https://embed.spotify.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
+              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' https://p.scdn.co https://*.itunes.apple.com https://audio-ssl.itunes.apple.com; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com https://open.spotify.com https://embed.spotify.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
           },
         ],
       },

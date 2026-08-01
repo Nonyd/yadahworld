@@ -43,6 +43,16 @@ type ItunesAlbumResult = {
   collectionName?: string
   collectionViewUrl?: string
   artistName?: string
+  collectionId?: number
+}
+
+type ItunesSongResult = {
+  trackName?: string
+  previewUrl?: string
+  collectionName?: string
+  artistName?: string
+  wrapperType?: string
+  kind?: string
 }
 
 /** Sync-owned field keys stored in `lockedFields`. */
@@ -79,7 +89,6 @@ function parseSpotifyReleaseDate(releaseDate: string, precision?: string): Date 
   if (precision === 'month' || /^\d{4}-\d{2}$/.test(raw)) {
     return new Date(`${raw}-01T12:00:00.000Z`)
   }
-  // day precision or full date
   if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
     return new Date(`${raw}T12:00:00.000Z`)
   }
@@ -160,10 +169,88 @@ async function findAppleMusicUrl(artistName: string, title: string): Promise<str
   return null
 }
 
-async function upsertTracks(releaseId: string, albumId: string): Promise<void> {
+/**
+ * Build a map of normalized track title → Apple 30s preview URL for an album.
+ * One search per album (not per track) to stay kind to the iTunes API.
+ */
+async function fetchApplePreviewMap(
+  artistName: string,
+  albumTitle: string,
+): Promise<Map<string, string>> {
+  const map = new Map<string, string>()
+  const term = encodeURIComponent(`${artistName} ${albumTitle}`.trim())
+  const url = `https://itunes.apple.com/search?term=${term}&entity=song&country=NG&limit=50`
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/json' } })
+    if (!res.ok) return map
+    const data = (await res.json()) as { results?: ItunesSongResult[] }
+    const wantAlbum = normalizeMusicTitle(albumTitle)
+    for (const row of data.results ?? []) {
+      if (row.kind && row.kind !== 'song') continue
+      const trackName = row.trackName?.trim()
+      const preview = row.previewUrl?.trim()
+      if (!trackName || !preview) continue
+      // Prefer rows that match this album when collectionName is present.
+      if (row.collectionName && wantAlbum) {
+        const gotAlbum = normalizeMusicTitle(row.collectionName)
+        if (gotAlbum && gotAlbum !== wantAlbum) continue
+      }
+      const key = normalizeMusicTitle(trackName)
+      if (key && !map.has(key)) map.set(key, preview)
+    }
+  } catch {
+    // silent skip — Spotify previews still apply
+  }
+  return map
+}
+
+/** Per-track Apple search when album-scoped search missed a title. */
+async function findAppleTrackPreview(
+  artistName: string,
+  trackName: string,
+): Promise<string | null> {
+  const term = encodeURIComponent(`${artistName} ${trackName}`.trim())
+  const url = `https://itunes.apple.com/search?term=${term}&entity=song&country=NG&limit=5`
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/json' } })
+    if (!res.ok) return null
+    const data = (await res.json()) as { results?: ItunesSongResult[] }
+    const want = normalizeMusicTitle(trackName)
+    if (!want) return null
+    for (const row of data.results ?? []) {
+      if (row.kind && row.kind !== 'song') continue
+      const name = row.trackName?.trim()
+      const preview = row.previewUrl?.trim()
+      if (!name || !preview) continue
+      if (normalizeMusicTitle(name) === want) return preview
+    }
+  } catch {
+    // silent skip
+  }
+  return null
+}
+
+async function upsertTracks(
+  releaseId: string,
+  albumId: string,
+  artistName: string,
+  albumTitle: string,
+): Promise<void> {
   const tracks = await fetchAlbumTracks(albumId)
+  const needsApple = tracks.some((t) => t.id && !t.preview_url?.trim())
+  const appleMap = needsApple ? await fetchApplePreviewMap(artistName, albumTitle) : new Map<string, string>()
+
   for (const t of tracks) {
     if (!t.id) continue
+    let previewUrl = t.preview_url?.trim() || null
+    if (!previewUrl) {
+      const key = normalizeMusicTitle(t.name)
+      previewUrl = (key && appleMap.get(key)) || null
+      if (!previewUrl) {
+        previewUrl = await findAppleTrackPreview(artistName, t.name)
+      }
+    }
+
     await prisma.releaseTrack.upsert({
       where: { spotifyTrackId: t.id },
       create: {
@@ -172,14 +259,15 @@ async function upsertTracks(releaseId: string, albumId: string): Promise<void> {
         name: t.name,
         trackNumber: t.track_number,
         durationMs: t.duration_ms ?? null,
-        previewUrl: t.preview_url ?? null,
+        previewUrl,
       },
       update: {
         releaseId,
         name: t.name,
         trackNumber: t.track_number,
         durationMs: t.duration_ms ?? null,
-        previewUrl: t.preview_url ?? null,
+        // Prefer Spotify; fall back to Apple; omit previewUrl when neither found so existing Apple URL is kept.
+        ...(previewUrl ? { previewUrl } : {}),
       },
     })
   }
@@ -255,7 +343,7 @@ export async function syncSpotify(): Promise<SyncSpotifyResult> {
         })
         created += 1
 
-        await upsertTracks(row.id, album.id)
+        await upsertTracks(row.id, album.id, artistName, title)
 
         const appleUrl = await findAppleMusicUrl(artistName, title)
         if (appleUrl) {
@@ -297,7 +385,7 @@ export async function syncSpotify(): Promise<SyncSpotifyResult> {
       })
       updated += 1
 
-      await upsertTracks(existing.id, album.id)
+      await upsertTracks(existing.id, album.id, artistName, existing.title || title)
     }
 
     const note = `${created + updated} releases synced (${created} created, ${updated} updated)`

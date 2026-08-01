@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import type { PublicReleaseTrack } from '@/lib/site-content'
+import { isApplePreviewUrl } from '@/lib/preview-source'
 
 function formatDuration(ms: number | null | undefined): string {
   if (ms == null || !Number.isFinite(ms) || ms < 0) return '—'
@@ -34,6 +35,9 @@ export default function ReleaseTrackList({
   const [progress, setProgress] = useState(0)
   const [currentSec, setCurrentSec] = useState(0)
   const [durationSec, setDurationSec] = useState(30)
+
+  const activeIsApple = isApplePreviewUrl(active?.previewUrl)
+  const anyApplePreview = tracks.some((t) => isApplePreviewUrl(t.previewUrl))
 
   useEffect(() => {
     const audio = new Audio()
@@ -138,6 +142,7 @@ export default function ReleaseTrackList({
         <h2 className="eyebrow mb-4">Tracks</h2>
         <p className="mb-3 font-jost text-[11px] text-muted">
           Tap a track for a 30-second preview. Full songs play in the Spotify player below.
+          {anyApplePreview ? <> Some previews courtesy of Apple Music.</> : null}
         </p>
         <ol className="divide-y divide-[rgba(42,37,32,0.1)] border-y border-[rgba(42,37,32,0.1)]">
           {tracks.map((track) => {
@@ -226,7 +231,13 @@ export default function ReleaseTrackList({
             <div className="min-w-0 flex-1">
               <p className="truncate font-playfair text-sm text-body md:text-base">{active.name}</p>
               <p className="truncate font-jost text-[10px] uppercase tracking-[0.12em] text-muted">
-                {releaseTitle} · 30s preview
+                {activeIsApple ? (
+                  <>Previews courtesy of Apple Music · {releaseTitle}</>
+                ) : (
+                  <>
+                    {releaseTitle} · 30s preview
+                  </>
+                )}
               </p>
               <div className="mt-2 flex items-center gap-2">
                 <span className="w-8 shrink-0 font-jost text-[10px] tabular-nums text-muted">
