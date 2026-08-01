@@ -104,8 +104,9 @@ export function normalizeMusicTitle(input: string): string {
 
 async function fetchAllArtistAlbums(artistId: string): Promise<SpotifyAlbumSimplified[]> {
   const albums: SpotifyAlbumSimplified[] = []
+  // Spotify caps this endpoint at limit=10 (default 5) — higher values return 400 "Invalid limit".
   let path: string | null =
-    `/v1/artists/${encodeURIComponent(artistId)}/albums?include_groups=album,single&market=NG&limit=50`
+    `/v1/artists/${encodeURIComponent(artistId)}/albums?include_groups=album,single&market=NG&limit=10`
 
   while (path) {
     const page: SpotifyPaging<SpotifyAlbumSimplified> =
