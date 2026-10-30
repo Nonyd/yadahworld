@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidateMediaAndMinistrations } from '@/lib/revalidate-public'
 import { syncAllPlaylists } from '@/lib/youtube-sync'
 
 export const runtime = 'nodejs'
@@ -18,6 +19,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const results = await syncAllPlaylists()
+    revalidateMediaAndMinistrations()
     return NextResponse.json({ success: true, results, timestamp: new Date().toISOString() })
   } catch (err) {
     console.error('YouTube sync error:', err)

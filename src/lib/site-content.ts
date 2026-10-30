@@ -5,7 +5,7 @@ import { slugify } from '@/lib/slug'
 import { normalizeStreamingLinksJson, type StreamingLink } from '@/lib/streaming-links'
 import { getVideosBySlot } from '@/lib/youtube-sync'
 import { youtubeWatchUrl } from '@/lib/youtube'
-import { listVideosForSlot } from '@/lib/videos-query'
+import { listPublicPlaylists, listVideosForSlot } from '@/lib/videos-query'
 
 export type PublicReleaseTrack = {
   id: string
@@ -383,12 +383,12 @@ export async function getPublicVideos(): Promise<PublicVideo[]> {
   }
 }
 
-/** First page of music videos for /media — most viewed, 15 items. */
+/** First page of music videos for /media — newest first, 15 items. */
 export async function getPublicMusicVideosForMedia(): Promise<{ videos: PublicVideo[]; total: number }> {
   try {
     const { videos, total } = await listVideosForSlot({
       slot: PlaylistSlot.MUSIC_VIDEOS,
-      sort: 'views',
+      sort: 'recent',
       skip: 0,
       take: 15,
     })
@@ -396,6 +396,21 @@ export async function getPublicMusicVideosForMedia(): Promise<{ videos: PublicVi
     return { videos: videos.map(mapCachedVideoToPublicVideo), total }
   } catch {
     return { videos: FALLBACK_VIDEOS, total: FALLBACK_VIDEOS.length }
+  }
+}
+
+export type PublicPlaylist = { id: string; name: string }
+
+/**
+ * Playlists shown as filter buttons on /media — ministrations and general playlists with videos.
+ * Music-video playlists are already covered by the default "Music Videos" view.
+ */
+export async function getPublicPlaylistsForMedia(): Promise<PublicPlaylist[]> {
+  try {
+    const rows = await listPublicPlaylists()
+    return rows.filter((r) => r.slot !== PlaylistSlot.MUSIC_VIDEOS).map(({ id, name }) => ({ id, name }))
+  } catch {
+    return []
   }
 }
 

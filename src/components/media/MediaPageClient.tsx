@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback } from 'react'
 import Image from 'next/image'
 import Lightbox from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
-import { type PublicVideo, deserializeCachedVideoToPublic } from '@/lib/site-content'
+import { type PublicPlaylist, type PublicVideo, deserializeCachedVideoToPublic } from '@/lib/site-content'
 import StackedVideoCard from '@/components/media/StackedVideoCard'
 import { usePublicVideoLightbox } from '@/components/media/usePublicVideoLightbox'
 import type { SiteCopy } from '@/lib/site-copy'
@@ -25,13 +25,14 @@ type ApiVideoRow = {
   viewCount: string | null
 }
 
-async function fetchVideos(sort: SortKey, skip: number) {
+async function fetchVideos(sort: SortKey, skip: number, playlistId: string | null) {
   const params = new URLSearchParams({
     slot: SLOT,
     sort,
     skip: String(skip),
     take: String(PAGE_SIZE),
   })
+  if (playlistId) params.set('playlist', playlistId)
   const res = await fetch(`/api/videos?${params}`)
   if (!res.ok) throw new Error('Failed to load videos')
   const data = (await res.json()) as { videos: ApiVideoRow[]; total: number }
@@ -42,10 +43,12 @@ async function fetchVideos(sort: SortKey, skip: number) {
 export default function MediaPageClient({
   videos: initialVideos,
   videoTotal: initialTotal,
+  playlists,
   galleryUrls,
   copy,
 }: {
   videos: PublicVideo[]
+  playlists: PublicPlaylist[]
   videoTotal: number
   galleryUrls: string[]
   copy: SiteCopy
@@ -53,7 +56,8 @@ export default function MediaPageClient({
   const [tab, setTab] = useState<'videos' | 'photos'>('videos')
   const [open, setOpen] = useState(false)
   const [index, setIndex] = useState(0)
-  const [sort, setSort] = useState<SortKey>('views')
+  const [sort, setSort] = useState<SortKey>('recent')
+  const [playlistId, setPlaylistId] = useState<string | null>(null)
   const [videos, setVideos] = useState<PublicVideo[]>(initialVideos)
   const [total, setTotal] = useState(initialTotal)
   const [loading, setLoading] = useState(false)
@@ -70,12 +74,12 @@ export default function MediaPageClient({
       ? 'bg-[var(--accent)] text-white px-4 py-2 font-jost text-xs tracking-widest uppercase'
       : 'border border-[var(--accent)] text-[var(--accent)] px-4 py-2 font-jost text-xs tracking-widest uppercase'
 
-  const onSortChange = useCallback(async (next: SortKey) => {
-    if (next === sort) return
+  const reload = useCallback(async (nextSort: SortKey, nextPlaylistId: string | null) => {
     setLoading(true)
     try {
-      const { videos: nextVideos, total: nextTotal } = await fetchVideos(next, 0)
-      setSort(next)
+      const { videos: nextVideos, total: nextTotal } = await fetchVideos(nextSort, 0, nextPlaylistId)
+      setSort(nextSort)
+      setPlaylistId(nextPlaylistId)
       setVideos(nextVideos)
       setTotal(nextTotal)
     } catch (e) {
@@ -83,12 +87,22 @@ export default function MediaPageClient({
     } finally {
       setLoading(false)
     }
-  }, [sort])
+  }, [])
+
+  const onSortChange = useCallback(async (next: SortKey) => {
+    if (next === sort) return
+    await reload(next, playlistId)
+  }, [sort, playlistId, reload])
+
+  const onPlaylistChange = useCallback(async (next: string | null) => {
+    if (next === playlistId) return
+    await reload(sort, next)
+  }, [sort, playlistId, reload])
 
   const onLoadMore = useCallback(async () => {
     setLoadMoreLoading(true)
     try {
-      const { videos: more, total: nextTotal } = await fetchVideos(sort, videos.length)
+      const { videos: more, total: nextTotal } = await fetchVideos(sort, videos.length, playlistId)
       setTotal(nextTotal)
       setVideos((prev) => [...prev, ...more])
     } catch (e) {
@@ -96,7 +110,7 @@ export default function MediaPageClient({
     } finally {
       setLoadMoreLoading(false)
     }
-  }, [sort, videos.length])
+  }, [sort, videos.length, playlistId])
 
   return (
     <div className="min-h-screen pt-40 pb-24 px-8 md:px-20 bg-bg">
@@ -128,13 +142,37 @@ export default function MediaPageClient({
         {tab === 'videos' && (
           <div id="videos" className="space-y-10">
             <div className="flex flex-wrap gap-3">
-              <button type="button" disabled={loading} className={sortClass(sort === 'views')} onClick={() => onSortChange('views')}>
-                Most Viewed
-              </button>
               <button type="button" disabled={loading} className={sortClass(sort === 'recent')} onClick={() => onSortChange('recent')}>
                 Recent
               </button>
+              <button type="button" disabled={loading} className={sortClass(sort === 'views')} onClick={() => onSortChange('views')}>
+                Most Viewed
+              </button>
             </div>
+
+            {playlists.length > 0 ? (
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  disabled={loading}
+                  className={sortClass(playlistId === null)}
+                  onClick={() => void onPlaylistChange(null)}
+                >
+                  Music Videos
+                </button>
+                {playlists.map((p) => (
+                  <button
+                    type="button"
+                    key={p.id}
+                    disabled={loading}
+                    className={sortClass(playlistId === p.id)}
+                    onClick={() => void onPlaylistChange(p.id)}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            ) : null}
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {videos.map((v, vi) => (

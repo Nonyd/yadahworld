@@ -11,6 +11,7 @@ function parseSlot(raw: string | null): PlaylistSlot | null {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
+  const playlistId = searchParams.get('playlist')?.trim() || undefined
   const slot = parseSlot(searchParams.get('slot'))
   if (!slot) {
     return NextResponse.json({ error: 'Invalid or missing slot' }, { status: 400 })
@@ -23,7 +24,7 @@ export async function GET(req: Request) {
   const take = Math.min(50, Math.max(1, parseInt(searchParams.get('take') ?? '15', 10) || 15))
 
   try {
-    const { videos, total } = await listVideosForSlot({ slot, sort, skip, take })
+    const { videos, total } = await listVideosForSlot({ slot, sort, skip, take, playlistId })
     return NextResponse.json({ videos, total })
   } catch (e) {
     console.error(e)
