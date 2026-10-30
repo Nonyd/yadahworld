@@ -26,6 +26,7 @@ export const DEFAULT_SITE_COPY: SiteCopyTree = {
   nav: {
     home: 'Home',
     media: 'Media',
+    ministrations: 'Ministrations',
     about: 'About',
     roomForYou: 'Room For You',
     roomForYouUrl: 'https://rfyglobal.org',
@@ -374,6 +375,7 @@ export function buildPublicNavLinks(copy: SiteCopy): PublicNavLink[] {
   return [
     { label: 'Home', href: '/' },
     { label: 'Media', href: '/media' },
+    { label: 'Ministrations', href: '/ministrations' },
     { label: 'About', href: '/about' },
     { label: 'Room For You', href: rfy, external: /^https?:\/\//i.test(rfy) },
     { label: 'Releases', href: '/releases' },
@@ -390,6 +392,7 @@ export function navLabelsFromCopy(copy: SiteCopy): Record<string, string> {
   return {
     '/': getCopyString(copy, 'nav.home'),
     '/media': getCopyString(copy, 'nav.media'),
+    '/ministrations': getCopyString(copy, 'nav.ministrations'),
     '/about': getCopyString(copy, 'nav.about'),
     [rfy]: getCopyString(copy, 'nav.roomForYou'),
     '/releases': getCopyString(copy, 'nav.releases'),
